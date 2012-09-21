@@ -25,18 +25,20 @@ import java.util.LinkedList;
  *
  * statement    ::= READ memberaccess ';'
  *                | WRITE expression ';'
- *                | IF relation
+ *                | IF logicalOR
  *                  THEN statements
- *                  { ELSEIF relation
+ *                  { ELSEIF logicalOR
  *                  THEN statements }
  *                  [ ELSE
  *                  statements ]
  *                  END IF
- *                | WHILE relation
+ *                | WHILE logicalOR
  *                  DO statements
  *                  END WHILE
  *                | memberaccess [ ':=' expression ] ';'
  *
+ * logicalOR    ::= logicalAND { 'OR' logicalAND }
+ * logicalAND   ::= relation { 'AND' relation }
  * relation     ::= expression [ ( '=' | '#' | '<' | '>' | '<=' | '>=' ) expression ]
  *
  * expression   ::= term { ( '+' | '-' ) term }
@@ -44,6 +46,7 @@ import java.util.LinkedList;
  * term         ::= factor { ( '*' | '/' | MOD ) factor }
  *
  * factor       ::= '-' factor
+ *                | 'NOT' factor
  *                | memberaccess
  *
  * memberaccess ::= literal { '.' varorcall }
@@ -55,7 +58,7 @@ import java.util.LinkedList;
  *                | FALSE
  *                | SELF
  *                | NEW identifier
- *                | '(' expression ')'
+ *                | '(' logicalOR ')'
  *                | varorcall
  *
  * varorcall    ::= identifier
@@ -239,7 +242,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
             break;
         case IF:
             nextSymbol();
-            IfStatement s = new IfStatement(relation());
+            IfStatement s = new IfStatement(logicalOR()); // Erweitert bei Aufgabe (c): AND, OR, NOT
             statements.add(s);
             expectSymbol(Symbol.Id.THEN);
             statements(s.thenStatements);
@@ -258,7 +261,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
             break;
         case WHILE:
             nextSymbol();
-            WhileStatement w = new WhileStatement(relation());
+            WhileStatement w = new WhileStatement(logicalOR()); //Erweitert fuer Aufgabe (c): AND, OR, NOT
             statements.add(w);
             expectSymbol(Symbol.Id.DO);
             statements(w.statements);
@@ -269,13 +272,52 @@ class SyntaxAnalysis extends LexicalAnalysis {
             Expression e = memberAccess();
             if (symbol.id == Symbol.Id.BECOMES) {
                 nextSymbol();
-                statements.add(new Assignment(e, expression()));
+                // statements.add(new Assignment(e, expression()));
+                statements.add(new Assignment(e, logicalOR())); /** Erweitern fuer Aufgabe (c): AND, OR, NOT */
             } else {
                 statements.add(new CallStatement(e));
             }
             expectSymbol(Symbol.Id.SEMICOLON);
         }
     }
+
+    /** BEGIN Aufgabe (c): AND, OR, NOT */
+
+    /**
+     * Die Methode parsiert eine logische OR Relation entsprechend der oben angegebenen
+     * Syntax und liefert den Ausdruck zurück.
+     * @return Der Ausdruck.
+     * @throws CompileException Der Quelltext entspricht nicht der Syntax.
+     * @throws IOException Ein Lesefehler ist aufgetreten.
+     */
+    private Expression logicalOR() throws CompileException, IOException {
+        Expression e = logicalAND();
+        while (symbol.id == Symbol.Id.OR) {
+          Symbol.Id operator = symbol.id;
+          nextSymbol();
+          e = new BinaryExpression(e, operator, logicalAND());
+        }
+        return e;
+    }
+
+    /**
+     * Die Methode parsiert eine logische UND Relation entsprechend der oben angegebenen
+     * Syntax und liefert den Ausdruck zurück.
+     * @return Der Ausdruck.
+     * @throws CompileException Der Quelltext entspricht nicht der Syntax.
+     * @throws IOException Ein Lesefehler ist aufgetreten.
+     */
+    private Expression logicalAND() throws CompileException, IOException {
+        Expression e = relation();
+        while (symbol.id == Symbol.Id.AND) {
+          Symbol.Id operator = symbol.id;
+          nextSymbol();
+          e = new BinaryExpression(e, operator, relation());
+        }
+        return e;
+    }
+
+    /** END Aufgabe (c) */
 
     /**
      * Die Methode parsiert eine Relation entsprechend der oben angegebenen
@@ -344,6 +386,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
      */
     private Expression factor() throws CompileException, IOException {
         switch (symbol.id) {
+        case NOT: /** Aufgabe (c): AND, OR, NOT */
         case MINUS:
             Symbol.Id operator = symbol.id;
             Position position = new Position(symbol.line, symbol.column);
@@ -412,7 +455,8 @@ class SyntaxAnalysis extends LexicalAnalysis {
             break;
         case LPAREN:
             nextSymbol();
-            e = expression();
+            // e = expression();
+            e = logicalOR(); /** Aufgabe (c): AND, OR, NOT */
             expectSymbol(Symbol.Id.RPAREN);
             break;
         case IDENT:

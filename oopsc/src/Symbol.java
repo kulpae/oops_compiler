@@ -20,6 +20,7 @@ class Symbol extends Position {
         NULL,
         TRUE, FALSE, /** Aufgabe (a): TRUE und FALSE */
         ELSE, ELSEIF, /** Aufgabe (b): ELSEIF und ELSE */
+        AND, OR, NOT, /** Aufgabe (c): AND, OR, NOT */
         EOF
     };
     

@@ -46,6 +46,16 @@ class BinaryExpression extends Expression {
             rightOperand.type.check(ClassDeclaration.intType, rightOperand.position);
             type = ClassDeclaration.intType;
             break;
+        /** BEGIN Aufgabe (c): AND, OR, NOT */
+        case AND:
+        case OR:
+            leftOperand = leftOperand.unBox();
+            rightOperand = rightOperand.unBox();
+            leftOperand.type.check(ClassDeclaration.boolType, leftOperand.position);
+            rightOperand.type.check(ClassDeclaration.boolType, rightOperand.position);
+            type = ClassDeclaration.boolType;
+            break;
+        /** END Aufgabe (c) */
         case GT:
         case GTEQ:
         case LT:
@@ -153,6 +163,14 @@ class BinaryExpression extends Expression {
             code.println("ISZ R6, R6");
             code.println("XOR R6, R1");
             break;
+        /** BEGIN Aufgabe (c): AND, OR, NOT */
+        case AND:
+            code.println("AND R6, R5");
+            break;
+        case OR:
+            code.println("OR R6, R5");
+            break;
+        /** END Aufgabe (c)*/
         default:
             assert false;
         }

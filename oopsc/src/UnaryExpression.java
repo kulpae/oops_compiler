@@ -31,6 +31,11 @@ class UnaryExpression extends Expression {
         operand = operand.contextAnalysis(declarations);
         operand = operand.unBox();
         switch (operator) {
+        /** BEGIN Aufgabe (c): AND, OR, NOT */
+        case NOT:
+            operand.type.check(ClassDeclaration.boolType, operand.position);
+            break;
+        /** END Aufgabe (c)*/
         case MINUS:
             operand.type.check(ClassDeclaration.intType, operand.position);
             break;
@@ -63,6 +68,12 @@ class UnaryExpression extends Expression {
         code.println("; " + operator);
         code.println("MRM R5, (R2)");
         switch (operator) {
+        /** BEGIN Aufgabe (c): AND, OR, NOT */
+        case NOT:
+            code.println("ISZ R5, R5");
+            code.println("MMR (R2), R5");
+            break;
+        /** END Aufgabe (c) */
         case MINUS:
             code.println("MRI R6, 0");
             code.println("SUB R6, R5");

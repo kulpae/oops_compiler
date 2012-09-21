@@ -90,6 +90,11 @@ class LexicalAnalysis {
         keywords.put("ELSEIF", Symbol.Id.ELSEIF);
         keywords.put("ELSE", Symbol.Id.ELSE);
         /** END Aufgabe (b)*/
+        /** BEGIN Aufgabe (c): AND, OR, NOT*/
+        keywords.put("AND", Symbol.Id.AND);
+        keywords.put("OR", Symbol.Id.OR);
+        keywords.put("NOT", Symbol.Id.NOT);
+        /** END Aufgabe (c)*/
 
         position = new Position(1, 0);
         nextChar();
