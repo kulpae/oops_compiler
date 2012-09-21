@@ -3,47 +3,51 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 /**
- * Die Klasse realisiert die syntaktische Analyse für die folgende Grammatik. 
+ * Die Klasse realisiert die syntaktische Analyse für die folgende Grammatik.
  * Terminale stehen dabei in Hochkommata oder sind groß geschrieben:
  * <pre>
  * program      ::= classdecl
  *
  * classdecl    ::= CLASS identifier IS
- *                  { memberdecl } 
+ *                  { memberdecl }
  *                  END CLASS
  *
  * memberdecl   ::= vardecl ';'
  *                | METHOD identifier IS methodbody
- * 
+ *
  * vardecl      ::= identifier { ',' identifier } ':' identifier
- * 
+ *
  * methodbody   ::= { vardecl ';' }
  *                  BEGIN statements
  *                  END METHOD
- * 
+ *
  * statements   ::= { statement }
- * 
+ *
  * statement    ::= READ memberaccess ';'
  *                | WRITE expression ';'
- *                | IF relation 
- *                  THEN statements 
+ *                | IF relation
+ *                  THEN statements
+ *                  { ELSEIF relation
+ *                  THEN statements }
+ *                  [ ELSE
+ *                  statements ]
  *                  END IF
- *                | WHILE relation 
- *                  DO statements 
+ *                | WHILE relation
+ *                  DO statements
  *                  END WHILE
  *                | memberaccess [ ':=' expression ] ';'
- * 
+ *
  * relation     ::= expression [ ( '=' | '#' | '<' | '>' | '<=' | '>=' ) expression ]
- * 
+ *
  * expression   ::= term { ( '+' | '-' ) term }
- * 
+ *
  * term         ::= factor { ( '*' | '/' | MOD ) factor }
- * 
+ *
  * factor       ::= '-' factor
  *                | memberaccess
- * 
+ *
  * memberaccess ::= literal { '.' varorcall }
- * 
+ *
  * literal    ::= number
  *                | character
  *                | NULL
@@ -53,7 +57,7 @@ import java.util.LinkedList;
  *                | NEW identifier
  *                | '(' expression ')'
  *                | varorcall
- * 
+ *
  * varorcall    ::= identifier
  * </pre>
  * Daraus wird der Syntaxbaum aufgebaut, dessen Wurzel die Klasse
@@ -67,7 +71,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
     private void unexpectedSymbol() throws CompileException {
         throw new CompileException("Unerwartetes Symbol " + symbol.id.toString(), symbol);
     }
-    
+
     /**
      * Die Methode überprüft, ob das aktuelle Symbol das erwartete ist. Ist dem so,
      * wird das nächste Symbol gelesen, ansonsten wird eine Fehlermeldung erzeugt.
@@ -81,7 +85,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
         }
         nextSymbol();
     }
-    
+
     /**
      * Die Methode überprüft, ob das aktuelle Symbol ein Bezeichner ist. Ist dem so,
      * wird er zurückgeliefert, ansonsten wird eine Fehlermeldung erzeugt.
@@ -96,7 +100,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
         nextSymbol();
         return i;
     }
-    
+
     /**
      * Die Methode überprüft, ob das aktuelle Symbol ein Bezeichner ist. Ist dem so,
      * wird er in Form eines Bezeichners mit noch aufzulösender Vereinbarung
@@ -112,7 +116,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
         nextSymbol();
         return r;
     }
-    
+
     /**
      * Die Methode parsiert eine Klassendeklaration entsprechend der oben angegebenen
      * Syntax und liefert diese zurück.
@@ -131,7 +135,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
         expectSymbol(Symbol.Id.CLASS);
         return c;
     }
-    
+
     /**
      * Die Methode parsiert die Deklaration eines Attributs bzw. einer Methode
      * entsprechend der oben angegebenen Syntax und hängt sie an eine von
@@ -141,7 +145,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
      * @throws CompileException Der Quelltext entspricht nicht der Syntax.
      * @throws IOException Ein Lesefehler ist aufgetreten.
      */
-    private void memberdecl(LinkedList<VarDeclaration> attributes, 
+    private void memberdecl(LinkedList<VarDeclaration> attributes,
             LinkedList<MethodDeclaration> methods)
             throws CompileException, IOException {
         if (symbol.id == Symbol.Id.METHOD) {
@@ -159,7 +163,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
     /**
      * Die Methode parsiert die Deklaration eines Attributs bzw. einer Variablen
      * entsprechend der oben angegebenen Syntax und hängt sie an eine Liste an.
-     * @param vars Die Liste der Attributdeklarationen der aktuellen Klasse oder 
+     * @param vars Die Liste der Attributdeklarationen der aktuellen Klasse oder
      *         der Variablen der aktuellen Methode.
      * @param isAttribute Ist die Variable ein Attribut?.
      * @throws CompileException Der Quelltext entspricht nicht der Syntax.
@@ -179,9 +183,9 @@ class SyntaxAnalysis extends LexicalAnalysis {
             vars.add(v);
         }
     }
-    
+
     /**
-     * Die Methode parsiert die Deklaration eines Methodenrumpfes entsprechend der 
+     * Die Methode parsiert die Deklaration eines Methodenrumpfes entsprechend der
      * oben angegebenen Syntax. Lokale Variablendeklarationen und Anweisungen werden
      * an die entsprechenden Listen angehängt.
      * @param vars Die Liste der lokalen Variablendeklarationen der aktuellen Methode.
@@ -199,20 +203,21 @@ class SyntaxAnalysis extends LexicalAnalysis {
         expectSymbol(Symbol.Id.END);
         expectSymbol(Symbol.Id.METHOD);
     }
-    
+
     /**
-     * Die Methode parsiert eine Folge von Anweisungen entsprechend der 
+     * Die Methode parsiert eine Folge von Anweisungen entsprechend der
      * oben angegebenen Syntax und hängt sie an eine Liste an.
      * @param statements Die Liste der Anweisungen.
      * @throws CompileException Der Quelltext entspricht nicht der Syntax.
      * @throws IOException Ein Lesefehler ist aufgetreten.
      */
     private void statements(LinkedList<Statement> statements) throws CompileException, IOException {
-        while (symbol.id != Symbol.Id.END) {
+        // Veraendert fuer Aufgabe (b): ELSEIF und ELSE
+        while (symbol.id != Symbol.Id.END && symbol.id != Symbol.Id.ELSE && symbol.id != Symbol.Id.ELSEIF) {
             statement(statements);
         }
     }
-    
+
     /**
      * Die Methode parsiert eine Anweisung entsprechend der oben angegebenen
      * Syntax und hängt sie an eine Liste an.
@@ -238,6 +243,16 @@ class SyntaxAnalysis extends LexicalAnalysis {
             statements.add(s);
             expectSymbol(Symbol.Id.THEN);
             statements(s.thenStatements);
+            /** BEGIN Aufgabe(b): ELSEIF und ELSE */
+            if(symbol.id == Symbol.Id.ELSEIF){
+              symbol.id = Symbol.Id.IF;
+              statement(s.elseStatements);
+              break;
+            } else if(symbol.id == Symbol.Id.ELSE){
+              nextSymbol();
+              statements(s.elseStatements);
+            }
+            /** END Aufgabe (b) */
             expectSymbol(Symbol.Id.END);
             expectSymbol(Symbol.Id.IF);
             break;
@@ -261,7 +276,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
             expectSymbol(Symbol.Id.SEMICOLON);
         }
     }
-    
+
     /**
      * Die Methode parsiert eine Relation entsprechend der oben angegebenen
      * Syntax und liefert den Ausdruck zurück.
@@ -338,10 +353,10 @@ class SyntaxAnalysis extends LexicalAnalysis {
             return memberAccess();
         }
     }
-    
+
     /**
-     * Die Methode parsiert den Zugriff auf ein Objektattribut bzw. eine 
-     * Objektmethode entsprechend der oben angegebenen Syntax und liefert 
+     * Die Methode parsiert den Zugriff auf ein Objektattribut bzw. eine
+     * Objektmethode entsprechend der oben angegebenen Syntax und liefert
      * den Ausdruck zurück.
      * @return Der Ausdruck.
      * @throws CompileException Der Quelltext entspricht nicht der Syntax.
@@ -359,7 +374,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
     /**
      * Die Methode parsiert ein Literal, die Erzeugung eines Objekts, einen
      * geklammerten Ausdruck oder einen einzelnen Zugriff auf eine Variable,
-     * ein Attribut oder eine Methode entsprechend der oben angegebenen 
+     * ein Attribut oder eine Methode entsprechend der oben angegebenen
      * Syntax und liefert den Ausdruck zurück.
      * @return Der Ausdruck.
      * @throws CompileException Der Quelltext entspricht nicht der Syntax.
@@ -418,14 +433,14 @@ class SyntaxAnalysis extends LexicalAnalysis {
      * @throws FileNotFoundException Der Quelltext wurde nicht gefunden.
      * @throws IOException Ein Lesefehler ist aufgetreten.
      */
-    SyntaxAnalysis(String fileName, boolean printSymbols) 
+    SyntaxAnalysis(String fileName, boolean printSymbols)
             throws CompileException, FileNotFoundException, IOException {
         super(fileName, printSymbols);
         ResolvableIdentifier.init();
     }
 
     /**
-     * Die Methode parsiert den Quelltext und liefert die Wurzel des 
+     * Die Methode parsiert den Quelltext und liefert die Wurzel des
      * Syntaxbaums zurück.
      * @throws CompileException Der Quelltext entspricht nicht der Syntax.
      * @throws IOException Ein Lesefehler ist aufgetreten.

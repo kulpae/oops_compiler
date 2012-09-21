@@ -19,6 +19,7 @@ class Symbol extends Position {
         SELF,
         NULL,
         TRUE, FALSE, /** Aufgabe (a): TRUE und FALSE */
+        ELSE, ELSEIF, /** Aufgabe (b): ELSEIF und ELSE */
         EOF
     };
     

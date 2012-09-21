@@ -86,6 +86,10 @@ class LexicalAnalysis {
         keywords.put("TRUE", Symbol.Id.TRUE);
         keywords.put("FALSE", Symbol.Id.FALSE);
         /** END Aufgabe (a)*/
+        /** BEGIN Aufgabe (b): ELSEIF und ELSE */
+        keywords.put("ELSEIF", Symbol.Id.ELSEIF);
+        keywords.put("ELSE", Symbol.Id.ELSE);
+        /** END Aufgabe (b)*/
 
         position = new Position(1, 0);
         nextChar();

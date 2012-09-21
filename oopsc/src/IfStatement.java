@@ -10,6 +10,11 @@ class IfStatement extends Statement {
     /** Die Anweisungen im THEN-Teil. */
     LinkedList<Statement> thenStatements = new LinkedList<Statement>();
 
+    /** BEGIN Aufgabe (b): ELSEIF und ELSE */
+    /** Die Anweisungen im THEN-Teil. */
+    LinkedList<Statement> elseStatements = new LinkedList<Statement>();
+    /** END Aufgabe (b) */
+
     /**
      * Konstruktor.
      * @param condition Die Bedingung der IF-Anweisung.
@@ -31,6 +36,11 @@ class IfStatement extends Statement {
         for (Statement s : thenStatements) {
             s.contextAnalysis(declarations);
         }
+        /** BEGIN Aufgabe (b): ELSEIF und ELSE */
+        for (Statement s : elseStatements) {
+            s.contextAnalysis(declarations);
+        }
+        /** END Aufgabe (b) */
     }
     
     /**
@@ -49,6 +59,16 @@ class IfStatement extends Statement {
             }
             tree.unindent();
         }
+        /** BEGIN Aufgabe (b): ELSEIF und ELSE */
+        if (!elseStatements.isEmpty()) {
+            tree.println("ELSE");
+            tree.indent();
+            for (Statement s : elseStatements) {
+                s.print(tree);
+            }
+            tree.unindent();
+        }
+        /** END Aufgabe (b) */
         tree.unindent();
     }
 
@@ -58,17 +78,26 @@ class IfStatement extends Statement {
      * @param code Der Strom, in den die Ausgabe erfolgt.
      */
     void generateCode(CodeStream code) {
+        String elseLabel = code.nextLabel();
         String endLabel = code.nextLabel();
         code.println("; IF");
         condition.generateCode(code);
         code.println("MRM R5, (R2) ; Bedingung vom Stapel nehmen");
         code.println("SUB R2, R1");
         code.println("ISZ R5, R5 ; Wenn 0, dann");
-        code.println("JPC R5, " + endLabel + " ; Sprung zu END IF");
+        code.println("JPC R5, " + elseLabel + " ; Sprung zu ELSE"); // Veraendert fuer Aufgabe (b)
         code.println("; THEN");
         for (Statement s : thenStatements) {
             s.generateCode(code);
         }
+        /** BEGIN Aufgabe (b): ELSEIF und ELSE */
+        code.println("MRI R0, " + endLabel + " ; Sprung zu END IF");
+        code.println("; ELSE");
+        code.println(elseLabel + ":");
+        for (Statement s : elseStatements) {
+            s.generateCode(code);
+        }
+        /** END Aufgabe (b) */
         code.println("; END IF");
         code.println(endLabel + ":");
     }
