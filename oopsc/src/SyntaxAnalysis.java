@@ -47,6 +47,8 @@ import java.util.LinkedList;
  * literal    ::= number
  *                | character
  *                | NULL
+ *                | TRUE
+ *                | FALSE
  *                | SELF
  *                | NEW identifier
  *                | '(' expression ')'
@@ -370,6 +372,16 @@ class SyntaxAnalysis extends LexicalAnalysis {
             e = new LiteralExpression(symbol.number, ClassDeclaration.intType, new Position(symbol.line, symbol.column));
             nextSymbol();
             break;
+        /** BEGIN Aufgabe (a): TRUE und FALSE */
+        case TRUE:
+            e = new LiteralExpression(1, ClassDeclaration.boolType, new Position(symbol.line, symbol.column));
+            nextSymbol();
+            break;
+        case FALSE:
+            e = new LiteralExpression(0, ClassDeclaration.boolType, new Position(symbol.line, symbol.column));
+            nextSymbol();
+            break;
+        /** END Aufgabe (a)*/
         case NULL:
             e = new LiteralExpression(0, ClassDeclaration.nullType, new Position(symbol.line, symbol.column));
             nextSymbol();

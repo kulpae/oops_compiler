@@ -18,6 +18,7 @@ class Symbol extends Position {
         BECOMES, NEW,
         SELF,
         NULL,
+        TRUE, FALSE, /** Aufgabe (a): TRUE und FALSE */
         EOF
     };
     

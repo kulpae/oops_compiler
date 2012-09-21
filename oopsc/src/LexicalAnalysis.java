@@ -82,6 +82,10 @@ class LexicalAnalysis {
         keywords.put("NEW", Symbol.Id.NEW);
         keywords.put("SELF", Symbol.Id.SELF);
         keywords.put("NULL", Symbol.Id.NULL);
+        /** BEGIN Aufgabe (a): TRUE und FALSE */
+        keywords.put("TRUE", Symbol.Id.TRUE);
+        keywords.put("FALSE", Symbol.Id.FALSE);
+        /** END Aufgabe (a)*/
 
         position = new Position(1, 0);
         nextChar();
