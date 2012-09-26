@@ -38,7 +38,7 @@ import java.util.TreeMap;
  */
 class Assembler {
     /** Alle gültigen Instruktionen. Die Position im Feld entspricht ihrer Kodierung. */
-    private static final String[] instructions = {
+    public static final String[] instructions = {
         "MRI", "MRR", "MRM", "MMR", 
         "ADD", "SUB", "MUL", "DIV", "MOD", 
         "AND", "OR", "XOR",

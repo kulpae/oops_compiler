@@ -24,6 +24,7 @@ class OOPSVM {
         boolean showR2b = false;
         boolean showR4f = false;
         boolean showR4b = false;
+        Inspector insp = null;
 
         for (String arg : args) {
             if (arg.equals("-i")) {
@@ -46,6 +47,10 @@ class OOPSVM {
                 showR4f = true;
             } else if (arg.equals("-b4")) {
                 showR4b = true;
+            } else if (arg.equals("-g")) {
+                if(insp == null) insp = new SwingInspector(false);
+            } else if (arg.equals("-gg")) {
+                if(insp == null) insp = new SwingInspector(true);
             } else if (arg.equals("-h")) {
                 usage();
                 return;
@@ -71,12 +76,14 @@ class OOPSVM {
         try {
             VirtualMachine vm = new VirtualMachine(
                     new Assembler(showFirst, showSecond).assemble(fileName), new int[8],
-                    showInstructions, showMemory, showRegisters, showR2f, showR2b, showR4f, showR4b);
+                    showInstructions, showMemory, showRegisters, showR2f, showR2b, showR4f, showR4b, insp);
+            if(insp!=null)insp.readCode(fileName);
             if (execution) {
                 vm.run();
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            if(insp!=null)insp.sendException(e);
         }
     }
     
@@ -96,5 +103,7 @@ class OOPSVM {
         System.out.println("    -b2 Zeige Stapelauszug für Register R2 rückwärts");
         System.out.println("    -f4 Zeige Stapelauszug für Register R4");
         System.out.println("    -b4 Zeige Stapelauszug für Register R4 rückwärts");
+        System.out.println("    -g  Zeige graphisch den Ablauf des Programms");
+        System.out.println("    -gg Zeige graphisch in Schritten den Ablauf des Programms");
     }
 }

@@ -152,7 +152,8 @@ class VirtualMachine
     /** Zeige R4 Speicherauszug rückwärts */
     private boolean showR4b;
     
-    
+    private Inspector insp;
+
     
     
     /**
@@ -231,14 +232,18 @@ class VirtualMachine
         int instruction = memory[registers[0]++];
         int param1 = memory[registers[0]++];
         int param2 = memory[registers[0]++];
+        if(insp != null) insp.sendRegister(0, registers[0]);
+
         switch(instruction) {
         case MRI:
             printInstruction("MRI R" + param1 + ", " + param2);
             registers[param1] = param2;
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case MRR:
             printInstruction("MRR R" + param1 + ", R" + param2);
             registers[param1] = registers[param2];
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case MRM:
             printInstruction("MRM R" + param1 + ", (R" + param2 + ")");
@@ -247,6 +252,7 @@ class VirtualMachine
                         + registers[param2] + " an Adresse " + (registers[0] - 3));
             }
             registers[param1] = memory[registers[param2]];
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case MMR:
             printInstruction("MMR (R" + param1 + "), R" + param2);
@@ -255,55 +261,68 @@ class VirtualMachine
                         + registers[param1] + " an Adresse " + (registers[0] - 3));
             }
             memory[registers[param1]] = registers[param2];
+            if(insp!=null)insp.sendMemory(registers[param1], memory[registers[param1]]);
             break;
         case ADD:
             printInstruction("ADD R" + param1 + ", R" + param2);
             registers[param1] += registers[param2];
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case SUB:
             printInstruction("SUB R" + param1 + ", R" + param2);
             registers[param1] -= registers[param2];
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case MUL:
             printInstruction("MUL R" + param1 + ", R" + param2);
             registers[param1] *= registers[param2];
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case DIV:
             printInstruction("DIV R" + param1 + ", R" + param2);
             registers[param1] /= registers[param2];
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case MOD:
             printInstruction("MOD R" + param1 + ", R" + param2);
             registers[param1] %= registers[param2];
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case AND:
             printInstruction("AND R" + param1 + ", R" + param2);
             registers[param1] &= registers[param2];
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case OR:
             printInstruction("OR R" + param1 + ", R" + param2);
             registers[param1] |= registers[param2];
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case XOR:
             printInstruction("XOR R" + param1 + ", R" + param2);
             registers[param1] ^= registers[param2];
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case ISZ:
             printInstruction("ISZ R" + param1 + ", R" + param2);
             registers[param1] = registers[param2] == 0 ? 1 : 0;
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case ISP:
             printInstruction("ISP R" + param1 + ", R" + param2);
             registers[param1] = registers[param2] > 0 ? 1 : 0;
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case ISN:
             printInstruction("ISN R" + param1 + ", R" + param2);
             registers[param1] = registers[param2] < 0 ? 1 : 0;
+            if(insp!=null)insp.sendRegister(param1, registers[param1]);
             break;
         case JPC:
             printInstruction("JPC R" + param1 + ", " + param2);
             if (registers[param1] != 0) {
                 registers[0] = param2;
+                if(insp!=null)insp.sendRegister(0, param2);
             }
             break;
         case SYS:
@@ -311,6 +330,7 @@ class VirtualMachine
             switch (param1) {
             case 0:
                 registers[param2] = System.in.read();
+                if(insp!=null)insp.sendRegister(param2, registers[param2]);
                 break;
             case 1:
                 System.out.print((char) registers[param2]);
@@ -334,7 +354,7 @@ class VirtualMachine
 	 */
     VirtualMachine(int[] memory, int[] registers, 
             boolean showInstructions, boolean showMemory, boolean showRegisters,
-            boolean showR2f, boolean showR2b, boolean showR4f, boolean showR4b) {
+            boolean showR2f, boolean showR2b, boolean showR4f, boolean showR4b, Inspector insp) {
         this.memory = memory;
         this.registers = registers;
         this.showInstructions = showInstructions;
@@ -344,6 +364,11 @@ class VirtualMachine
         this.showR2b = showR2b;
         this.showR4f = showR4f;
         this.showR4b = showR4b;
+        this.insp = insp;
+        if(this.insp != null){
+          insp.setupMemory(memory);
+          insp.setupRegisters(registers);
+        }
     }
 
     /**
@@ -354,6 +379,7 @@ class VirtualMachine
     void run() throws Exception {
         try {
             while (registers[0] >= 0 && registers[0] < memory.length) {
+                if(insp!=null)insp.nextStep();
                 executeInstruction();
                 printMemory();
                 printRegisters();
