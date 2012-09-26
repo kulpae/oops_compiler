@@ -21,6 +21,7 @@ class Symbol extends Position {
         TRUE, FALSE, /** Aufgabe (a): TRUE und FALSE */
         ELSE, ELSEIF, /** Aufgabe (b): ELSEIF und ELSE */
         AND, OR, NOT, /** Aufgabe (c): AND, OR, NOT */
+        ANDTHEN, ORELSE, /** Bonus Aufgabe 1: AND THEN, OR ELSE */
         EOF
     };
     

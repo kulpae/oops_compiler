@@ -295,6 +295,12 @@ class SyntaxAnalysis extends LexicalAnalysis {
         while (symbol.id == Symbol.Id.OR) {
           Symbol.Id operator = symbol.id;
           nextSymbol();
+          /** BEGIN Bonus Aufgabe 1: AND THEN und OR ELSE */
+          if(symbol.id == Symbol.Id.ELSE){
+            operator = Symbol.Id.ORELSE;
+            nextSymbol();
+          }
+          /** END Bonus Aufgabe 1*/
           e = new BinaryExpression(e, operator, logicalAND());
         }
         return e;
@@ -312,6 +318,12 @@ class SyntaxAnalysis extends LexicalAnalysis {
         while (symbol.id == Symbol.Id.AND) {
           Symbol.Id operator = symbol.id;
           nextSymbol();
+          /** BEGIN Bonus Aufgabe 1: AND THEN und OR ELSE */
+          if(symbol.id == Symbol.Id.THEN){
+            operator = Symbol.Id.ANDTHEN;
+            nextSymbol();
+          }
+          /** END Bonus Aufgabe 1*/
           e = new BinaryExpression(e, operator, relation());
         }
         return e;

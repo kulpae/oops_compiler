@@ -10,7 +10,7 @@ class BinaryExpression extends Expression {
 
     /** Der rechte Operand. */
     Expression rightOperand;
-    
+
     /**
      * Konstruktor.
      * @param operator Der Operator.
@@ -49,6 +49,8 @@ class BinaryExpression extends Expression {
         /** BEGIN Aufgabe (c): AND, OR, NOT */
         case AND:
         case OR:
+        case ANDTHEN:
+        case ORELSE:
             leftOperand = leftOperand.unBox();
             rightOperand = rightOperand.unBox();
             leftOperand.type.check(ClassDeclaration.boolType, leftOperand.position);
@@ -80,7 +82,7 @@ class BinaryExpression extends Expression {
                 leftOperand = leftOperand.unBox();
                 rightOperand = rightOperand.unBox();
             }
-            
+
             // Nun muss der Typ mindestens eines Operanden gleich oder eine
             // Ableitung des Typs des anderen Operanden sein.
             if (!leftOperand.type.isA(rightOperand.type) &&
@@ -109,12 +111,30 @@ class BinaryExpression extends Expression {
     }
 
     /**
-     * Die Methode generiert den Assembler-Code für diesen Ausdruck. Sie geht 
+     * Die Methode generiert den Assembler-Code für diesen Ausdruck. Sie geht
      * davon aus, dass die Kontextanalyse vorher erfolgreich abgeschlossen wurde.
      * @param code Der Strom, in den die Ausgabe erfolgt.
      */
     void generateCode(CodeStream code) {
+        /**BEGIN Bonus Aufgabe 1: AND THEN und OR ELSE*/
+        String skipLabel = null;
+        if(operator == Symbol.Id.ORELSE || operator == Symbol.Id.ANDTHEN){
+            skipLabel = code.nextLabel();
+        }
+        /**END Bonus Aufgabe 1*/
         leftOperand.generateCode(code);
+        /**BEGIN Bonus Aufgabe 1: AND THEN und OR ELSE*/
+        code.println("MRM R5, (R2)");
+        switch(operator){
+          case ORELSE:
+            code.println("JPC R5, "+skipLabel + " ; Sprung zum Ende der Auswertung");
+            break;
+          case ANDTHEN:
+            code.println("ISZ R5, R5");
+            code.println("JPC R5, "+skipLabel + " ; Sprung zum Ende der Auswertung");
+            break;
+        }
+        /**END Bonus Aufgabe 1*/
         rightOperand.generateCode(code);
         code.println("; " + operator);
         code.println("MRM R5, (R2)");
@@ -165,15 +185,22 @@ class BinaryExpression extends Expression {
             break;
         /** BEGIN Aufgabe (c): AND, OR, NOT */
         case AND:
+        case ANDTHEN: // Bonus Aufgabe 1: AND THEN und OR ELSE
             code.println("AND R6, R5");
             break;
         case OR:
+        case ORELSE: // Bonus Aufgabe 1: AND THEN und OR ELSE
             code.println("OR R6, R5");
             break;
         /** END Aufgabe (c)*/
         default:
             assert false;
         }
+        /** BEGIN Bonus Aufgabe 1: AND THEN und OR ELSE */
         code.println("MMR (R2), R6");
+        if(skipLabel != null){
+            code.println(""+skipLabel+":");
+        }
+        /** END Bonus Aufgabe 1*/
     }
 }

@@ -1,0 +1,39 @@
+CLASS Main IS
+    METHOD main IS
+        a, b, c : Integer;
+    BEGIN
+        IF 1<2 AND THEN NOT FALSE
+        THEN
+            WRITE 79;
+        END IF
+        IF 1<2 AND THEN FALSE
+        THEN
+            WRITE 35; | #
+        END IF
+        IF NOT (1>2 AND THEN TRUE)
+        THEN
+            WRITE 75;
+        END IF
+        IF 1>2 AND THEN TRUE
+        THEN
+            WRITE 35; | #
+        END IF
+
+        IF 1<2 OR ELSE FALSE
+        THEN
+            WRITE 79;
+        END IF
+        IF NOT (1<2 OR ELSE FALSE)
+        THEN
+            WRITE 35; | #
+        END IF
+        IF 1>2 OR ELSE TRUE
+        THEN
+            WRITE 75;
+        END IF
+        IF NOT (1>2 OR ELSE TRUE)
+        THEN
+            WRITE 35; | #
+        END IF
+    END METHOD
+END CLASS
