@@ -19,6 +19,10 @@ class UnBoxExpression extends Expression {
         this.operand = operand;
         if (operand.type.isA(ClassDeclaration.intClass)) {
             type = ClassDeclaration.intType;
+        /** BEGIN Aufgabe (d): Boolean */
+        } else if (operand.type.isA(ClassDeclaration.boolClass)) {
+            type = ClassDeclaration.boolType;
+        /** END Aufgabe(d) */
         } else {
             assert false;
         }

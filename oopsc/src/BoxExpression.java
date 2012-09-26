@@ -26,6 +26,11 @@ class BoxExpression extends Expression {
         if (operand.type.isA(ClassDeclaration.intType)) {
             type = ClassDeclaration.intClass;
             newType = new NewExpression(new ResolvableIdentifier("Integer", null), null);
+        /** BEGIN Aufgabe (d): Boolean */
+        } else if (operand.type.isA(ClassDeclaration.boolType)) {
+            type = ClassDeclaration.boolClass;
+            newType = new NewExpression(new ResolvableIdentifier("Boolean", null), null);
+        /** END Aufgabe (d) */
         } else {
             assert false;
         }

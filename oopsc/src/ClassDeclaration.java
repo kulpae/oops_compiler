@@ -26,6 +26,11 @@ class ClassDeclaration extends Declaration {
     /** Die Klasse Integer. */
     static final ClassDeclaration intClass = new ClassDeclaration(new Identifier("Integer", null));
 
+    /** BEGIN Aufgabe (d): Boolean */
+    /** Die Klasse Boolean. */
+    static final ClassDeclaration boolClass = new ClassDeclaration(new Identifier("Boolean", null));
+    /** END Aufgabe (d) */
+
     /** Die Attribute dieser Klasse. */
     LinkedList<VarDeclaration> attributes = new LinkedList<VarDeclaration>();
     

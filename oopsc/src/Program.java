@@ -34,11 +34,19 @@ class Program {
         // Integer enthält ein Element
         ClassDeclaration.intClass.objectSize = ClassDeclaration.HEADERSIZE + 1;
 
+        /** BEGIN Aufgabe (d): Boolean */
+        // Boolean enthält ein Element
+        ClassDeclaration.boolClass.objectSize = ClassDeclaration.HEADERSIZE + 1;
+        /** END Aufgabe (d) */
+
         // Neuen Deklarationsraum schaffen
         declarations.enter();
         
         // Vordefinierte Klasse hinzufügen
         declarations.add(ClassDeclaration.intClass);
+        /** BEGIN Aufgabe (d): Boolean */
+        declarations.add(ClassDeclaration.boolClass);
+        /** END Aufgabe (d) */
 
         // Benutzerdefinierte Klasse hinzufügen
         declarations.add(theClass);

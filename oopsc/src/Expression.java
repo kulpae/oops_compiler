@@ -71,7 +71,10 @@ abstract class Expression {
      *         gefunden.
      */
     Expression box(Declarations declarations) throws CompileException {
-        if (type.isA(ClassDeclaration.intType)) {
+        // if (type.isA(ClassDeclaration.intType)) {
+        /** BEGIN Aufgabe (d): Boolean */
+        if (type.isA(ClassDeclaration.intType) || type.isA(ClassDeclaration.boolType)) {
+        /** END Aufgabe (d) */
             return new BoxExpression(this, declarations);
         } else if (lValue) {
             return new DeRefExpression(this);
@@ -94,7 +97,10 @@ abstract class Expression {
     Expression unBox() {
         if (lValue) {
             return new DeRefExpression(this).unBox();
-        } else if (type != ClassDeclaration.nullType && type.isA(ClassDeclaration.intClass)) {
+        // } else if (type != ClassDeclaration.nullType && type.isA(ClassDeclaration.intClass)) {
+        /** BEGIN Aufgabe (d): Boolean */
+        } else if (type != ClassDeclaration.nullType && (type.isA(ClassDeclaration.intClass) || type.isA(ClassDeclaration.boolClass))) {
+        /** END Aufgabe (d) */
             return new UnBoxExpression(this);
         } else {
             return this;
