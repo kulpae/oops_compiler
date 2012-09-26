@@ -1,3 +1,4 @@
+import java.util.LinkedList;
 /**
  * Die Klasse repräsentiert den Syntaxbaum des gesamten Programms.
  * Sie ist der Einstiegspunkt für die Kontextanalyse und die
@@ -5,8 +6,11 @@
  */
 class Program {
     /** Die benutzerdefinierte Klasse. */
-    ClassDeclaration theClass;
-   
+    // ClassDeclaration theClass;
+    /** BEGIN Anfang (e): mehrere Klassen */
+    LinkedList<ClassDeclaration> classes;
+    /** END Anfang (e) */
+
     /**
      * Eine Ausdruck, der ein Objekt der Klasse Main erzeugt und dann darin die
      * Methode main aufruft. Entspricht NEW Main.main.
@@ -14,15 +18,28 @@ class Program {
     private Expression main = new AccessExpression(
             new NewExpression(new ResolvableIdentifier("Main", null), null),
             new VarOrCall(new ResolvableIdentifier("main", null)));
-    
+
+    /** BEGIN Aufgabe (e): mehrere Klassen */
     /**
      * Konstruktor.
      * @param theClass Die benutzerdefinierte Klasse.
      */
     Program(ClassDeclaration theClass) {
-        this.theClass = theClass;
+        // this.theClass = theClass;
+        this.classes = new LinkedList<ClassDeclaration>();
+        this.classes.add(theClass);
     }
-    
+
+    /**
+     * Konstruktor.
+     * @param classes Eine Liste der benutzerdefinierten Klassen.
+     */
+    Program(LinkedList<ClassDeclaration> classes) {
+        this.classes = classes;
+    }
+
+    /** END Aufgabe (e) */
+
     /**
      * Die Methode führt die Kontextanalyse für das Programm durch.
      * @throws CompileException Während der Kontextanylyse wurde ein Fehler
@@ -30,29 +47,57 @@ class Program {
      */
     void contextAnalysis() throws CompileException {
         Declarations declarations = new Declarations();
-        
+
         // Integer enthält ein Element
-        ClassDeclaration.intClass.objectSize = ClassDeclaration.HEADERSIZE + 1;
+        // ClassDeclaration.intClass.objectSize = ClassDeclaration.HEADERSIZE + 1;
 
         /** BEGIN Aufgabe (d): Boolean */
         // Boolean enthält ein Element
-        ClassDeclaration.boolClass.objectSize = ClassDeclaration.HEADERSIZE + 1;
+        // ClassDeclaration.boolClass.objectSize = ClassDeclaration.HEADERSIZE + 1;
         /** END Aufgabe (d) */
 
         // Neuen Deklarationsraum schaffen
         declarations.enter();
-        
+
         // Vordefinierte Klasse hinzufügen
-        declarations.add(ClassDeclaration.intClass);
+        // declarations.add(ClassDeclaration.intClass);
         /** BEGIN Aufgabe (d): Boolean */
-        declarations.add(ClassDeclaration.boolClass);
+        // declarations.add(ClassDeclaration.boolClass);
         /** END Aufgabe (d) */
+        /** BEGIN Aufgabe (e): mehrere Klassen */
+        classes.add(ClassDeclaration.intClass);
+        classes.add(ClassDeclaration.boolClass);
+
+        //Vorgegebene Klassen initiieren
+        VarDeclaration intValue = new VarDeclaration(new Identifier("_value", null), true);
+        intValue.type = new ResolvableIdentifier("_Integer", null);
+        intValue.type.declaration = ClassDeclaration.intType;
+        ClassDeclaration.intClass.attributes.add(intValue);
+
+        VarDeclaration boolValue = new VarDeclaration(new Identifier("_value", null), true);
+        boolValue.type = new ResolvableIdentifier("_Boolean", null);
+        boolValue.type.declaration = ClassDeclaration.boolType;
+        ClassDeclaration.boolClass.attributes.add(boolValue);
+        /** END Aufgabe (e) */
 
         // Benutzerdefinierte Klasse hinzufügen
-        declarations.add(theClass);
-        
+        /** BEGIN Aufgabe (e): mehrere Klassen*/
+        // declarations.add(theClass);
+        for(ClassDeclaration c: classes){
+            declarations.add(c);
+        }
+
         // Kontextanalyse für die Methoden der Klasse durchführen
-        theClass.contextAnalysis(declarations);
+        // theClass.contextAnalysis(declarations);
+        for(ClassDeclaration c: classes){
+            c.contextAnalysis(declarations);
+        }
+        
+        //Kontextanalyse fuer die Ruempfe der Klassen durchfuehren
+        for(ClassDeclaration classdecl: classes){
+            classdecl.contextAnalysisForBody((Declarations) classdecl.declarations.clone());
+        }
+        /** END Aufgabe (e) */
 
         // Abhängigkeiten für Startup-Code auflösen
         main = main.contextAnalysis(declarations);
@@ -60,17 +105,22 @@ class Program {
         // Deklarationsraum verlassen
         declarations.leave();
     }
-    
+
     /**
      * Die Methode gibt den Syntaxbaum des Programms aus.
      */
     void printTree() {
         TreeStream tree = new TreeStream(System.out, 4);
-        theClass.print(tree);
+        // theClass.print(tree);
+        /** BEGIN Aufgabe (e): mehrere Klassen */
+        for(ClassDeclaration c: classes){
+            c.print(tree);
+        }
+        /** END Aufgabe (e)*/
     }
-    
+
     /**
-     * Die Methode generiert den Assembler-Code für das Programm. Sie geht 
+     * Die Methode generiert den Assembler-Code für das Programm. Sie geht
      * davon aus, dass die Kontextanalyse vorher erfolgreich abgeschlossen wurde.
      * @param code Der Strom, in den die Ausgabe erfolgt.
      */
@@ -81,14 +131,19 @@ class Program {
         code.println("MRI R1, 1 ; R1 ist immer 1");
         code.println("MRI R2, _stack ; R2 zeigt auf Stapel");
         code.println("MRI R4, _heap ; R4 zeigt auf die nächste freie Stelle auf dem Heap");
-        
+
         // Ein Objekt der Klasse Main konstruieren und die Methode main aufrufen.
         main.generateCode(code);
         code.println("MRI R0, _end ; Programm beenden");
-        
+
         // Generiere Code für benutzerdefinierte Klasse
-        theClass.generateCode(code);
-        
+        // theClass.generateCode(code);
+        /** BEGIN Aufgabe (e): mehrere Klassen */
+        for(ClassDeclaration c: classes){
+            c.generateCode(code);
+        }
+        /** END Aufgabe (e)*/
+
         // Speicher für Stapel und Heap reservieren
         code.println("_stack: ; Hier fängt der Stapel an");
         code.println("DAT " + stackSize + ", 0");

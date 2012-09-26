@@ -88,14 +88,32 @@ class ClassDeclaration extends Declaration {
         // in diesem Zustand benötigt. Deshalb werden sie in der Klasse gespeichert.
         this.declarations = (Declarations) declarations.clone();
 
-        // Kontextanalyse für Methoden durchführen
-        for (MethodDeclaration m : methods) {
-            m.contextAnalysis(declarations);
-        }
+        /** BEGIN Aufgabe (e): Mehrere Klassen */
+        // // Kontextanalyse für Methoden durchführen
+        // for (MethodDeclaration m : methods) {
+        //     m.contextAnalysis(declarations);
+        // }
+        /** END Aufgabe (e) */
         
         // Deklarationsraum verlassen
         declarations.leave();
     }
+
+    /** BEGIN MISSION (e): Mehrere Klassen */
+    /**
+     * Die Methode führt die Kontextanalyse für den Rumpf dieser Klassen-Deklaration durch.
+     * @param declarations Die an dieser Stelle gültigen Deklarationen.
+     * @throws CompileException Während der Kontextanylyse wurde ein Fehler
+     *         gefunden.
+     */
+    void contextAnalysisForBody(Declarations declarations) throws CompileException {
+        // Kontextanalyse für Methoden durchführen
+        for (MethodDeclaration m : methods) {
+            m.contextAnalysis(declarations);
+        }
+    }
+    /** END Aufgabe (e) */
+
     
     /**
      * Die Methode prüft, ob dieser Typ kompatibel mit einem anderen Typ ist.
