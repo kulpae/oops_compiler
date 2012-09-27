@@ -17,6 +17,10 @@ class MethodDeclaration extends Declaration {
     /** Die Parameter der Methode */
     LinkedList<VarDeclaration> params = new LinkedList<VarDeclaration>();
     /** END Aufgabe (f) */
+
+    /** BEGIN Aufgabe (g): Return */
+    ResolvableIdentifier returnType = new ResolvableIdentifier("_Void", null);
+    /** End Aufgabe (g)*/
     
     /**
      * Konstruktor.
@@ -24,6 +28,10 @@ class MethodDeclaration extends Declaration {
      */
     MethodDeclaration(Identifier name) {
         super(name);
+        /** BEGIN Aufgabe (g): Return */
+        //falls kein Rueckgabewert angegeben, ist der Standard-Rueckgabewert bereits aufgeloest
+        returnType.declaration = ClassDeclaration.voidType;
+        /** END Aufgabe (g) */
     }
 
     /**
@@ -43,6 +51,11 @@ class MethodDeclaration extends Declaration {
           if(!params.isEmpty()){
             throw new CompileException("Methode Main.main darf keine Parameter haben", null);
           }
+          /** BEGIN Aufgabe (g): Return*/
+          if(hasReturnType()){
+            throw new CompileException("Methode Main.main darf keinen Rueckgabewert haben", null);
+          }
+          /** END Aufgabe (g) */
         }
         /** END Aufgabe (f) */
         
@@ -53,6 +66,10 @@ class MethodDeclaration extends Declaration {
         
         // Neuen Deklarationsraum schaffen
         declarations.enter();
+
+        /** BEGIN Aufgabe (g): Return */
+        declarations.currentMethod = this;
+        /** END Aufgabe (g)*/
         
         // SELF eintragen
         declarations.add(self);
@@ -82,9 +99,19 @@ class MethodDeclaration extends Declaration {
         }
         
         // Kontextanalyse aller Anweisungen durchführen
-        for (Statement s : statements) {
+        // for (Statement s : statements) {
+        //     s.contextAnalysis(declarations);
+        // }
+        /** BEGIN Aufgabe (g): Return */
+        boolean returnAccessible = false;
+        for(Statement s: statements){
             s.contextAnalysis(declarations);
+            returnAccessible = returnAccessible || s.returnAccessible();
         }
+        if(hasReturnType() && !returnAccessible){
+          throw new CompileException("Auf jedem Ausfuehrungspfad wird ein Rueckgabewert erwartet", null);
+        }
+        /** END Aufgabe (g) */
         
         // Alten Deklarationsraum wiederherstellen
         declarations.leave();
@@ -93,6 +120,8 @@ class MethodDeclaration extends Declaration {
     /** BEGIN Aufgabe (f): Methoden Parameter */
     /**
      * Führt die Kontextanalyse für die Signatur dieser Methoden-Deklaration durch.
+     * Hier werden die Bezeichner aufgeloest, die ausserhalb der Methode relevant sind
+     * (Parameter und Rueckgabewert).
      * @param declarations Die an dieser Stelle gültigen Deklarationen.
      * @throws CompileException Während der Kontextanylyse wurde ein Fehler
      *         gefunden.
@@ -102,6 +131,9 @@ class MethodDeclaration extends Declaration {
       for (VarDeclaration v : params) {
         v.contextAnalysis(declarations);
       }
+      /** BEGIN Aufgabe (g): Return */
+      declarations.resolveType(returnType);
+      /** END Aufgabe (g)*/
     }
     /** END Aufgabe (f)*/
 
@@ -110,7 +142,15 @@ class MethodDeclaration extends Declaration {
      * @param tree Der Strom, in den die Ausgabe erfolgt.
      */
     void print(TreeStream tree) {
-        tree.println("METHOD " + identifier.name);
+        // tree.println("METHOD " + identifier.name);
+        /** BEGIN Aufgabe (g): Return */
+        String returnTypeExt = "";
+        if(hasReturnType()){
+          returnTypeExt = " : " + returnType.name;
+        }
+        tree.println("METHOD " + identifier.name + returnTypeExt);
+        /** END Aufgabe (g) */
+
         tree.indent();
         /** BEGIN Aufgabe (f): Methoden Parameter */
         if (!params.isEmpty()) {
@@ -159,17 +199,48 @@ class MethodDeclaration extends Declaration {
         }
         for (Statement s : statements) {
             s.generateCode(code);
+            /** BEGIN Aufgabe (g): Return */
+            // Weitere Anweisungen ignorieren, wenn diese Anweisung RETURN erreicht
+            if(s.returnAccessible()){
+              break;
+            }
+            /** END Aufgabe (g) */
+
         }
+
+        /** BEGIN Aufgabe (g): Return */
+        code.println(code.returnLabel()+":");
+        if(hasReturnType()){
+            code.println("MRM R6, (R2); Rueckgabewert sichern");
+            code.println("SUB R2, R1");
+        }
+        /** END Aufgabe (g)*/
+
         code.println("; END METHOD " + identifier.name);
         // code.println("MRI R5, " + (vars.size() + 3));
         /** BEGIN Aufgabe (f): Methoden Parameter */
         code.println("MRI R5, " + (vars.size() + 3 + params.size()));
         /** END Aufgabe (f) */
         code.println("SUB R2, R5 ; Stack korrigieren");
+        /** BEGIN Aufgabe (g): Return */
+        if(hasReturnType()){
+            code.println("ADD R2, R1");
+            code.println("MMR (R2), R6; Rueckgabewert auf dem Stack ablegen");
+        }
+        /** END Aufgabe (g)*/
         code.println("SUB R3, R1");
         code.println("MRM R5, (R3) ; Rücksprungadresse holen");
         code.println("ADD R3, R1");
         code.println("MRM R3, (R3) ; Alten Stapelrahmen holen");
         code.println("MRR R0, R5 ; Rücksprung");
     }
+
+    /** BEGIN Aufgabe (g): Return */
+    /**
+     * @return true, wenn diese Methode einen Rueckgabewert besitzt
+     */
+    boolean hasReturnType(){
+      return returnType != null && returnType.declaration != ClassDeclaration.voidType;
+    }
+    /** END Aufgabe (g)*/
 }

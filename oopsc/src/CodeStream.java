@@ -52,4 +52,15 @@ class CodeStream extends PrintStream {
     String nextLabel() {
         return namespace + "_" + counter++;
     }
+
+    /** BEGIN Aufgabe (g): Return*/
+    /**
+     * Label zum Verlassen der aktuellen Methode.
+     * Nur gueltig in einer Methode, die dieses Label angelegt hat.
+     * @return Name des Labels, das zum Ausgang der Methode fuehrt.
+     */
+    String returnLabel(){
+      return namespace + "_return";
+    }
+    /** END Aufgabe (g)*/
 }

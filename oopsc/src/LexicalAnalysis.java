@@ -95,6 +95,10 @@ class LexicalAnalysis {
         keywords.put("OR", Symbol.Id.OR);
         keywords.put("NOT", Symbol.Id.NOT);
         /** END Aufgabe (c)*/
+        /** BEGIN Aufgabe (g): Return */
+        keywords.put("RETURN", Symbol.Id.RETURN);
+        /** END Aufgabe (g)*/
+
 
         position = new Position(1, 0);
         nextChar();

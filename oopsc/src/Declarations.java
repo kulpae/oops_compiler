@@ -16,6 +16,10 @@ class Declarations {
     
     /** Die aktuelle Klasse. */
     ClassDeclaration currentClass;
+
+    /** Aufgabe (g): Return */
+    /** Die aktuelle Methode */
+    MethodDeclaration currentMethod;
     
     /**
      * Die Method erstellt eine Kopie dieses Objekts. Dabei werden die Ebenen nicht kopiert,

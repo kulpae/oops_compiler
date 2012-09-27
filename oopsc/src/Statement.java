@@ -22,4 +22,14 @@ abstract class Statement {
      * @param code Der Strom, in den die Ausgabe erfolgt.
      */
     abstract void generateCode(CodeStream code);
+
+    /** BEGIN Aufgabe (g): Return */
+    /**
+     * Liefert true, wenn dieses Statement immer ein RETURN erreicht
+     * @return true, wenn RETURN immer erreicht wird
+     */
+    boolean returnAccessible(){
+      return false;
+    }
+    /** End Aufgabe (g)*/
 }

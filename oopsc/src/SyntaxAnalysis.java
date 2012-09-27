@@ -14,7 +14,7 @@ import java.util.LinkedList;
  *
  * memberdecl   ::= vardecl ';'
  *                | METHOD identifier ['(' vardecl { ';' vardecl } ')']
- *                  IS methodbody
+ *                  [':' identifier ] IS methodbody
  *
  * vardecl      ::= identifier { ',' identifier } ':' identifier
  *
@@ -37,6 +37,7 @@ import java.util.LinkedList;
  *                  DO statements
  *                  END WHILE
  *                | memberaccess [ ':=' expression ] ';'
+ *                | RETURN [ logicalOR ] ';'
  *
  * logicalOR    ::= logicalAND { 'OR' logicalAND }
  * logicalAND   ::= relation { 'AND' relation }
@@ -164,6 +165,12 @@ class SyntaxAnalysis extends LexicalAnalysis {
               expectSymbol(Symbol.Id.RPAREN);
             }
             /** END Aufgabe (f) */
+            /** BEGIN Aufgabe (g): Return */
+            if(symbol.id == Symbol.Id.COLON){
+              nextSymbol();
+              m.returnType = expectResolvableIdent();
+            }
+            /** END Aufgabe (g) */
             expectSymbol(Symbol.Id.IS);
             methodbody(m.vars, m.statements);
             methods.add(m);
@@ -277,6 +284,15 @@ class SyntaxAnalysis extends LexicalAnalysis {
             statements(w.statements);
             expectSymbol(Symbol.Id.END);
             expectSymbol(Symbol.Id.WHILE);
+            break;
+        case RETURN:
+            nextSymbol();
+            ReturnStatement r =  new ReturnStatement(new Position(symbol.line, symbol.column));
+            statements.add(r);
+            if(symbol.id != Symbol.Id.SEMICOLON){
+              r.value = logicalOR();
+            }
+            expectSymbol(Symbol.Id.SEMICOLON);
             break;
         default:
             Expression e = memberAccess();

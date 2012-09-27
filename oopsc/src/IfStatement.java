@@ -101,4 +101,20 @@ class IfStatement extends Statement {
         code.println("; END IF");
         code.println(endLabel + ":");
     }
+
+    /** BEGIN Aufgabe (g): Return */
+    /** IfStatement erreicht RETURN, wenn THEN und ELSE-Zweige RETURN erreichen */
+    boolean returnAccessible(){
+        boolean thenReturn = false;
+        boolean elseReturn = false;
+
+        for(Statement s: thenStatements){
+            thenReturn = thenReturn || s.returnAccessible();
+        }
+        for(Statement s: elseStatements){
+            elseReturn = elseReturn || s.returnAccessible();
+        }
+        return thenReturn && elseReturn;
+    }
+    /** END Aufgabe (g) */
 }

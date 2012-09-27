@@ -65,7 +65,10 @@ class VarOrCall extends Expression {
             type = (ClassDeclaration) ((VarDeclaration) identifier.declaration).type.declaration;
             lValue = true;
         } else if (identifier.declaration instanceof MethodDeclaration) {
-            type = ClassDeclaration.voidType;
+            // type = ClassDeclaration.voidType;
+            /** BEGIN Aufgabe (g): return */
+            type = (ClassDeclaration) ((MethodDeclaration) identifier.declaration).returnType.declaration;
+            /** END Aufgabe (g) */
         } else {
             assert false;
         }
@@ -95,7 +98,7 @@ class VarOrCall extends Expression {
             // stimmt der Typ der Parameter?
             for(int p=0; p< mdecl.size(); p++){
                 Expression v = params.get(p);
-                v.contextAnalysis(declarations);
+                v = v.contextAnalysis(declarations);
                 //boxen/dereferenzieren
                 v = v.box(declarations);
                 params.set(p, v);
