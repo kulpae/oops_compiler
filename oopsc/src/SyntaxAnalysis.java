@@ -13,7 +13,8 @@ import java.util.LinkedList;
  *                  END CLASS
  *
  * memberdecl   ::= vardecl ';'
- *                | METHOD identifier IS methodbody
+ *                | METHOD identifier ['(' vardecl { ';' vardecl } ')']
+ *                  IS methodbody
  *
  * vardecl      ::= identifier { ',' identifier } ':' identifier
  *
@@ -61,7 +62,7 @@ import java.util.LinkedList;
  *                | '(' logicalOR ')'
  *                | varorcall
  *
- * varorcall    ::= identifier
+ * varorcall    ::= identifier ['(' logicalOR {',' logicalOR } ')']
  * </pre>
  * Daraus wird der Syntaxbaum aufgebaut, dessen Wurzel die Klasse
  * {@link Program Program} ist.
@@ -154,6 +155,15 @@ class SyntaxAnalysis extends LexicalAnalysis {
         if (symbol.id == Symbol.Id.METHOD) {
             nextSymbol();
             MethodDeclaration m = new MethodDeclaration(expectIdent());
+            /** BEGIN Aufgabe (f): Methoden Parameter */
+            if(symbol.id == Symbol.Id.LPAREN){
+              do {
+                nextSymbol();
+                vardecl(m.params, false);
+              } while(symbol.id == Symbol.Id.SEMICOLON);
+              expectSymbol(Symbol.Id.RPAREN);
+            }
+            /** END Aufgabe (f) */
             expectSymbol(Symbol.Id.IS);
             methodbody(m.vars, m.statements);
             methods.add(m);
@@ -421,7 +431,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
         Expression e = literal();
         while (symbol.id == Symbol.Id.PERIOD) {
             nextSymbol();
-            e = new AccessExpression(e, new VarOrCall(expectResolvableIdent()));
+            e = new AccessExpression(e, varorcall());
         }
         return e;
     }
@@ -472,13 +482,36 @@ class SyntaxAnalysis extends LexicalAnalysis {
             expectSymbol(Symbol.Id.RPAREN);
             break;
         case IDENT:
-            e = new VarOrCall(expectResolvableIdent());
+            e = varorcall();
             break;
         default:
             unexpectedSymbol();
         }
         return e;
     }
+
+    /** BEGIN Aufgabe (f): Methoden Parameter */
+    /** Diese Methode parsiert einen Methodenaufruf mit Parametern
+     * oder ein Zugriff auf einen Attribut oder eine Variable.
+     * @return der parsierte Ausdruck
+     * @throws CompileException Der Quelltext entspricht nicht der Syntax.
+     * @throws IOException Ein Lesefehler ist aufgetreten.
+     */
+    private VarOrCall varorcall() throws CompileException, IOException{
+      VarOrCall e = new VarOrCall(expectResolvableIdent());
+      //optional, Klammern mit Parameterwerten
+      if(symbol.id == Symbol.Id.LPAREN){
+        do {
+          nextSymbol();
+          e.params.add(logicalOR());
+        } while(symbol.id == Symbol.Id.COMMA);
+
+        //muss geschlossen werden
+        expectSymbol(Symbol.Id.RPAREN);
+      }
+      return e;
+    }
+    /** END Aufgabe (f) */
 
     /**
      * Konstruktor.

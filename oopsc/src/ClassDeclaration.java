@@ -88,6 +88,12 @@ class ClassDeclaration extends Declaration {
         // in diesem Zustand benötigt. Deshalb werden sie in der Klasse gespeichert.
         this.declarations = (Declarations) declarations.clone();
 
+        /** BEGIN Aufgabe (f): Methoden Parameter */
+        for (MethodDeclaration m : methods) {
+            m.contextAnalysisForSignature(declarations);
+        }
+        /** END Aufgabe (f) */
+
         /** BEGIN Aufgabe (e): Mehrere Klassen */
         // // Kontextanalyse für Methoden durchführen
         // for (MethodDeclaration m : methods) {

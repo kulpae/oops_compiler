@@ -1,3 +1,4 @@
+import java.util.LinkedList;
 /**
  * Die Klasse repräsentiert einen Ausdruck im Syntaxbaum, der dem Zugriff auf eine 
  * Variable oder ein Attribut bzw. einem Methodenaufruf entspricht.
@@ -5,6 +6,11 @@
 class VarOrCall extends Expression {
     /** Der Name des Attributs, der Variablen oder der Methode. */
     ResolvableIdentifier identifier;
+
+    /** BEGIN Aufgabe (f): Methoden Parameter */
+    /** aktuelle Parameter des Methodenaufrufs */
+    LinkedList<Expression> params = new LinkedList<Expression>();
+    /** END Aufgabe (f)*/
     
     /**
      * Konstruktor.
@@ -36,6 +42,9 @@ class VarOrCall extends Expression {
             a.leftOperand = a.leftOperand.box(declarations);
             a.type = type;
             a.lValue = lValue;
+            /** BEGIN Ausgabe (f): Methoden Parameter */
+            contextAnalysisForParameters(declarations);
+            /** END Aufgabe (f) */
             return a;
         } else {
             return this;
@@ -61,6 +70,41 @@ class VarOrCall extends Expression {
             assert false;
         }
     }
+
+    /** BEGIN Aufgabe (f): Methoden Parameter */
+    /**
+     * Die Methode führt die Kontextanalyse für die aktuellen Parameter durch.
+     * (falls notwendig)
+     * Hier wird geprueft, ob die aktuelle Parameter zu den formalen Parametern passen.
+     * @param declarations Die an dieser Stelle gültigen Deklarationen.
+     * @throws CompileException Während der Kontextanylyse wurde ein Fehler
+     *         gefunden.
+     */
+    void contextAnalysisForParameters(Declarations declarations) throws CompileException{
+        if (identifier.declaration instanceof MethodDeclaration) {
+            MethodDeclaration method = (MethodDeclaration) identifier.declaration;
+            LinkedList<VarDeclaration> mdecl = method.params;
+            //zu viele Parameter angegeben?
+            if(params.size() > mdecl.size()){
+                throw new CompileException("Zu viele Parameter", position);
+            }
+            //zu wenige Parameter angegeben?
+            if(params.size() < mdecl.size()){
+                throw new CompileException("Zu wenige Parameter", position);
+            }
+            // stimmt der Typ der Parameter?
+            for(int p=0; p< mdecl.size(); p++){
+                Expression v = params.get(p);
+                v.contextAnalysis(declarations);
+                //boxen/dereferenzieren
+                v = v.box(declarations);
+                params.set(p, v);
+                ClassDeclaration mtype = (ClassDeclaration) mdecl.get(p).type.declaration;
+                v.type.check(mtype, v.position);
+            }
+        }
+    }
+    /** END Aufgabe (f) */
     
     /**
      * Die Methode gibt diesen Ausdruck in einer Baumstruktur aus.
@@ -70,6 +114,18 @@ class VarOrCall extends Expression {
     void print(TreeStream tree) {
         tree.println(identifier.name + (type == null ? "" : " : " + 
                 (lValue ? "REF " : "") + type.identifier.name));
+        /** BEGIN Aufgabe (f): Methoden Parameter */
+        if(!params.isEmpty()){
+          tree.indent();
+          tree.println("PARAMETERS");
+          tree.indent();
+          for(Expression p: params){
+            p.print(tree);
+          }
+          tree.unindent();
+          tree.unindent();
+        }
+        /** END Aufgabe (f) */
     }
 
     /**
@@ -95,6 +151,16 @@ class VarOrCall extends Expression {
             }
         } else if (identifier.declaration instanceof MethodDeclaration) {
             MethodDeclaration m = (MethodDeclaration) identifier.declaration;
+            /** BEGIN Aufgabe (f): Methoden Parameter */
+            if(!params.isEmpty()){
+              code.println("; CALL "+m.self.type.name + "."+m.identifier.name);
+              for(int i = 0; i< params.size(); i++){
+                Expression p = params.get(i);
+                code.println("; Parameter "+i+":");
+                p.generateCode(code);
+              }
+            }
+            /** END Aufgabe (f) */
             String returnLabel = code.nextLabel();
             code.println("MRI R5, " + returnLabel);
             code.println("ADD R2, R1");

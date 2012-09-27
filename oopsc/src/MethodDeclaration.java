@@ -12,6 +12,11 @@ class MethodDeclaration extends Declaration {
     
     /** Die Anweisungen der Methode, d.h. der Methodenrumpf. */
     LinkedList<Statement> statements = new LinkedList<Statement>();
+
+    /** BEGIN Aufgabe (f): Mathoden Parameter */
+    /** Die Parameter der Methode */
+    LinkedList<VarDeclaration> params = new LinkedList<VarDeclaration>();
+    /** END Aufgabe (f) */
     
     /**
      * Konstruktor.
@@ -31,6 +36,15 @@ class MethodDeclaration extends Declaration {
         // SELF ist Variable vom Typ dieser Klasse
         self.type = new ResolvableIdentifier(declarations.currentClass.identifier.name, null);
         self.type.declaration = declarations.currentClass;
+
+        /** BEGIN Aufgabe (f): Methoden Parameter */
+        //Main.main darf keine Parameter haben!
+        if(declarations.currentClass.identifier.name.equals("Main") && identifier.name.equals("main")){
+          if(!params.isEmpty()){
+            throw new CompileException("Methode Main.main darf keine Parameter haben", null);
+          }
+        }
+        /** END Aufgabe (f) */
         
         // Löse Typen aller Variablen auf
         for (VarDeclaration v : vars) {
@@ -43,12 +57,24 @@ class MethodDeclaration extends Declaration {
         // SELF eintragen
         declarations.add(self);
  
+        /** BEGIN Aufgabe (f): Methoden Parameter */
+        int offset = -2 - params.size();
         // SELF liegt vor der Rücksprungadresse auf dem Stapel
-        self.offset = -2;
+        // self.offset = -2;
+        self.offset = offset++;
+
+        // Parameter eintragen
+        for (VarDeclaration v : params) {
+            declarations.add(v);
+            v.offset = offset++;
+        }
         
         // Rücksprungadresse und alten Rahmenzeiger überspringen
-        int offset = 1;
+        // int offset = 1;
+        offset = 1; // Aufgabe (f)
         
+        /** END Aufgabe (f)*/
+
         // Lokale Variablen eintragen
         for (VarDeclaration v : vars) {
             declarations.add(v);
@@ -63,7 +89,22 @@ class MethodDeclaration extends Declaration {
         // Alten Deklarationsraum wiederherstellen
         declarations.leave();
     }
-    
+
+    /** BEGIN Aufgabe (f): Methoden Parameter */
+    /**
+     * Führt die Kontextanalyse für die Signatur dieser Methoden-Deklaration durch.
+     * @param declarations Die an dieser Stelle gültigen Deklarationen.
+     * @throws CompileException Während der Kontextanylyse wurde ein Fehler
+     *         gefunden.
+     */
+    void contextAnalysisForSignature(Declarations declarations) throws CompileException {
+      // Löse Typen aller Parameter auf
+      for (VarDeclaration v : params) {
+        v.contextAnalysis(declarations);
+      }
+    }
+    /** END Aufgabe (f)*/
+
     /**
      * Die Methode gibt diese Deklaration in einer Baumstruktur aus.
      * @param tree Der Strom, in den die Ausgabe erfolgt.
@@ -71,6 +112,16 @@ class MethodDeclaration extends Declaration {
     void print(TreeStream tree) {
         tree.println("METHOD " + identifier.name);
         tree.indent();
+        /** BEGIN Aufgabe (f): Methoden Parameter */
+        if (!params.isEmpty()) {
+            tree.println("PARAMETERS");
+            tree.indent();
+            for (VarDeclaration v : params) {
+                v.print(tree);
+            }
+            tree.unindent();
+        }
+        /** END Aufgabe (f) */
         if (!vars.isEmpty()) {
             tree.println("VARIABLES");
             tree.indent();
@@ -110,7 +161,10 @@ class MethodDeclaration extends Declaration {
             s.generateCode(code);
         }
         code.println("; END METHOD " + identifier.name);
-        code.println("MRI R5, " + (vars.size() + 3));
+        // code.println("MRI R5, " + (vars.size() + 3));
+        /** BEGIN Aufgabe (f): Methoden Parameter */
+        code.println("MRI R5, " + (vars.size() + 3 + params.size()));
+        /** END Aufgabe (f) */
         code.println("SUB R2, R5 ; Stack korrigieren");
         code.println("SUB R3, R1");
         code.println("MRM R5, (R3) ; Rücksprungadresse holen");

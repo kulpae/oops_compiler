@@ -37,6 +37,9 @@ class AccessExpression extends Expression {
         // Der rechte Operand hat einen Deklarationsraum, der sich aus dem 
         // Ergebnistyp des linken Operanden ergibt.
         rightOperand.contextAnalysisForMember(leftOperand.type.declarations);
+        /** BEGIN Aufgabe (f): Methoden Parameter */
+        rightOperand.contextAnalysisForParameters(declarations);
+        /** END Aufgabe (f) */
 
         // Der Typ dieses Ausdrucks ist immer der des rechten Operanden.
         type = rightOperand.type;
