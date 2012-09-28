@@ -92,7 +92,7 @@ class Program {
         for(ClassDeclaration c: classes){
             c.contextAnalysis(declarations);
         }
-        
+
         //Kontextanalyse fuer die Ruempfe der Klassen durchfuehren
         for(ClassDeclaration classdecl: classes){
             classdecl.contextAnalysisForBody((Declarations) classdecl.declarations.clone());
@@ -132,6 +132,24 @@ class Program {
         code.println("MRI R2, _stack ; R2 zeigt auf Stapel");
         code.println("MRI R4, _heap ; R4 zeigt auf die nächste freie Stelle auf dem Heap");
 
+        /** BEGIN Aufgabe (h): Ausnahmebehandlung */
+        // Zustand sichern
+        code.println("MRR R5, R2 ; R2 zwischenspeichern ");
+        code.println("ADD R2, R1 ; push");
+        code.println("MRR R6, R2 ; Ausnahmerahmen Adresse zwischenspeichern ");
+        code.println("MMR (R2), R6; Initialler Ausnahmerahmen zeigt auf sich selbst");
+        code.println("ADD R2, R1 ; push");
+        code.println("MMR (R2), R5 ; R2 sichern aus dem Zwischenspeicher");
+        code.println("ADD R2, R1 ; push");
+        code.println("MMR (R2), R3 ; R3 sichern");
+        code.println("ADD R2, R1 ; push");
+        code.println("MRI R5, _final_exception_handler ; finalle Ausnahmenbehandlung ");
+        code.println("MMR (R2), R5 ");
+        code.println("; _exception aktualisieren ");
+        code.println("MRI R5, _exception");
+        code.println("MMR (R5), R6 ");
+
+        /** END Aufgabe (h) */
         // Ein Objekt der Klasse Main konstruieren und die Methode main aufrufen.
         main.generateCode(code);
         code.println("MRI R0, _end ; Programm beenden");
@@ -143,6 +161,34 @@ class Program {
             c.generateCode(code);
         }
         /** END Aufgabe (e)*/
+
+        /** BEGIN Aufgabe (h): Ausnahmebehandlung */
+        //TODO: benutze den allgemeinen Wiederherstellungscode
+        code.println("_final_exception_handler: ; Finale Ausnahmebehandlung");
+        code.println("MRM R7, (R2) ; Fehlercode holen");
+        // nicht notwendig, da Stack wiederhergestellt wird
+        // code.println("SUB R2, R1 ; pop");
+
+        code.correctExceptionFrame();
+
+        code.println("MRI R5, 65 ; A");
+        code.println("SYS 1, 5");
+        code.println("MRI R5, 66 ; B");
+        code.println("SYS 1, 5");
+        code.println("MRI R5, 79 ; O");
+        code.println("SYS 1, 5");
+        code.println("MRI R5, 82 ; R");
+        code.println("SYS 1, 5");
+        code.println("MRI R5, 84 ; T");
+        code.println("SYS 1, 5");
+        code.println("MRI R5, 32 ; Leerzeichen ");
+        code.println("SYS 1, 5");
+        code.println("SYS 1, 7 ; Fehlercode ausgeben ");
+        code.println("MRI R0, _end ; Programm beenden ");
+
+        code.println("_exception: ; Verweis auf den aktuellen Ausnahmerahmen");
+        code.println("DAT 1, 0");
+        /** END Aufgabe (h) */
 
         // Speicher für Stapel und Heap reservieren
         code.println("_stack: ; Hier fängt der Stapel an");

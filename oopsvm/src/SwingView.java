@@ -385,7 +385,9 @@ class SwingView extends JFrame {
                 float maxH = 0f;
                 for(int tok = 0; tok < model.getTokenCount(line); tok++){
                     fl[tok] = new Fragment();
-                    fl[tok].layout = new TextLayout(model.getText(line, tok), getFont(), frc);
+                    String text = model.getText(line, tok);
+                    if(text == null || text.isEmpty())text = "?";
+                    fl[tok].layout = new TextLayout(text, getFont(), frc);
                     fl[tok].color = colors[line.type][Math.min(tok, colors[line.type].length-1)];
                     if(line instanceof SwingModel.Instruction && tok < 3){
                         fl[tok].info = view.progWord(row.lineNumber, tok);

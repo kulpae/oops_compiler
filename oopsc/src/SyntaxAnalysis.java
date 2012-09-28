@@ -38,6 +38,12 @@ import java.util.LinkedList;
  *                  END WHILE
  *                | memberaccess [ ':=' expression ] ';'
  *                | RETURN [ logicalOR ] ';'
+ *                | THROW expression ';'
+ *                | TRY
+ *                    statements
+ *                  CATCH ( number | character ) DO
+ *                    statements
+ *                  END TRY
  *
  * logicalOR    ::= logicalAND { 'OR' logicalAND }
  * logicalAND   ::= relation { 'AND' relation }
@@ -233,7 +239,8 @@ class SyntaxAnalysis extends LexicalAnalysis {
      */
     private void statements(LinkedList<Statement> statements) throws CompileException, IOException {
         // Veraendert fuer Aufgabe (b): ELSEIF und ELSE
-        while (symbol.id != Symbol.Id.END && symbol.id != Symbol.Id.ELSE && symbol.id != Symbol.Id.ELSEIF) {
+        // Veraendert fuer Aufgabe (h): Ausnahmebehandlung
+        while (symbol.id != Symbol.Id.END && symbol.id != Symbol.Id.ELSE && symbol.id != Symbol.Id.ELSEIF && symbol.id != Symbol.Id.CATCH) {
             statement(statements);
         }
     }
@@ -285,6 +292,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
             expectSymbol(Symbol.Id.END);
             expectSymbol(Symbol.Id.WHILE);
             break;
+        /** BEGIN Aufgabe (g): Return */
         case RETURN:
             nextSymbol();
             ReturnStatement r =  new ReturnStatement(new Position(symbol.line, symbol.column));
@@ -294,6 +302,33 @@ class SyntaxAnalysis extends LexicalAnalysis {
             }
             expectSymbol(Symbol.Id.SEMICOLON);
             break;
+        /** END Aufgabe (g)*/
+        /** BEGIN Aufgabe (h): Ausnahmebehandlung */
+        case TRY:
+            nextSymbol();
+            TryStatement t = new TryStatement();
+            statements.add(t);
+
+            statements(t.tryStatements);
+            expectSymbol(Symbol.Id.CATCH);
+            if (Symbol.Id.NUMBER != symbol.id) {
+                unexpectedSymbol();
+            }
+            t.catchCode = new LiteralExpression(symbol.number, ClassDeclaration.intType, new Position(symbol.line, symbol.column));
+            nextSymbol();
+            expectSymbol(Symbol.Id.DO);
+            statements(t.catchStatements);
+            expectSymbol(Symbol.Id.END);
+            expectSymbol(Symbol.Id.TRY);
+
+            break;
+        case THROW:
+            nextSymbol();
+            ThrowStatement th = new ThrowStatement(expression());
+            statements.add(th);
+            expectSymbol(Symbol.Id.SEMICOLON);
+            break;
+        /** END Aufgabe (h) */
         default:
             Expression e = memberAccess();
             if (symbol.id == Symbol.Id.BECOMES) {

@@ -55,9 +55,12 @@ class Assembler {
     /** Das zuletzt gelesenen Zeichen. Wird durch Aufruf von {@link #nextChar() nextChar} aktualisiert. */
     private int c;
 
+    /** Die Nummer der aktuell gelesenen Zeile. */
+    private int lineno;
+
     /** Die aktuell gelesene Zeile wird in diesem Puffer für eine mögliche Ausgabe zwischengespeichert. */
     private String line;
-  
+
     /** In dieses Feld wird im zweiten Durchgang das Programm generiert. Im ersten Durchgang ist es null. */
     private int[] output;
 
@@ -116,6 +119,7 @@ class Assembler {
      */
     private String readToken() throws IOException, Exception {
         while (c != -1) {
+            if(c == '\n')lineno++;
             while (c != -1 && Character.isWhitespace((char) c)) {
                 nextChar();
             }
@@ -332,6 +336,7 @@ class Assembler {
         FileInputStream stream = new FileInputStream(fileName);
         reader = new InputStreamReader(stream);
         line = "";
+        lineno=1;
         nextChar();
         writePos = 0;
         while (c != -1) {
@@ -362,13 +367,18 @@ class Assembler {
      */
     int[] assemble(String fileName) 
             throws FileNotFoundException, IOException, Exception {
-        labels = new TreeMap<String, Integer>();
-        output = null;
-        showCode = showFirst;
-        pass(fileName);
-        output = new int[writePos];
-        showCode = showSecond;
-        pass(fileName);
+        try {
+            labels = new TreeMap<String, Integer>();
+            output = null;
+            showCode = showFirst;
+            pass(fileName);
+            output = new int[writePos];
+            showCode = showSecond;
+            pass(fileName);
+        } catch (Exception e){
+          System.out.println("Assembling error in line "+(lineno+1));
+          throw e;
+        }
         return output;
     }   
 }

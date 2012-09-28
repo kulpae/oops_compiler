@@ -98,6 +98,11 @@ class LexicalAnalysis {
         /** BEGIN Aufgabe (g): Return */
         keywords.put("RETURN", Symbol.Id.RETURN);
         /** END Aufgabe (g)*/
+        /** BEGIN Aufgabe (h): Ausnahmebehandlung */
+        keywords.put("TRY", Symbol.Id.TRY);
+        keywords.put("CATCH", Symbol.Id.CATCH);
+        keywords.put("THROW", Symbol.Id.THROW);
+        /** END Aufgabe (h)*/
 
 
         position = new Position(1, 0);
