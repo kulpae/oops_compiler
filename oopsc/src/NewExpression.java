@@ -46,6 +46,10 @@ class NewExpression extends Expression {
         code.println("; NEW " + newType.name);
         code.println("ADD R2, R1");
         code.println("MMR (R2), R4 ; Referenz auf neues Objekt auf den Stapel legen");
+        /** BEGIN Aufgabe (i): Vererbung */
+        code.println("MRI R5, " + ((ClassDeclaration)newType.declaration).identifier.name);
+        code.println("MMR (R4), R5 ; Referenz auf die VMT des Objects");
+        /** END Aufgabe (i) */
         code.println("MRI R5, " + ((ClassDeclaration) newType.declaration).objectSize);
         code.println("ADD R4, R5 ; Heap weiter zählen");
     }

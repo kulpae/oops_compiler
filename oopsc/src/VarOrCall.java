@@ -11,6 +11,13 @@ class VarOrCall extends Expression {
     /** aktuelle Parameter des Methodenaufrufs */
     LinkedList<Expression> params = new LinkedList<Expression>();
     /** END Aufgabe (f)*/
+
+    /** BEGIN Aufgabe (i): Vererbung */
+    /** Bei Methoden bestimmt dieser Flag, ob sie dynamisch oder statisch
+     * gebunden werden */
+    boolean dynamicBind = true;
+    /** END Aufgabe (i)*/
+
     
     /**
      * Konstruktor.
@@ -64,6 +71,12 @@ class VarOrCall extends Expression {
         if (identifier.declaration instanceof VarDeclaration) {
             type = (ClassDeclaration) ((VarDeclaration) identifier.declaration).type.declaration;
             lValue = true;
+            /** BEGIN Aufgabe (i): Vererbung */
+            // SELF und BASE sind R-Werte
+            if(identifier.name.equals("_self") || identifier.name.equals("_base")){
+              lValue = false;
+            }
+            /** END Aufgabe (i)*/
         } else if (identifier.declaration instanceof MethodDeclaration) {
             // type = ClassDeclaration.voidType;
             /** BEGIN Aufgabe (g): return */
@@ -168,11 +181,34 @@ class VarOrCall extends Expression {
             code.println("MRI R5, " + returnLabel);
             code.println("ADD R2, R1");
             code.println("MMR (R2), R5 ; Rücksprungadresse auf den Stapel");
-            code.println("; Statischer Aufruf von " + identifier.name);
-            code.println("MRI R0, " + m.self.type.name + "_" + m.identifier.name);
+            /** BEGIN Aufgabe (i): Vererbung */
+            if(dynamicBind){
+              //dynamisches Binden
+              code.println("; Dynamischer Aufruf von " + identifier.name);
+              code.println("MRI R5, "+(m.self.offset+1));
+              code.println("ADD R5, R2 ");
+              code.println("MRM R5, (R5) ; Adresse von SELF auf dem Heap ");
+              code.println("MRM R5, (R5) ; VMT Referenz ");
+              code.println("MRI R6, "+m.index+" ; Methodenoffset");
+              code.println("ADD R5, R6 ; Methodenoffset anwenden");
+              code.println("MRM R5, (R5) ; Methodenadresse holen ");
+              code.println("MRR R0, R5 ; Sprung zu " + m.identifier.name);
+            } else {
+              code.println("; Statischer Aufruf von " + identifier.name);
+              code.println("MRI R0, " + m.self.type.name + "_" + m.identifier.name);
+            }
+            /** END Aufgabe (i)*/
+            // code.println("; Statischer Aufruf von " + identifier.name);
+            // code.println("MRI R0, " + m.self.type.name + "_" + m.identifier.name);
             code.println(returnLabel + ":");
         } else {
             assert false;
         }
     }
+
+    /** BEGIN Aufgabe (i): Vererbung */
+    boolean bindsDynamically(){
+      return identifier.name != "_base";
+    }
+    /** END Aufgabe (i)*/
 }

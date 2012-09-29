@@ -65,10 +65,17 @@ class Program {
         // declarations.add(ClassDeclaration.boolClass);
         /** END Aufgabe (d) */
         /** BEGIN Aufgabe (e): mehrere Klassen */
+        classes.add(ClassDeclaration.objectClass); //Aufgabe (i): Vererbung
         classes.add(ClassDeclaration.intClass);
         classes.add(ClassDeclaration.boolClass);
 
         //Vorgegebene Klassen initiieren
+        /** BEGIN Aufgabe (i): Vererbung */
+        // Die Klassen Integer und Boolean erben von Object
+        ClassDeclaration.intClass.baseType = new ResolvableIdentifier("Object", null);
+        ClassDeclaration.boolClass.baseType = new ResolvableIdentifier("Object", null);
+        /** END Aufgabe (i) */
+
         VarDeclaration intValue = new VarDeclaration(new Identifier("_value", null), true);
         intValue.type = new ResolvableIdentifier("_Integer", null);
         intValue.type.declaration = ClassDeclaration.intType;
@@ -189,6 +196,13 @@ class Program {
         code.println("_exception: ; Verweis auf den aktuellen Ausnahmerahmen");
         code.println("DAT 1, 0");
         /** END Aufgabe (h) */
+
+        /** BEGIN Aufgabe (i): Vererbung */
+        // Generiere die Virtuellen Methodentabellen aller Klassen
+        for(ClassDeclaration c: classes){
+            c.generateVMTCode(code);
+        }
+        /** END Aufgabe (i)*/
 
         // Speicher für Stapel und Heap reservieren
         code.println("_stack: ; Hier fängt der Stapel an");

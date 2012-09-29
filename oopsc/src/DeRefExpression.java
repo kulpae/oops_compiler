@@ -44,4 +44,10 @@ class DeRefExpression extends Expression {
         code.println("MRM R5, (R5)");
         code.println("MMR (R2), R5");
     }
+
+    /** BEGIN Aufgabe (i): Vererbung */
+    boolean bindsDynamically(){
+      return operand.bindsDynamically();
+    }
+    /** END Aufgabe (i)*/
 }

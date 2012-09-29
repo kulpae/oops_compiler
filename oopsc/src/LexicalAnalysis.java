@@ -103,6 +103,10 @@ class LexicalAnalysis {
         keywords.put("CATCH", Symbol.Id.CATCH);
         keywords.put("THROW", Symbol.Id.THROW);
         /** END Aufgabe (h)*/
+        /** BEGIN Aufgabe (i): Vererbung */
+        keywords.put("EXTENDS", Symbol.Id.EXTENDS);
+        keywords.put("BASE", Symbol.Id.BASE);
+        /** END Aufgabe (i)*/
 
 
         position = new Position(1, 0);

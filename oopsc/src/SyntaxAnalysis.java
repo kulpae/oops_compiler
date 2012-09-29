@@ -8,7 +8,7 @@ import java.util.LinkedList;
  * <pre>
  * program      ::= {classdecl}
  *
- * classdecl    ::= CLASS identifier IS
+ * classdecl    ::= CLASS identifier [ EXTENDS identifier ] IS
  *                  { memberdecl }
  *                  END CLASS
  *
@@ -65,6 +65,7 @@ import java.util.LinkedList;
  *                | TRUE
  *                | FALSE
  *                | SELF
+ *                | BASE
  *                | NEW identifier
  *                | '(' logicalOR ')'
  *                | varorcall
@@ -138,6 +139,15 @@ class SyntaxAnalysis extends LexicalAnalysis {
     private ClassDeclaration classdecl() throws CompileException, IOException {
         expectSymbol(Symbol.Id.CLASS);
         ClassDeclaration c = new ClassDeclaration(expectIdent());
+        /** BEGIN Aufgabe (i): Vererbung*/
+        if(symbol.id == Symbol.Id.EXTENDS){
+          nextSymbol();
+          c.baseType = expectResolvableIdent();
+        } else {
+          //wenn kein EXTENDS, dann ist die Basisklasse Objekt
+          c.baseType = new ResolvableIdentifier("Object", null);
+        }
+        /** END Aufgabe (i)*/
         expectSymbol(Symbol.Id.IS);
         while (symbol.id != Symbol.Id.END) {
             memberdecl(c.attributes, c.methods);
@@ -521,6 +531,12 @@ class SyntaxAnalysis extends LexicalAnalysis {
             e = new VarOrCall(new ResolvableIdentifier("_self", new Position(symbol.line, symbol.column)));
             nextSymbol();
             break;
+        /** BEGIN Aufgabe (i): Vererbung */
+        case BASE:
+            e = new VarOrCall(new ResolvableIdentifier("_base", new Position(symbol.line, symbol.column)));
+            nextSymbol();
+            break;
+        /** END Aufgabe (i)*/
         case NEW:
             Position position = new Position(symbol.line, symbol.column);
             nextSymbol();

@@ -24,6 +24,7 @@ class Symbol extends Position {
         ANDTHEN, ORELSE, /** Bonus Aufgabe 1: AND THEN, OR ELSE */
         RETURN, /** Aufgabe (g): Return */
         TRY, CATCH, THROW, /** Aufgabe (h): Ausnahmebehandlung */
+        EXTENDS, BASE, /** Aufgabe (i): Vererbung */
         EOF
     };
     

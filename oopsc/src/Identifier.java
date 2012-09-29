@@ -17,4 +17,15 @@ class Identifier {
         this.name = name;
         this.position = position;
     }
+
+    /** BEGIN Aufgabe (i): Vererbung */
+    /**
+     * Vergleicht Identifier
+     * @param o zu vergleichende Identifier
+     * @return true, wenn beide gleich sind
+     */
+    public boolean equals(Object o){
+        return (o instanceof Identifier) && ((Identifier)o).name.equals(name);
+    }
+    /** END Aufgabe (i) */
 }

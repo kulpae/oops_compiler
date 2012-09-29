@@ -78,6 +78,10 @@ abstract class Expression {
             return new BoxExpression(this, declarations);
         } else if (lValue) {
             return new DeRefExpression(this);
+        /** BEGIN Aufgabe (i): Vererbung*/
+        } else if (this instanceof VarOrCall && ((VarOrCall)this).identifier.name.startsWith("_")) {
+            return new DeRefExpression(this);
+        /** END Aufgabe (i)*/
         } else {
             return this;
         }
@@ -106,4 +110,11 @@ abstract class Expression {
             return this;
         }
     }
+    
+
+    /** BEGIN Aufgabe (i): Vererbung */
+    boolean bindsDynamically(){
+      return true;
+    }
+    /** END Aufgabe (i)*/
 }

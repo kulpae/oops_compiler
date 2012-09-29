@@ -34,6 +34,10 @@ class AccessExpression extends Expression {
         // schreiben, wenn Integer Methoden hätte.
         leftOperand = leftOperand.box(declarations);
 
+        /** BEGIN Aufgabe (i): Vererbung */
+        rightOperand.dynamicBind = leftOperand.bindsDynamically();
+        /** END Aufgabe (i)*/
+
         // Der rechte Operand hat einen Deklarationsraum, der sich aus dem 
         // Ergebnistyp des linken Operanden ergibt.
         rightOperand.contextAnalysisForMember(leftOperand.type.declarations);

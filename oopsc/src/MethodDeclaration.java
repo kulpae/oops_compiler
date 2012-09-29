@@ -6,10 +6,14 @@ import java.util.LinkedList;
 class MethodDeclaration extends Declaration {
     /** Die lokale Variable SELF. */
     VarDeclaration self = new VarDeclaration(new Identifier("_self", null), false);
-    
+    /** BEGIN Aufgabe (i): Vererbung */
+    /** Die lokale Variable BASE. */
+    VarDeclaration base = new VarDeclaration(new Identifier("_base", null), false);
+    /** END Aufgabe (i)*/
+
     /** Die lokalen Variablen der Methode. */
     LinkedList<VarDeclaration> vars = new LinkedList<VarDeclaration>();
-    
+
     /** Die Anweisungen der Methode, d.h. der Methodenrumpf. */
     LinkedList<Statement> statements = new LinkedList<Statement>();
 
@@ -21,7 +25,12 @@ class MethodDeclaration extends Declaration {
     /** BEGIN Aufgabe (g): Return */
     ResolvableIdentifier returnType = new ResolvableIdentifier("_Void", null);
     /** End Aufgabe (g)*/
-    
+
+    /** BEGIN Aufgabe (i) */
+    /** Index der Methode in der VMT */
+    int index;
+    /** END Aufgabe (i) */
+
     /**
      * Konstruktor.
      * @param name Der Name der deklarierten Methode.
@@ -44,6 +53,13 @@ class MethodDeclaration extends Declaration {
         // SELF ist Variable vom Typ dieser Klasse
         self.type = new ResolvableIdentifier(declarations.currentClass.identifier.name, null);
         self.type.declaration = declarations.currentClass;
+        /** BEGIN Aufgabe (i): Vererbung */
+        // BASE aufloesen: ist eine Variable vom Typ der Basisklasse dieser Klasse
+        if(declarations.currentClass.baseType != null){
+            base.type = new ResolvableIdentifier(declarations.currentClass.baseType.name, null);
+            base.type.declaration = declarations.currentClass.baseType.declaration;
+        }
+        /** END Aufgabe (i)*/
 
         /** BEGIN Aufgabe (f): Methoden Parameter */
         //Main.main darf keine Parameter haben!
@@ -58,38 +74,50 @@ class MethodDeclaration extends Declaration {
           /** END Aufgabe (g) */
         }
         /** END Aufgabe (f) */
-        
+
         // Löse Typen aller Variablen auf
         for (VarDeclaration v : vars) {
             v.contextAnalysis(declarations);
         }
-        
+
         // Neuen Deklarationsraum schaffen
         declarations.enter();
 
         /** BEGIN Aufgabe (g): Return */
         declarations.currentMethod = this;
         /** END Aufgabe (g)*/
-        
+
         // SELF eintragen
         declarations.add(self);
- 
+
+        /** BEGIN Aufgabe (i): Vererbung */
+        // Mache BASE sichtbar, wenn die Klasse eine Basisklasse hat
+        if(declarations.currentClass.baseType != null){
+          declarations.add(base);
+        }
+        /** END Aufgabe (i) */
+
         /** BEGIN Aufgabe (f): Methoden Parameter */
         int offset = -2 - params.size();
         // SELF liegt vor der Rücksprungadresse auf dem Stapel
         // self.offset = -2;
         self.offset = offset++;
 
+        /** BEGIN Aufgabe (i): Vererbung */
+        // BASE und SELF zeigen auf die selbe Stelle
+        base.offset = self.offset;
+        /** END Aufgabe (i) */
+
         // Parameter eintragen
         for (VarDeclaration v : params) {
             declarations.add(v);
             v.offset = offset++;
         }
-        
+
         // Rücksprungadresse und alten Rahmenzeiger überspringen
         // int offset = 1;
         offset = 1; // Aufgabe (f)
-        
+
         /** END Aufgabe (f)*/
 
         // Lokale Variablen eintragen
@@ -97,7 +125,7 @@ class MethodDeclaration extends Declaration {
             declarations.add(v);
             v.offset = offset++;
         }
-        
+
         // Kontextanalyse aller Anweisungen durchführen
         // for (Statement s : statements) {
         //     s.contextAnalysis(declarations);
@@ -112,7 +140,7 @@ class MethodDeclaration extends Declaration {
           throw new CompileException("Auf jedem Ausfuehrungspfad wird ein Rueckgabewert erwartet", null);
         }
         /** END Aufgabe (g) */
-        
+
         // Alten Deklarationsraum wiederherstellen
         declarations.leave();
     }
@@ -243,4 +271,53 @@ class MethodDeclaration extends Declaration {
       return returnType != null && returnType.declaration != ClassDeclaration.voidType;
     }
     /** END Aufgabe (g)*/
+
+    /** BEGIN Aufgabe (i) */
+    /**
+     * Liefert true, wenn beide Methoden den selben Bezeicher haben
+     * @param o Zu vergleichende Methode
+     * @return true, wenn o eine Methode ist, die den gleichen Bezeichner hat,
+     * wie diese Methode.
+     */
+    public boolean equals(Object o){
+        return (o instanceof MethodDeclaration) && ((MethodDeclaration)o).identifier.equals(identifier);
+    }
+
+    /**
+     * Liefert true, wenn beide Methoden die selbe Signatur haben.
+     * Zur Signatur gehoeren: Anzahl und Type der Parameter, Identifier und der
+     * Type des Rueckgabewertes
+     * @param o zu vergleichende Methodendeklaration
+     * @return true, wenn Signaturen gleich sind
+     */
+    boolean sameSignature(MethodDeclaration o){
+        return this.equals(o) && this.sameParameters(o) && this.sameReturnType(o);
+    }
+
+    /**
+     * Liefert true, wenn beide Methoden die selben Parameter haben.
+     * @param o zu vergleichende Methodendeklaration
+     * @return true, wenn Parameter gleich sind
+     */
+    boolean sameParameters(MethodDeclaration o){
+        if(o.params.size() != params.size()){
+            return false;
+        }
+        for(int i=0; i<params.size(); i++){
+            if(!o.params.get(i).type.declaration.identifier.equals(params.get(i).type.declaration.identifier)){
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * Liefert true, wenn beide Methoden den selben Rueckgabewert haben.
+     * @param o zu vergleichende Methodendeklaration
+     * @return true, wenn Rueckgabewerte gleich sind
+     */
+    boolean sameReturnType(MethodDeclaration o){
+        return o.returnType.declaration == returnType.declaration;
+    }
+
+    /** END Aufgabe (i) */
 }
