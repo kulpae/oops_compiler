@@ -10,20 +10,22 @@ import java.awt.font.FontRenderContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 class SwingView extends JFrame {
 
     private SwingController controller;
     private RegisterTable registerTbl;
     private WordTable progTbl;
-    private WordTable stackTbl;
-    private WordTable heapTbl;
     private JLabel helpPanel;
+    private JPanel widgetPane;
     private CodeTextPane codeViewer;
+    private LinkedList<SwingView.WordTable> dataPools;
 
     public SwingView(SwingController controller, boolean expand){
         super("OOPSVM Inspector");
         this.controller = controller;
+        dataPools = new LinkedList<SwingView.WordTable>();
         build(expand);
         setVisible(true);
     }
@@ -98,13 +100,14 @@ class SwingView extends JFrame {
         c.gridwidth=2;
         c.gridheight=3;
         c.fill=GridBagConstraints.BOTH;
-        stackTbl = new SwingView.WordTable();
-        heapTbl = new SwingView.WordTable();
-        JScrollPane stackTblSP = new JScrollPane(stackTbl);
-        JScrollPane heapTblSP = new JScrollPane(heapTbl);
-        JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, stackTblSP, heapTblSP);
-        jsp.setResizeWeight(0.5);
-        add(jsp, c);
+        // stackTbl = new SwingView.WordTable();
+        // heapTbl = new SwingView.WordTable();
+        // JScrollPane stackTblSP = new JScrollPane(stackTbl);
+        // JScrollPane heapTblSP = new JScrollPane(heapTbl);
+        // JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, stackTblSP, heapTblSP);
+        // jsp.setResizeWeight(0.5);
+        widgetPane = new JPanel(new BorderLayout());
+        add(new JScrollPane(widgetPane), c);
 
         setPreferredSize(new Dimension(800, 400));
         pack();
@@ -131,18 +134,63 @@ class SwingView extends JFrame {
         }
     }
 
-    public void setStack(int[] stack, int offset){
-        stackTbl.setModel(new SwingModel.WordModel(stack, offset, 1, "Stack"));
+    public void addDataTable(String name, int mem[], int offset){
+      if(name == null || name.isEmpty()){
+        name = "Memory "+offset;
+      }
+
+      SwingView.WordTable tbl = new SwingView.WordTable();
+      tbl.setModel(new SwingModel.WordModel(mem, offset, 1, name));
+      dataPools.add(tbl);
+      addWidget(tbl);
     }
 
-    public void setHeap(int[] heap, int offset){
-        heapTbl.setModel(new SwingModel.WordModel(heap, offset, 1, "Heap"));
+    private void addWidget(SwingView.WordTable tbl){
+      int height = widgetPane.getHeight()/dataPools.size();
+      JScrollPane tblS = new JScrollPane(tbl);
+      if(widgetPane.getComponentCount() > 0){
+        Component c = widgetPane.getComponent(0);
+        widgetPane.removeAll();
+        JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, c, tblS);
+        // jsp.setResizeWeight(0.5);
+        widgetPane.add(jsp, BorderLayout.CENTER);
+      }else{
+        widgetPane.add(tblS, BorderLayout.CENTER);
+      }
+      Container con = widgetPane;
+      Component c;
+      while(con.getComponentCount()>0){
+        c = con.getComponent(0);
+        if(c instanceof JScrollPane){
+          c.setPreferredSize(new Dimension(widgetPane.getWidth(), height));
+          break;
+        } else if(c instanceof JSplitPane){
+          Component c1 = ((JSplitPane)c).getTopComponent();
+          Component c2 = ((JSplitPane)c).getBottomComponent();
+          c1.setPreferredSize(new Dimension(widgetPane.getWidth(), height));
+          c2.setPreferredSize(new Dimension(widgetPane.getWidth(), height));
+          con = (Container)c1;
+        } else {
+          break;
+        }
+      }
+      widgetPane.revalidate();
     }
+
+    // public void setStack(int[] stack, int offset){
+    //     stackTbl.setModel(new SwingModel.WordModel(stack, offset, 1, "Stack"));
+    // }
+
+    // public void setHeap(int[] heap, int offset){
+    //     heapTbl.setModel(new SwingModel.WordModel(heap, offset, 1, "Heap"));
+    // }
 
     public void setMemory(int idx, int value){
         if(!progTbl.getModel().setMemory(idx, value)){
-            if(!stackTbl.getModel().setMemory(idx, value)){
-                heapTbl.getModel().setMemory(idx, value);
+            for(SwingView.WordTable t: dataPools){
+                if(t.getModel().setMemory(idx, value)){
+                    break;
+                }
             }
         }
     }
@@ -170,15 +218,15 @@ class SwingView extends JFrame {
                 int p2 = (Integer)progTbl.getModel().getValueAt(pos, 3);
                 showHelp(instr, p1, p2);
             }
-        } else if(idx == 2){
-            stackTbl.getModel().setMark(value, Color.orange);
-            stackTbl.scrollToRow(value);
-        } else if(idx == 3){
-            stackTbl.getModel().setMark(value, Color.yellow);
-            stackTbl.scrollToRow(value);
-        } else if(idx == 4){
-            heapTbl.getModel().setMark(value, Color.lightGray);
-            heapTbl.scrollToRow(value);
+        // } else if(idx == 2){
+        //     stackTbl.getModel().setMark(value, Color.orange);
+        //     stackTbl.scrollToRow(value);
+        // } else if(idx == 3){
+        //     stackTbl.getModel().setMark(value, Color.yellow);
+        //     stackTbl.scrollToRow(value);
+        // } else if(idx == 4){
+        //     heapTbl.getModel().setMark(value, Color.lightGray);
+        //     heapTbl.scrollToRow(value);
         }
     }
 

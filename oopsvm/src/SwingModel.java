@@ -171,6 +171,9 @@ class SwingModel {
 
     static class Instruction extends Line{
     }
+    static class DatInstruction extends Instruction{
+        public int size;
+    }
     static class Comment extends Line{
     }
     static class Label extends Line{
@@ -190,9 +193,9 @@ class SwingModel {
             lo.lineCount = 0;
             lo.type = 3;
         } else {
-            lo = new Instruction();
-            lo.type = 1;
             if(tokens[0].equals("DAT")){
+                lo = new DatInstruction();
+                lo.type = 1;
                 int count;
                 try {
                     count = Integer.parseInt(tokens[1].replaceAll("[\\D]", ""));
@@ -200,8 +203,11 @@ class SwingModel {
                     nfe.printStackTrace();
                     count = 3;
                 }
+                ((DatInstruction)lo).size = count;
                 lo.lineCount += count;
             } else {
+                lo = new Instruction();
+                lo.type = 1;
                 lo.lineCount += 3;
             }
         }

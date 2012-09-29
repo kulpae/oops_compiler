@@ -13,6 +13,7 @@ class SwingInspector implements Inspector {
     private Semaphore stepLock;
     private SwingController controller;
     private SwingView view;
+    private int offset;
 
     public SwingInspector(boolean stepByStep){
         controller = new SwingController(this);
@@ -42,9 +43,22 @@ class SwingInspector implements Inspector {
             int c;
             StringBuffer buffer = new StringBuffer();
             SwingModel.LineModel lines = new SwingModel.LineModel();
+            String label = null;
             while((c=reader.read())!=-1){
                 if(c == '\n'){
-                    lines.add(SwingModel.parseCodeLine(buffer.toString()));
+                    SwingModel.Line line = SwingModel.parseCodeLine(buffer.toString());
+                    if(line instanceof SwingModel.DatInstruction){
+                      SwingModel.DatInstruction dat = (SwingModel.DatInstruction) line;
+                      if(label != null){
+                        view.addDataTable(label, new int[dat.size], offset);
+                        offset += dat.size;
+                      }
+                    } else if(line instanceof SwingModel.Label){
+                      label = line.tokens[0];
+                    } else {
+                      label = null;
+                    }
+                    lines.add(line);
                     buffer = new StringBuffer();
                 } else {
                     buffer.append((char)c);
@@ -74,19 +88,21 @@ class SwingInspector implements Inspector {
     public void setupMemory(final int[] memory){
         SwingUtilities.invokeLater(new Runnable(){
             public void run(){
-                int stackPtr = memory[5];
-                int heapPtr = memory[8];
-                int[] prog = new int[stackPtr];
-                int[] stack = new int[heapPtr-stackPtr];
-                int[] heap = new int[memory.length-heapPtr];
+                for(offset = memory.length-1; offset > 0; offset--){
+                  if(memory[offset] != 0){
+                    offset += 1;
+                    break;
+                  }
+                }
+                int[] prog = new int[offset];
 
                 System.arraycopy(memory, 0, prog, 0, prog.length);
-                System.arraycopy(memory, stackPtr, stack, 0, stack.length);
-                System.arraycopy(memory, heapPtr, heap, 0, heap.length);
+                // System.arraycopy(memory, stackPtr, stack, 0, stack.length);
+                // System.arraycopy(memory, heapPtr, heap, 0, heap.length);
 
                 view.setProgram(prog, 0);
-                view.setStack(stack, stackPtr);
-                view.setHeap(heap, heapPtr);
+                // view.setStack(stack, stackPtr);
+                // view.setHeap(heap, heapPtr);
             }
         });
     }
