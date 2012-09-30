@@ -14,6 +14,7 @@ class SwingInspector implements Inspector {
     private SwingController controller;
     private SwingView view;
     private int offset;
+    private int[] memory;
 
     public SwingInspector(boolean stepByStep){
         controller = new SwingController(this);
@@ -44,18 +45,31 @@ class SwingInspector implements Inspector {
             StringBuffer buffer = new StringBuffer();
             SwingModel.LineModel lines = new SwingModel.LineModel();
             String label = null;
+            int datSize = 0;
             while((c=reader.read())!=-1){
                 if(c == '\n'){
                     SwingModel.Line line = SwingModel.parseCodeLine(buffer.toString());
+
+                    if(!(line instanceof SwingModel.DatInstruction) && datSize > 0){
+                      int[] mempart = new int[datSize];
+                      System.arraycopy(this.memory, offset, mempart, 0, mempart.length);
+                      view.addDataTable(label, mempart, offset);
+                      offset += datSize;
+                      datSize = 0;
+                      label = null;
+                    }
+
                     if(line instanceof SwingModel.DatInstruction){
                       SwingModel.DatInstruction dat = (SwingModel.DatInstruction) line;
                       if(label != null){
-                        view.addDataTable(label, new int[dat.size], offset);
-                        offset += dat.size;
+                        datSize += dat.size;
                       }
                     } else if(line instanceof SwingModel.Label){
                       label = line.tokens[0];
                     } else {
+                      if(line instanceof SwingModel.Instruction){
+                        offset += 3;
+                      }
                       label = null;
                     }
                     lines.add(line);
@@ -86,15 +100,10 @@ class SwingInspector implements Inspector {
 
     @Override
     public void setupMemory(final int[] memory){
+      this.memory = memory;
         SwingUtilities.invokeLater(new Runnable(){
             public void run(){
-                for(offset = memory.length-1; offset > 0; offset--){
-                  if(memory[offset] != 0){
-                    offset += 1;
-                    break;
-                  }
-                }
-                int[] prog = new int[offset];
+                int[] prog = new int[memory.length];
 
                 System.arraycopy(memory, 0, prog, 0, prog.length);
                 // System.arraycopy(memory, stackPtr, stack, 0, stack.length);

@@ -130,14 +130,28 @@ class SwingModel {
             return globalIndex;
         }
 
-        public void setMark(int pos, Color color){
+        /**
+         * @param pos absolute Adress to set color to 
+         * @return true, if set, or false if address not in this scope */
+        public boolean setMark(int pos, Color color){
             pos = g2lRow(pos);
+            if(pos < 0 || pos >= getRowCount()) {
+              Integer prevPos = marks.get(color);
+              marks.put(color, -1);
+              if(prevPos!=null){
+                fireTableRowsUpdated(prevPos, prevPos);
+              }
+              fireTableRowsUpdated(pos, pos);
+              return false;
+            }
+
             Integer prevPos = marks.get(color);
             marks.put(color, pos);
             if(prevPos!=null){
                 fireTableRowsUpdated(prevPos, prevPos);
             }
             fireTableRowsUpdated(pos, pos);
+            return true;
         }
 
         public Color getRowColor(int row){

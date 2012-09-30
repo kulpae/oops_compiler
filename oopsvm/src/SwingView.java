@@ -21,6 +21,9 @@ class SwingView extends JFrame {
     private JPanel widgetPane;
     private CodeTextPane codeViewer;
     private LinkedList<SwingView.WordTable> dataPools;
+    private static Color[] regColors = new Color[]{Color.orange, new Color(255,240,245),
+      Color.yellow, new Color(255,211,155), Color.lightGray, Color.pink, Color.green,
+      new Color(135,206,250), new Color(250,128,114)};
 
     public SwingView(SwingController controller, boolean expand){
         super("OOPSVM Inspector");
@@ -146,8 +149,9 @@ class SwingView extends JFrame {
     }
 
     private void addWidget(SwingView.WordTable tbl){
-      int height = widgetPane.getHeight()/dataPools.size();
       JScrollPane tblS = new JScrollPane(tbl);
+      int height = widgetPane.getHeight()/dataPools.size();
+      int width = 50;
       if(widgetPane.getComponentCount() > 0){
         Component c = widgetPane.getComponent(0);
         widgetPane.removeAll();
@@ -162,13 +166,13 @@ class SwingView extends JFrame {
       while(con.getComponentCount()>0){
         c = con.getComponent(0);
         if(c instanceof JScrollPane){
-          c.setPreferredSize(new Dimension(widgetPane.getWidth(), height));
+          c.setPreferredSize(new Dimension(width, height));
           break;
         } else if(c instanceof JSplitPane){
           Component c1 = ((JSplitPane)c).getTopComponent();
           Component c2 = ((JSplitPane)c).getBottomComponent();
-          c1.setPreferredSize(new Dimension(widgetPane.getWidth(), height));
-          c2.setPreferredSize(new Dimension(widgetPane.getWidth(), height));
+          c1.setPreferredSize(new Dimension(width, height));
+          c2.setPreferredSize(new Dimension(width, height));
           con = (Container)c1;
         } else {
           break;
@@ -186,12 +190,11 @@ class SwingView extends JFrame {
     // }
 
     public void setMemory(int idx, int value){
-        if(!progTbl.getModel().setMemory(idx, value)){
-            for(SwingView.WordTable t: dataPools){
-                if(t.getModel().setMemory(idx, value)){
-                    break;
-                }
-            }
+        progTbl.getModel().setMemory(idx, value);
+        for(SwingView.WordTable t: dataPools){
+          if(t.getModel().setMemory(idx, value)){
+            break;
+          }
         }
     }
 
@@ -218,15 +221,11 @@ class SwingView extends JFrame {
                 int p2 = (Integer)progTbl.getModel().getValueAt(pos, 3);
                 showHelp(instr, p1, p2);
             }
-        // } else if(idx == 2){
-        //     stackTbl.getModel().setMark(value, Color.orange);
-        //     stackTbl.scrollToRow(value);
-        // } else if(idx == 3){
-        //     stackTbl.getModel().setMark(value, Color.yellow);
-        //     stackTbl.scrollToRow(value);
-        // } else if(idx == 4){
-        //     heapTbl.getModel().setMark(value, Color.lightGray);
-        //     heapTbl.scrollToRow(value);
+        }
+        for(SwingView.WordTable t: dataPools){
+          if(t.getModel().setMark(value, regColors[idx])){
+            break;
+          }
         }
     }
 
@@ -245,6 +244,14 @@ class SwingView extends JFrame {
 
         public SwingModel.RegisterModel getModel(){
             return (SwingModel.RegisterModel)super.getModel();
+        }
+
+        @Override
+        public Component prepareRenderer(TableCellRenderer renderer, int row, int column){
+            Component c = super.prepareRenderer(renderer, row, column);
+            Color color = (regColors.length > column)?regColors[column]:null;
+            c.setBackground((color==null)?getBackground():color);
+            return c;
         }
     }
 
@@ -433,7 +440,7 @@ class SwingView extends JFrame {
             for(Row row: rows){
                 if(row.layout != null){
                     if(hiLine == row.lineNumber){
-                        g2.setColor(Color.orange);
+                        g2.setColor(SwingView.regColors[0]);
                         float h = row.layout.getAscent() + 1;
                         g2.fillRect(0, (int)(row.y - h), getWidth(), (int)row.height);
                     }
