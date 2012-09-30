@@ -1,5 +1,6 @@
-/** BEGIN Aufgabe (h): Ausnahmebehandlung */
 import java.util.LinkedList;
+
+/** BEGIN Aufgabe (h): Ausnahmebehandlung */
 
 /**
  * Die Klasse repräsentiert die Anweisung THROW im Syntaxbaum.
@@ -39,8 +40,9 @@ class ThrowStatement extends Statement {
   }
 
   /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-  void optimizeTree(){
-    value.optimizeTree();
+  Statement optimizeStatement(){
+    value = value.optimizeTree();
+    return this;
   }
   /** END Bonus Aufgabe 2*/
 

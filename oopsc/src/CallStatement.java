@@ -1,3 +1,4 @@
+import java.util.LinkedList;
 /**
  * Die Klasse repräsentiert die Anweisung "Methodenaufruf" im Syntaxbaum.
  */
@@ -25,8 +26,9 @@ class CallStatement extends Statement {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      call.optimizeTree();
+    Statement optimizeStatement(){
+      call = call.optimizeTree();
+      return this;
     }
     /** END Bonus Aufgabe 2*/
 

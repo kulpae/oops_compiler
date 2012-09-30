@@ -1,5 +1,6 @@
-/** BEGIN Aufgabe (h): Ausnahmebehandlung */
 import java.util.LinkedList;
+
+/** BEGIN Aufgabe (h): Ausnahmebehandlung */
 
 /**
  * Die Klasse repräsentiert die Anweisung TRY-CATCH im Syntaxbaum.
@@ -39,14 +40,19 @@ class TryStatement extends Statement {
     }
     
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
+    Statement optimizeStatement(){
       catchCode.optimizeTree();
-      for (Statement s : tryStatements) {
-        s.optimizeTree();
-      }
-      for (Statement s : catchStatements) {
-        s.optimizeTree();
-      }
+	LinkedList<Statement> list = new LinkedList<Statement>();
+	for (Statement s : tryStatements) {
+		list.addAll(s.optimizeStatements());
+	}
+	tryStatements = list;
+	list = new LinkedList<Statement>();
+	for (Statement s : catchStatements) {
+		list.addAll(s.optimizeStatements());
+	}
+	catchStatements = list;
+	return this;
     }
     /** END Bonus Aufgabe 2*/
 

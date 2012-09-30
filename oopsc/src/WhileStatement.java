@@ -34,13 +34,28 @@ class WhileStatement extends Statement {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      condition.optimizeTree();
-      // TODO while (TRUE) und while (FALSE) optimieren
-      for (Statement s : statements) {
-        s.optimizeTree();
-      }
-    }
+    LinkedList<Statement> optimizeStatements(){
+	condition.optimizeTree();
+	LinkedList<Statement> list = new LinkedList<Statement>();
+	for (Statement s : statements) {
+		list.addAll(s.optimizeStatements());
+	}
+	statements = list;
+	if(condition instanceof LiteralExpression){
+		LiteralExpression con = (LiteralExpression)condition;
+			if(con.value == 0){
+				return new LinkedList<Statement>();
+			}else{
+			// TODO FOREVER statt while(true) implementieren
+				list = new LinkedList<Statement>();
+				list.add(this);
+				return list;
+			}
+		}
+	list = new LinkedList<Statement>();
+	list.add(this);
+	return list;
+     }
     /** END Bonus Aufgabe 2*/
 
     /**

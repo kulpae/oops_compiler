@@ -167,9 +167,11 @@ class MethodDeclaration extends Declaration {
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
     void optimizeTree(){
-      for (Statement s : statements) {
-        s.optimizeTree();
-      }
+      LinkedList<Statement> list = new LinkedList<Statement>();
+	for (Statement s : statements) {
+		list.addAll(s.optimizeStatements());
+	}
+	statements = list;
     }
     /** END Bonus Aufgabe 2*/
 

@@ -20,8 +20,9 @@ class DeRefExpression extends Expression {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
+    Expression optimizeTree(){
       operand.optimizeTree();
+      return this;
     }
     /** END Bonus Aufgabe 2*/
 

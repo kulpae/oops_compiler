@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+
 /**
  * Die Klasse repräsentiert einen Ausdruck im Syntaxbaum, der dem Zugriff auf eine 
  * Variable oder ein Attribut bzw. einem Methodenaufruf entspricht.
@@ -123,10 +124,11 @@ class VarOrCall extends Expression {
     /** END Aufgabe (f) */
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      for(Expression p: params){
-        p.optimizeTree();
-      }
+    Expression optimizeTree(){
+      	for(Expression p: params){
+		p = p.optimizeTree();
+	}
+	return this;
     }
     /** END Bonus Aufgabe 2*/
     

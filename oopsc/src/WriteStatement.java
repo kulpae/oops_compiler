@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 /**
  * Die Klasse repräsentiert die Anweisung WRITE im Syntaxbaum.
  */
@@ -37,8 +39,9 @@ public class WriteStatement extends Statement {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      operand.optimizeTree();
+    Statement optimizeStatement(){
+      operand = operand.optimizeTree();
+	return this;
     }
     /** END Bonus Aufgabe 2*/
 

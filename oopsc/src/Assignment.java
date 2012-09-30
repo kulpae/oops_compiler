@@ -1,6 +1,7 @@
 /**
  * Die Klasse repräsentiert die Zuweisung im Syntaxbaum.
  */
+import java.util.LinkedList;
 class Assignment extends Statement {
     /** Der L-Wert, dem ein neuer Wert zugewiesen wird. */
     Expression leftOperand;
@@ -35,9 +36,10 @@ class Assignment extends Statement {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      leftOperand.optimizeTree();
-      rightOperand.optimizeTree();
+    Statement optimizeStatement(){
+      leftOperand = leftOperand.optimizeTree();
+      rightOperand = rightOperand.optimizeTree();
+      return this;
     }
     /** END Bonus Aufgabe 2*/
 

@@ -98,11 +98,41 @@ class BinaryExpression extends Expression {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      leftOperand.optimizeTree();
-      rightOperand.optimizeTree();
-      //TODO do it
+    Expression optimizeTree(){
+	leftOperand = leftOperand.optimizeTree();
+	rightOperand = rightOperand.optimizeTree();
+	switch(operator){
+		case PLUS:
+			if(leftOperand instanceof LiteralExpression){
+				LiteralExpression op = (LiteralExpression)leftOperand;
+				if(op.value == 0){
+					return rightOperand;
+				}
+				if(rightOperand instanceof LiteralExpression){
+					LiteralExpression op2 = (LiteralExpression)rightOperand;
+					op.value = op.value + op2.value;
+					op.position = position;
+					return op;
+				}
+			}else{
+				if(rightOperand instanceof LiteralExpression){
+					LiteralExpression op = (LiteralExpression)rightOperand;
+					if(op.value == 0){
+						return leftOperand;
+					}else{
+						rightOperand = leftOperand;
+						leftOperand = op;
+						return this;
+					}
+				}else if(rightOperand instanceof UnaryExpression){
+				}
+					
+			}
+
+	}
+      return this;
     }
+	
     /** END Bonus Aufgabe 2*/
 
     /**

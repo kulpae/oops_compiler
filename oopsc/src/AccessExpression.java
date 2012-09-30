@@ -53,9 +53,10 @@ class AccessExpression extends Expression {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      leftOperand.optimizeTree();
-      rightOperand.optimizeTree();
+    Expression optimizeTree(){
+      leftOperand = leftOperand.optimizeTree();
+      rightOperand = (VarOrCall)rightOperand.optimizeTree();
+      return this;
     }
     /** END Bonus Aufgabe 2*/
 

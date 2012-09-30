@@ -47,9 +47,33 @@ class UnaryExpression extends Expression {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      operand.optimizeTree();
+    Expression optimizeTree(){
+      operand = operand.optimizeTree();
       //TODO do it!
+	switch(operator){
+		case NOT:
+			if(operand instanceof UnaryExpression){
+		        UnaryExpression op = (UnaryExpression)operand;				
+				if(op.operator == Symbol.Id.NOT){
+					return op.operand;
+				}
+			}else if(operand instanceof LiteralExpression){
+		        LiteralExpression op = (LiteralExpression)operand;
+				op.value = 1-op.value;
+				op.position = position;
+				return op;
+			}
+			break;
+		case MINUS:
+			if(operand instanceof UnaryExpression){
+		        UnaryExpression op = (UnaryExpression)operand;				
+				if(op.operator == Symbol.Id.MINUS){
+					return op.operand;
+				}
+			}
+			break;
+	}
+	return this;
     }
     /** END Bonus Aufgabe 2*/
 

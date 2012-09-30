@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 /**
  * Die Klasse repräsentiert die Anweisung READ im Syntaxbaum.
  */

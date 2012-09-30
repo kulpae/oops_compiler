@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 /**
  * Die abstrakte Basisklasse für alle Anweisungen im Syntaxbaum.
  */
@@ -17,8 +19,14 @@ abstract class Statement {
     abstract void print(TreeStream tree);
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      //DO NOTHING
+    Statement optimizeStatement(){
+	return this;
+    }
+
+    LinkedList<Statement> optimizeStatements(){
+	LinkedList<Statement> list = new LinkedList<Statement>();
+	list.add(optimizeStatement());
+	return list;
     }
     /** END Bonus Aufgabe 2*/
 

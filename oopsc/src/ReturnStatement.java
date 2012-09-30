@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 /**
  * Aufgabe (g): Return
  * Die Klasse realisiert die Anweisung 'RETURN' zum Verlassen einer Methoden.
@@ -38,8 +40,9 @@ class ReturnStatement extends Statement {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      value.optimizeTree();
+    Statement optimizeTree(){
+      value = value.optimizeTree();
+      return this;
     }
     /** END Bonus Aufgabe 2*/
 

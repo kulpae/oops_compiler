@@ -44,15 +44,30 @@ class IfStatement extends Statement {
     }
     
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      condition.optimizeTree();
-      //TODO: IF TRUE und IF FALSE optimieren
-      for (Statement s : thenStatements) {
-        s.optimizeTree();
-      }
-      for (Statement s : elseStatements) {
-        s.optimizeTree();
-      }
+    LinkedList<Statement> optimizeStatements(){
+	condition = condition.optimizeTree();
+	LinkedList<Statement> list = new LinkedList<Statement>();
+	for (Statement s : thenStatements) {
+		list.addAll(s.optimizeStatements());
+	}
+	thenStatements = list;
+	list = new LinkedList<Statement>();
+	for (Statement s : elseStatements) {
+		list.addAll(s.optimizeStatements());
+	}
+	elseStatements = list;
+	if(condition instanceof LiteralExpression){
+		LiteralExpression op = (LiteralExpression)condition;
+			if(op.value == 0){
+				return elseStatements;
+			}else{
+				return thenStatements;
+			}
+	}
+	
+	list = new LinkedList<Statement>();
+	list.add(this);
+	return list;
     }
     /** END Bonus Aufgabe 2*/
 

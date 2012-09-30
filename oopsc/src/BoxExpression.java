@@ -38,9 +38,10 @@ class BoxExpression extends Expression {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      operand.optimizeTree();
-      newType.optimizeTree();
+    Expression optimizeTree(){
+      operand = operand.optimizeTree();
+      newType = newType.optimizeTree();
+      return this;
     }
     /** END Bonus Aufgabe 2*/
 

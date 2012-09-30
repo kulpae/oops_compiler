@@ -29,8 +29,9 @@ class UnBoxExpression extends Expression {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
-      operand.optimizeTree();
+    Expression optimizeTree(){
+      operand = operand.optimizeTree();
+      return this;
     }
     /** END Bonus Aufgabe 2*/
 
