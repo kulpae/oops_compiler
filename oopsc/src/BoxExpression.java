@@ -37,6 +37,13 @@ class BoxExpression extends Expression {
         newType = newType.contextAnalysis(declarations);
     }
 
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      operand.optimizeTree();
+      newType.optimizeTree();
+    }
+    /** END Bonus Aufgabe 2*/
+
     /**
      * Die Methode gibt diesen Ausdruck in einer Baumstruktur aus.
      * Wenn der Typ des Ausdrucks bereits ermittelt wurde, wird er auch ausgegeben.

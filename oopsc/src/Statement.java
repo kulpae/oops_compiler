@@ -16,6 +16,13 @@ abstract class Statement {
      */
     abstract void print(TreeStream tree);
 
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      //DO NOTHING
+    }
+    /** END Bonus Aufgabe 2*/
+
+
     /**
      * Die Methode generiert den Assembler-Code für diese Anweisung. Sie geht 
      * davon aus, dass die Kontextanalyse vorher erfolgreich abgeschlossen wurde.

@@ -46,6 +46,13 @@ class UnaryExpression extends Expression {
         return this;
     }
 
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      operand.optimizeTree();
+      //TODO do it!
+    }
+    /** END Bonus Aufgabe 2*/
+
     /**
      * Die Methode gibt diesen Ausdruck in einer Baumstruktur aus.
      * Wenn der Typ des Ausdrucks bereits ermittelt wurde, wird er auch ausgegeben.

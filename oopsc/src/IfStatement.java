@@ -43,6 +43,19 @@ class IfStatement extends Statement {
         /** END Aufgabe (b) */
     }
     
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      condition.optimizeTree();
+      //TODO: IF TRUE und IF FALSE optimieren
+      for (Statement s : thenStatements) {
+        s.optimizeTree();
+      }
+      for (Statement s : elseStatements) {
+        s.optimizeTree();
+      }
+    }
+    /** END Bonus Aufgabe 2*/
+
     /**
      * Die Methode gibt diese Anweisung in einer Baumstruktur aus.
      * @param tree Der Strom, in den die Ausgabe erfolgt.

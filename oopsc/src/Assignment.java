@@ -34,6 +34,13 @@ class Assignment extends Statement {
         rightOperand.type.check(leftOperand.type, rightOperand.position);
     }
 
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      leftOperand.optimizeTree();
+      rightOperand.optimizeTree();
+    }
+    /** END Bonus Aufgabe 2*/
+
     /**
      * Die Methode gibt diese Anweisung in einer Baumstruktur aus.
      * @param tree Der Strom, in den die Ausgabe erfolgt.

@@ -24,6 +24,13 @@ class CallStatement extends Statement {
         call.type.check(ClassDeclaration.voidType, call.position);
     }
 
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      call.optimizeTree();
+    }
+    /** END Bonus Aufgabe 2*/
+
+
     /**
      * Die Methode gibt diese Anweisung in einer Baumstruktur aus.
      * @param tree Der Strom, in den die Ausgabe erfolgt.

@@ -37,6 +37,12 @@ class ReturnStatement extends Statement {
 
     }
 
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      value.optimizeTree();
+    }
+    /** END Bonus Aufgabe 2*/
+
     /**
      * Die Methode gibt diese Anweisung in einer Baumstruktur aus.
      * @param tree Der Strom, in den die Ausgabe erfolgt.

@@ -31,6 +31,7 @@ class ReadStatement extends Statement {
         newInt = newInt.contextAnalysis(declarations);
     }
 
+
     /**
      * Die Methode gibt diese Anweisung in einer Baumstruktur aus.
      * @param tree Der Strom, in den die Ausgabe erfolgt.

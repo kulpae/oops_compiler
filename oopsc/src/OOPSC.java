@@ -83,6 +83,11 @@ class OOPSC {
             if (showContext) {
                 p.printTree();
             }
+
+            /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+            // optimiert den Syntaxbaum
+            p.optimizeTree();
+            /** END Bonus Aufgabe 2*/
             
             CodeStream stream = outFile == null ? new CodeStream() : new CodeStream(outFile);
             p.generateCode(stream, stackSize, heapSize);

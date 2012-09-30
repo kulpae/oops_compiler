@@ -33,6 +33,16 @@ class WhileStatement extends Statement {
         }
     }
 
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      condition.optimizeTree();
+      // TODO while (TRUE) und while (FALSE) optimieren
+      for (Statement s : statements) {
+        s.optimizeTree();
+      }
+    }
+    /** END Bonus Aufgabe 2*/
+
     /**
      * Die Methode gibt diese Anweisung in einer Baumstruktur aus.
      * @param tree Der Strom, in den die Ausgabe erfolgt.

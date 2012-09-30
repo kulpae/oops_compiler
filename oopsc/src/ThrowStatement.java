@@ -38,6 +38,12 @@ class ThrowStatement extends Statement {
     tree.unindent();
   }
 
+  /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+  void optimizeTree(){
+    value.optimizeTree();
+  }
+  /** END Bonus Aufgabe 2*/
+
   /**
    * Die Methode generiert den Assembler-Code für diese Anweisung. Sie geht 
    * davon aus, dass die Kontextanalyse vorher erfolgreich abgeschlossen wurde.

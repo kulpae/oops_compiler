@@ -247,6 +247,14 @@ class ClassDeclaration extends Declaration {
         }
     }
 
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      for (MethodDeclaration m : methods) {
+        m.optimizeTree();
+      }
+    }
+    /** END Bonus Aufgabe 2*/
+
     /**
      * Die Methode gibt diese Deklaration in einer Baumstruktur aus.
      * @param tree Der Strom, in den die Ausgabe erfolgt.

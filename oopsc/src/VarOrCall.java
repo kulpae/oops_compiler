@@ -121,6 +121,14 @@ class VarOrCall extends Expression {
         }
     }
     /** END Aufgabe (f) */
+
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      for(Expression p: params){
+        p.optimizeTree();
+      }
+    }
+    /** END Bonus Aufgabe 2*/
     
     /**
      * Die Methode gibt diesen Ausdruck in einer Baumstruktur aus.

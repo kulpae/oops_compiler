@@ -38,6 +38,18 @@ class TryStatement extends Statement {
         }
     }
     
+    /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
+    void optimizeTree(){
+      catchCode.optimizeTree();
+      for (Statement s : tryStatements) {
+        s.optimizeTree();
+      }
+      for (Statement s : catchStatements) {
+        s.optimizeTree();
+      }
+    }
+    /** END Bonus Aufgabe 2*/
+
     /**
      * Die Methode gibt diese Anweisung in einer Baumstruktur aus.
      * @param tree Der Strom, in den die Ausgabe erfolgt.
