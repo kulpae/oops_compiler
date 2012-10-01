@@ -39,7 +39,7 @@ public class WriteStatement extends Statement {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    Statement optimizeStatement(){
+    Statement optimizeStatement() throws CompileException {
       operand = operand.optimizeTree();
 	return this;
     }

@@ -166,7 +166,7 @@ class MethodDeclaration extends Declaration {
     /** END Aufgabe (f)*/
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
+    void optimizeTree() throws CompileException {
       LinkedList<Statement> list = new LinkedList<Statement>();
 	for (Statement s : statements) {
 		list.addAll(s.optimizeStatements());

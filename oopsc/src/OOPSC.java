@@ -19,6 +19,8 @@ class OOPSC {
         boolean showContext = false;
         boolean showSymbols = false;
         boolean showIdentifiers = false;
+	/**Bonus Aufgabe 2: Konstante Ausdrücke */
+        boolean showOptimizedTree = false;
         boolean showSyntax = false;
         int heapSize = 100;
         int stackSize = 100;
@@ -27,6 +29,10 @@ class OOPSC {
             String arg = args[i];
             if (arg.equals("-c")) {
                 showContext = true;
+	/**BEGIN Bonus Aufgabe 2: Konstante Ausdrücke */
+	    }else if (arg.equals("-o")) {
+                showOptimizedTree = true;
+	/**END Bonus Aufgabe 2*/
             } else if (arg.equals("-h")) {
                 usage();
                 return;
@@ -87,6 +93,10 @@ class OOPSC {
             /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
             // optimiert den Syntaxbaum
             p.optimizeTree();
+
+            if (showOptimizedTree) {
+                p.printTree();
+            }
             /** END Bonus Aufgabe 2*/
             
             CodeStream stream = outFile == null ? new CodeStream() : new CodeStream(outFile);

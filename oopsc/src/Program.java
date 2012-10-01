@@ -127,7 +127,7 @@ class Program {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
+    void optimizeTree() throws CompileException {
         for(ClassDeclaration c: classes){
             c.optimizeTree();
         }

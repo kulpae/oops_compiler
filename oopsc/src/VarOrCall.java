@@ -124,7 +124,7 @@ class VarOrCall extends Expression {
     /** END Aufgabe (f) */
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    Expression optimizeTree(){
+    Expression optimizeTree() throws CompileException {
       	for(Expression p: params){
 		p = p.optimizeTree();
 	}

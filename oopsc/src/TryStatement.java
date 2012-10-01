@@ -40,7 +40,7 @@ class TryStatement extends Statement {
     }
     
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    Statement optimizeStatement(){
+    Statement optimizeStatement() throws CompileException {
       catchCode.optimizeTree();
 	LinkedList<Statement> list = new LinkedList<Statement>();
 	for (Statement s : tryStatements) {

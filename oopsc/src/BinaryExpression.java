@@ -98,41 +98,174 @@ class BinaryExpression extends Expression {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    Expression optimizeTree(){
+    Expression optimizeTree() throws CompileException {
 	leftOperand = leftOperand.optimizeTree();
 	rightOperand = rightOperand.optimizeTree();
-	switch(operator){
+	// wenn (-(...) # ...)
+	if(leftOperand instanceof UnaryExpression){
+		UnaryExpression e1 = (UnaryExpression)leftOperand;
+		switch (operator){
+		case MINUS:
+			// (-(A) - B) >> -(A+B)
+			operator = Symbol.Id.PLUS;
+			leftOperand = e1.operand;
+			e1.operand = this;
+			return e1.optimizeTree();
 		case PLUS:
-			if(leftOperand instanceof LiteralExpression){
-				LiteralExpression op = (LiteralExpression)leftOperand;
-				if(op.value == 0){
+			// (-(A) + B) >> -(A-B)
+			operator = Symbol.Id.MINUS;
+			leftOperand = e1.operand;
+			e1.operand = this;
+			return e1.optimizeTree();
+		case TIMES:
+		case DIV:
+		case OR:
+		case AND:
+			// (-(A) * B) >> -(A*B)
+			leftOperand = e1.operand;
+			e1.operand = this;
+			return e1.optimizeTree();
+		}
+	}
+	// wenn (... # -(...))
+	if(rightOperand instanceof UnaryExpression){
+		UnaryExpression e2 = (UnaryExpression)rightOperand;
+		switch (operator){
+		case MINUS:
+			// (A - -(B)) >> (A+B)
+			operator = Symbol.Id.PLUS;
+			rightOperand = e2.operand;
+			return this.optimizeTree();
+		case PLUS:
+			// (A + -(B)) >> -(A-B)
+			operator = Symbol.Id.MINUS;
+			rightOperand = e2.operand;
+			return this.optimizeTree();
+		case TIMES:
+		case DIV:
+		case OR:
+		case AND:
+			// (A * -(B)) >> -(A*B)
+			rightOperand = e2.operand;
+			e2.operand = this;
+			return e2.optimizeTree();
+		}
+	}
+	if(leftOperand instanceof LiteralExpression){
+		LiteralExpression e1 = (LiteralExpression) leftOperand;
+		if(e1.value == 0){
+			switch (operator){
+				case PLUS:  
+				case OR:
 					return rightOperand;
-				}
-				if(rightOperand instanceof LiteralExpression){
-					LiteralExpression op2 = (LiteralExpression)rightOperand;
-					op.value = op.value + op2.value;
-					op.position = position;
-					return op;
+				case MINUS:
+					return (new UnaryExpression(Symbol.Id.MINUS, rightOperand , position).optimizeTree());
+				case DIV:
+					if(rightOperand instanceof LiteralExpression){
+						LiteralExpression e2 = (LiteralExpression) rightOperand;
+						if(e2.value == 0){
+							throw new CompileException("Teilen durch 0 bei Konstanten Ausdruecken ", position);
+						}
+					}
+				case TIMES:
+				case AND:
+					return (leftOperand);			
+			}
+		}else if(e1.value == 1){
+			switch (operator){
+				case OR:
+					return leftOperand;
+				case TIMES:
+				case AND:
+					return (leftOperand);			
+			}
+		}
+		if(rightOperand instanceof LiteralExpression){
+			LiteralExpression e2 = (LiteralExpression) rightOperand;
+			switch (operator){
+				case PLUS:  
+					e1.value = e1.value + e2.value;
+					return e1;
+				case MINUS:
+					e1.value = e1.value + e2.value;
+					return e1;
+				case AND:
+				case TIMES:
+					e1.value = e1.value * e2.value;
+					return e1;
+				case DIV:
+					e1.value = e1.value / e2.value;
+					return e1;
+				case OR: 
+					e1.value = (e1.value | e2.value); 
+					return e1;
+			}
+		}
+	}
+	if(rightOperand instanceof LiteralExpression){
+		LiteralExpression e2 = (LiteralExpression) rightOperand;
+		if(e2.value == 1 && operator == Symbol.Id.DIV){
+			return leftOperand;
+		}
+	}
+	if(leftOperand instanceof BinaryExpression){
+		BinaryExpression e1 = (BinaryExpression) leftOperand;
+		if(rightOperand instanceof LiteralExpression){
+			LiteralExpression e2 = (LiteralExpression) rightOperand;
+			if(e2.value == 1 && operator == Symbol.Id.DIV){
+				return leftOperand;
+			}		
+			if(!(e1.rightOperand instanceof LiteralExpression)){ 
+			//tauschen ((a # A) #c) >> ((a # c) #A)
+				switch(operator){
+					case PLUS:
+					case MINUS:
+						if(e1.operator == Symbol.Id.PLUS || e1.operator == Symbol.Id.MINUS){
+							Symbol.Id op = operator;
+							operator = e1.operator;
+							e1.operator = op;
+							rightOperand = e1.rightOperand;
+							e1.rightOperand = e2;
+							return this.optimizeTree();
+						}
+					case TIMES:
+					case DIV:
+					case OR:
+					case AND:
+						if(e1.operator == operator){
+							rightOperand = e1.rightOperand;
+							e1.rightOperand = e2;
+							return this.optimizeTree();
+						}
 				}
 			}else{
-				if(rightOperand instanceof LiteralExpression){
-					LiteralExpression op = (LiteralExpression)rightOperand;
-					if(op.value == 0){
-						return leftOperand;
-					}else{
-						rightOperand = leftOperand;
-						leftOperand = op;
-						return this;
-					}
-				}else if(rightOperand instanceof UnaryExpression){
+				if(operator == Symbol.Id.DIV && e1.operator == Symbol.Id.DIV){
+					LiteralExpression e3 = (LiteralExpression)e1.rightOperand;
+					e3.value = e3.value * e2.value;
+					return e1.optimizeTree();
 				}
-					
 			}
-
+		}
 	}
-      return this;
+	if(rightOperand instanceof LiteralExpression){
+		Expression e2 = rightOperand;
+		switch(operator){
+			case MINUS:
+				// (A-b) >> (-b +A)
+				operator = Symbol.Id.PLUS;
+				e2 = new UnaryExpression(Symbol.Id.MINUS, e2 ,position);
+			case PLUS:
+			case TIMES:
+			case OR:
+			case AND:
+				rightOperand = leftOperand;
+				leftOperand = e2;
+				return this.optimizeTree();
+		}
+	}
+    return this;
     }
-	
+
     /** END Bonus Aufgabe 2*/
 
     /**

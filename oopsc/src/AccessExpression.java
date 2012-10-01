@@ -53,7 +53,7 @@ class AccessExpression extends Expression {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    Expression optimizeTree(){
+    Expression optimizeTree() throws CompileException {
       leftOperand = leftOperand.optimizeTree();
       rightOperand = (VarOrCall)rightOperand.optimizeTree();
       return this;

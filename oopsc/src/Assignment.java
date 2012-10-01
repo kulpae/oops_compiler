@@ -36,7 +36,7 @@ class Assignment extends Statement {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    Statement optimizeStatement(){
+    Statement optimizeStatement() throws CompileException {
       leftOperand = leftOperand.optimizeTree();
       rightOperand = rightOperand.optimizeTree();
       return this;

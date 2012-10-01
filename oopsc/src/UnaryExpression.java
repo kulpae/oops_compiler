@@ -47,9 +47,8 @@ class UnaryExpression extends Expression {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    Expression optimizeTree(){
+    Expression optimizeTree() throws CompileException {
       operand = operand.optimizeTree();
-      //TODO do it!
 	switch(operator){
 		case NOT:
 			if(operand instanceof UnaryExpression){
@@ -71,7 +70,20 @@ class UnaryExpression extends Expression {
 					return op.operand;
 				}
 			}
-			break;
+			if(operand instanceof BinaryExpression){
+		        BinaryExpression op = (BinaryExpression)operand;
+				if(op.operator == Symbol.Id.TIMES && op.leftOperand instanceof LiteralExpression){
+					operand = op.leftOperand;
+					op.leftOperand = this;
+					return op;
+				}
+				if(op.operator == Symbol.Id.DIV && op.rightOperand instanceof LiteralExpression){
+					operand = op.rightOperand;
+					op.rightOperand = this;
+					return op;
+				}
+				return this;
+			}
 	}
 	return this;
     }

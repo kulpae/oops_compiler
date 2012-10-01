@@ -44,7 +44,7 @@ class IfStatement extends Statement {
     }
     
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    LinkedList<Statement> optimizeStatements(){
+    LinkedList<Statement> optimizeStatements() throws CompileException {
 	condition = condition.optimizeTree();
 	LinkedList<Statement> list = new LinkedList<Statement>();
 	for (Statement s : thenStatements) {

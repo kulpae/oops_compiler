@@ -1,0 +1,15 @@
+CLASS Main IS
+    a: Integer;
+    METHOD main IS
+    BEGIN
+	a:=0;
+	WHILE FALSE DO
+	THROW 0;
+	END WHILE
+
+	WHILE TRUE DO
+	WRITE a+ 'A';
+	a:= a+1;
+	END WHILE
+    END METHOD
+END CLASS

@@ -248,7 +248,7 @@ class ClassDeclaration extends Declaration {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    void optimizeTree(){
+    void optimizeTree() throws CompileException {
       for (MethodDeclaration m : methods) {
         m.optimizeTree();
       }

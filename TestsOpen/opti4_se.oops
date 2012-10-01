@@ -1,0 +1,7 @@
+CLASS Main IS
+    a: Integer;
+    METHOD main IS
+    BEGIN
+        a := 0/0; 
+    END METHOD
+END CLASS

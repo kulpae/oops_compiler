@@ -40,7 +40,7 @@ class ThrowStatement extends Statement {
   }
 
   /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-  Statement optimizeStatement(){
+  Statement optimizeStatement() throws CompileException {
     value = value.optimizeTree();
     return this;
   }

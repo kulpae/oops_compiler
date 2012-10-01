@@ -19,11 +19,11 @@ abstract class Statement {
     abstract void print(TreeStream tree);
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    Statement optimizeStatement(){
+    Statement optimizeStatement() throws CompileException {
 	return this;
     }
 
-    LinkedList<Statement> optimizeStatements(){
+    LinkedList<Statement> optimizeStatements() throws CompileException {
 	LinkedList<Statement> list = new LinkedList<Statement>();
 	list.add(optimizeStatement());
 	return list;

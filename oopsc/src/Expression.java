@@ -44,7 +44,7 @@ abstract class Expression {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    Expression optimizeTree(){
+    Expression optimizeTree() throws CompileException {
 	return this;
     }
     /** END Bonus Aufgabe 2*/

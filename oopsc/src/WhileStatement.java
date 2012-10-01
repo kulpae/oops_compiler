@@ -34,7 +34,7 @@ class WhileStatement extends Statement {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    LinkedList<Statement> optimizeStatements(){
+    LinkedList<Statement> optimizeStatements() throws CompileException {
 	condition.optimizeTree();
 	LinkedList<Statement> list = new LinkedList<Statement>();
 	for (Statement s : statements) {
@@ -46,9 +46,8 @@ class WhileStatement extends Statement {
 			if(con.value == 0){
 				return new LinkedList<Statement>();
 			}else{
-			// TODO FOREVER statt while(true) implementieren
 				list = new LinkedList<Statement>();
-				list.add(this);
+				list.add(new ForeverStatement(statements));
 				return list;
 			}
 		}

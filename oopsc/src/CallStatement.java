@@ -26,7 +26,7 @@ class CallStatement extends Statement {
     }
 
     /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
-    Statement optimizeStatement(){
+    Statement optimizeStatement() throws CompileException {
       call = call.optimizeTree();
       return this;
     }
