@@ -25,6 +25,7 @@ class Symbol extends Position {
         RETURN, /** Aufgabe (g): Return */
         TRY, CATCH, THROW, /** Aufgabe (h): Ausnahmebehandlung */
         EXTENDS, BASE, /** Aufgabe (i): Vererbung */
+        UNKNOWN, /** Bonus Aufgabe 3: Mehrere Fehlermeldungen */
         EOF
     };
     

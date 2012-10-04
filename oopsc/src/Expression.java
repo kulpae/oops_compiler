@@ -6,7 +6,11 @@
  */
 abstract class Expression {
     /** Der Typ dieses Ausdrucks. Solange er nicht bekannt ist, ist dieser Eintrag null. */
-    ClassDeclaration type;
+    // ClassDeclaration type;
+    /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+    // ClassDeclaration type;
+    ClassDeclaration type = ClassDeclaration.univType;
+    /** END Bonus Aufgabe 3*/
 
     /**
      * Ist dieser Ausdruck ein L-Wert, d.h. eine Referenz auf eine Variable?

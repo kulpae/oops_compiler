@@ -1,0 +1,6 @@
+| Dieses Programm endet zu frueh
+CLASS Main IS
+  a : Integer;
+
+  METHOD main IS
+  BEGIN

@@ -1,0 +1,20 @@
+| Dieses Programm hat mehrere lexikalische Fehler
+CLASS Main IS
+  a % Integer; | Unbekantes Zeichen '%'
+  c : Main;
+
+  METHOD! print : Integer IS
+  BEGIN
+    WRITE 55;
+    RETURN 60;
+  END METHOD
+
+  METHOD main IS
+    b : Integer;
+  BEGIN
+    a := 'A1'; | nicht abgeschlossen
+    b := ''; | nicht vollstaendig
+    WRITE print;
+    WRITE '; | nicht abgeschlossen
+  END METHOD
+END CLASS

@@ -4,6 +4,12 @@
  * eine Hilfe an, falls diese falsch sind.
  */
 class OOPSC {
+
+    /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+    /** Dieser Flag merkt, ob beim Uebersetzen Fehler entdeckt wurden und die
+     * Kompilierung ausgelassen werden soll*/
+    static boolean buggyCode;
+    /** END Bonus Aufgabe 3*/
     /**
      * Die Hauptmethode des Übersetzers. 
      * Sie wertet die Kommandozeilen-Optionen aus und bietet eine Hilfe an, falls diese falsch sind.
@@ -70,6 +76,10 @@ class OOPSC {
                 inFile = arg;
             }
         }
+
+        /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+        buggyCode = false;
+        /** END Bonus Aufgabe 3*/
             
         if (inFile == null) {
             System.out.println("Keine Quelldatei angegeben");
@@ -89,6 +99,12 @@ class OOPSC {
             if (showContext) {
                 p.printTree();
             }
+
+            /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+            if(buggyCode){
+              throw new CompileException("Fehler gefunden. Kompilierung abgebrochen.", null);
+            }
+            /** END Bonus Aufgabe 3*/
 
             /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
             // optimiert den Syntaxbaum

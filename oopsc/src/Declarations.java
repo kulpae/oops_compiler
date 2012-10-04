@@ -79,8 +79,13 @@ class Declarations {
                     return;
                 }
             }
-            throw new CompileException("Fehlende Deklaration von " + identifier.name, 
-                    identifier.position);
+            /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+            System.out.println(new CompileException("Fehlende Deklaration von " + identifier.name, 
+                    identifier.position).getMessage());
+            identifier.declaration = ClassDeclaration.univType;
+            /** END Bonus Aufgabe 3*/
+            // throw new CompileException("Fehlende Deklaration von " + identifier.name, 
+            //         identifier.position);
         }
     }
 
@@ -92,7 +97,10 @@ class Declarations {
     void resolveType(ResolvableIdentifier type) throws CompileException {
         resolve(type);
         if (!(type.declaration instanceof ClassDeclaration)) {
-            throw new CompileException("Typ erwartet", type.position);
+            // throw new CompileException("Typ erwartet", type.position);
+            /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+            System.out.println(new CompileException("Typ erwartet", type.position).getMessage());
+            /** END Bonus Aufgabe 3 */
         }
     }
 
@@ -106,7 +114,11 @@ class Declarations {
     void resolveVarOrMethod(ResolvableIdentifier varOrMethod) throws CompileException {
         resolve(varOrMethod);
         if (varOrMethod.declaration instanceof ClassDeclaration) {
-            throw new CompileException("Variable oder Methode erwartet", varOrMethod.position);
+            // throw new CompileException("Variable oder Methode erwartet", varOrMethod.position);
+            /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+            System.out.println(new CompileException("Variable oder Methode erwartet", 
+                  varOrMethod.position).getMessage());
+            /** END Bonus Aufgabe 3 */
         }
     }
 }

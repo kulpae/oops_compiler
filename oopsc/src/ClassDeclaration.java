@@ -26,6 +26,11 @@ class ClassDeclaration extends Declaration {
     /** Der interne Basisdatentyp für Wahrheitswerte. */
     static final ClassDeclaration boolType = new ClassDeclaration(new Identifier("_Boolean", null));
 
+    /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+    /** Der interne Basisdatentyp für Wahrheitswerte. */
+    static final ClassDeclaration univType = new ClassDeclaration(new Identifier("_Univ", null));
+    /** END Bonus Aufgabe 3*/
+
     /** Die Klasse Integer. */
     static final ClassDeclaration intClass = new ClassDeclaration(new Identifier("Integer", null));
 
@@ -67,6 +72,9 @@ class ClassDeclaration extends Declaration {
      */
     ClassDeclaration(Identifier name) {
         super(name);
+        /** BEGIN Aufgabe (i): Vererbung */
+        vmt = new MethodDeclaration[0];
+        /** END Aufgabe (i)*/
     }
 
     /**
@@ -222,15 +230,24 @@ class ClassDeclaration extends Declaration {
      * @throws CompileException Die Meldung über den Typfehler.
      */
     static void typeError(ClassDeclaration expected, Position position) throws CompileException {
+      /**BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+      try {
+        /**END Bonus Aufgabe 3*/
         if (expected == intType) {
-            throw new CompileException("Ausdruck vom Typ Integer erwartet", position);
+          throw new CompileException("Ausdruck vom Typ Integer erwartet", position);
         } else if (expected == boolType) {
-            throw new CompileException("Ausdruck vom Typ Boolean erwartet", position);
+          throw new CompileException("Ausdruck vom Typ Boolean erwartet", position);
         } else if (expected == ClassDeclaration.voidType) {
-            throw new CompileException("Hier darf keinen Wert zurückgeliefert werden", position);
+          throw new CompileException("Hier darf keinen Wert zurückgeliefert werden", position);
         } else {
-            throw new CompileException("Ausdruck vom Typ " + expected.identifier.name + " erwartet", position);
+          throw new CompileException("Ausdruck vom Typ " + expected.identifier.name + " erwartet", position);
         }
+        /**BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+      } catch(CompileException e) {
+        //Abbruch unterdruecken
+        System.out.println(e.getMessage());
+      }
+      /**END Bonus Aufgabe 3*/
     }
 
     /**
@@ -242,7 +259,12 @@ class ClassDeclaration extends Declaration {
      * @throws CompileException Die Typen sind nicht kompatibel.
      */
     void check(ClassDeclaration expected, Position position) throws CompileException {
-        if (!isA(expected)) {
+        /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+        if(expected == univType){
+          OOPSC.buggyCode = true;
+        } else if (!isA(expected)) {
+        // if (!isA(expected)) {
+        /** END Bonus Aufgabe 3*/
             typeError(expected, position);
         }
     }

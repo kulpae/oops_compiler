@@ -1,0 +1,18 @@
+| Dieses Programm hat mehrere lexikalische syntaktische Fehler
+CLASS Main IS
+  a : Birne; | Unbekannt Birne
+  b: Apfel;  | Unbekannt Apfel
+
+  METHOD print (chars: List) : String IS | List und String unbekannt
+  BEGIN
+    WRITE 55;
+    RETURN 10;
+  END METHOD
+
+  METHOD main IS
+    b : Method;
+  BEGIN
+    WRITE print('A');
+    WRITE b;
+  END METHOD
+END CLASS

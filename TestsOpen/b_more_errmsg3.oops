@@ -1,0 +1,26 @@
+| Dieses Programm hat keine Bezeichner (ausser Main und main)
+CLASS Main IS
+   : ;
+   : ;
+
+  METHOD IS
+  BEGIN
+    WRITE 55;
+  END METHOD
+
+  METHOD ( : , :) : IS
+  BEGIN
+    RETURN 10;
+  END METHOD
+
+  METHOD main IS
+     : ;
+  BEGIN
+    print;
+    WRITE ; 
+  END METHOD
+END CLASS
+
+CLASS IS
+  :;
+END CLASS

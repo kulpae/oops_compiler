@@ -38,6 +38,10 @@ class LexicalAnalysis {
     
     /** Das zuletzt gelesene Zeichen. */
     private int c;
+
+    /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+    int reread;
+    /** END Bonus Aufgabe 3*/
     
     /** Das zuletzt erkannte Symbol. */
     Symbol symbol;
@@ -109,6 +113,9 @@ class LexicalAnalysis {
         /** END Aufgabe (i)*/
 
 
+        /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+        reread = -1;
+        /** END Bonus Aufgabe 3*/
         position = new Position(1, 0);
         nextChar();
     }
@@ -120,6 +127,7 @@ class LexicalAnalysis {
      * @throws IOException Ein Lesefehler ist aufgetreten.
      */
     void nextSymbol() throws CompileException, IOException {
+      if(reread == -1){
         for(;;) {
             // Leerraum ignorieren
             while (c != -1 && Character.isWhitespace((char) c)) {
@@ -144,129 +152,148 @@ class LexicalAnalysis {
                 break;
             }
         }
+      } else {
+        c = reread;
+        reread = -1;
+      }
         
-        switch (c) {
-        case -1:
-            symbol = new Symbol(Symbol.Id.EOF, position);;
-            break;
-        case ':':
-            symbol = new Symbol(Symbol.Id.COLON, position);
-            nextChar();
-            if (c == '=') {
-                symbol.id = Symbol.Id.BECOMES;
+        /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+        try {
+        /** END Bonus Aufgabe 3*/
+          switch (c) {
+          case -1:
+              symbol = new Symbol(Symbol.Id.EOF, position);;
+              break;
+          case ':':
+              symbol = new Symbol(Symbol.Id.COLON, position);
+              nextChar();
+              if (c == '=') {
+                  symbol.id = Symbol.Id.BECOMES;
+                  nextChar();
+              }
+              break;
+          case ';':
+              symbol = new Symbol(Symbol.Id.SEMICOLON, position);
+              nextChar();
+              break;
+          case ',':
+              symbol = new Symbol(Symbol.Id.COMMA, position);
+              nextChar();
+              break;
+          case '.':
+              symbol = new Symbol(Symbol.Id.PERIOD, position);
+              nextChar();
+              break;
+          case '(':
+              symbol = new Symbol(Symbol.Id.LPAREN, position);
+              nextChar();
+              break;
+          case ')':
+              symbol = new Symbol(Symbol.Id.RPAREN, position);
+              nextChar();
+              break;
+          case '=':
+              symbol = new Symbol(Symbol.Id.EQ, position);
+              nextChar();
+              break;
+          case '#':
+              symbol = new Symbol(Symbol.Id.NEQ, position);
+              nextChar();
+              break;
+          case '>':
+              symbol = new Symbol(Symbol.Id.GT, position);
+              nextChar();
+              if (c == '=') {
+                  symbol.id = Symbol.Id.GTEQ;
+                  nextChar();
+              }
+              break;
+          case '<':
+              symbol = new Symbol(Symbol.Id.LT, position);
+              nextChar();
+              if (c == '=') {
+                  symbol.id = Symbol.Id.LTEQ;
+                  nextChar();
+              }
+              break;
+          case '+':
+              symbol = new Symbol(Symbol.Id.PLUS, position);
+              nextChar();
+              break;
+          case '-':
+              symbol = new Symbol(Symbol.Id.MINUS, position);
+              nextChar();
+              break;
+          case '*':
+              symbol = new Symbol(Symbol.Id.TIMES, position);
+              nextChar();
+              break;
+          case '/':
+              symbol = new Symbol(Symbol.Id.DIV, position);
+              nextChar();
+              break;
+          default:
+              if (Character.isDigit((char) c)) {
+                  symbol = new Symbol(Symbol.Id.NUMBER, position);
+                  symbol.number = c - '0';
+                  nextChar();
+                  while (c != -1 && Character.isDigit((char) c)) {
+                      symbol.number = symbol.number * 10 + c - '0';
+                      nextChar();
+                  }
+              } else if (Character.isLetter((char) c)) {
+                  symbol = new Symbol(Symbol.Id.IDENT, position);
+                  String ident = "" + (char) c;
+                  nextChar();
+                  while (c != -1 && Character.isLetterOrDigit((char) c)) {
+                      ident = ident + (char) c;
+                      nextChar();
+                  }
+                  Symbol.Id id = keywords.get(ident);
+                  if (id != null) {
+                      symbol.id = id;
+                  } else {
+                      symbol.ident = ident;
+                  }
+              } else if (c=='\'') {
+                  symbol = new Symbol(Symbol.Id.NUMBER, position);
+                int ch;
                 nextChar();
-            }
-            break;
-        case ';':
-            symbol = new Symbol(Symbol.Id.SEMICOLON, position);
-            nextChar();
-            break;
-        case ',':
-            symbol = new Symbol(Symbol.Id.COMMA, position);
-            nextChar();
-            break;
-        case '.':
-            symbol = new Symbol(Symbol.Id.PERIOD, position);
-            nextChar();
-            break;
-        case '(':
-            symbol = new Symbol(Symbol.Id.LPAREN, position);
-            nextChar();
-            break;
-        case ')':
-            symbol = new Symbol(Symbol.Id.RPAREN, position);
-            nextChar();
-            break;
-        case '=':
-            symbol = new Symbol(Symbol.Id.EQ, position);
-            nextChar();
-            break;
-        case '#':
-            symbol = new Symbol(Symbol.Id.NEQ, position);
-            nextChar();
-            break;
-        case '>':
-            symbol = new Symbol(Symbol.Id.GT, position);
-            nextChar();
-            if (c == '=') {
-                symbol.id = Symbol.Id.GTEQ;
-                nextChar();
-            }
-            break;
-        case '<':
-            symbol = new Symbol(Symbol.Id.LT, position);
-            nextChar();
-            if (c == '=') {
-                symbol.id = Symbol.Id.LTEQ;
-                nextChar();
-            }
-            break;
-        case '+':
-            symbol = new Symbol(Symbol.Id.PLUS, position);
-            nextChar();
-            break;
-        case '-':
-            symbol = new Symbol(Symbol.Id.MINUS, position);
-            nextChar();
-            break;
-        case '*':
-            symbol = new Symbol(Symbol.Id.TIMES, position);
-            nextChar();
-            break;
-        case '/':
-            symbol = new Symbol(Symbol.Id.DIV, position);
-            nextChar();
-            break;
-        default:
-            if (Character.isDigit((char) c)) {
-                symbol = new Symbol(Symbol.Id.NUMBER, position);
-                symbol.number = c - '0';
-                nextChar();
-                while (c != -1 && Character.isDigit((char) c)) {
-                    symbol.number = symbol.number * 10 + c - '0';
+                if (c=='\\') {
                     nextChar();
-                }
-            } else if (Character.isLetter((char) c)) {
-                symbol = new Symbol(Symbol.Id.IDENT, position);
-                String ident = "" + (char) c;
+                    switch (c) {
+                    case 'n': ch='\n'; break;
+                    case '\\': ch='\\'; break;
+                    default: throw new CompileException("Zeichenliteral nicht erlaubt: "
+                        + "'\\" + (char) c + " (Code " + c + ")", position);
+                    }
+                } else if (c<' ' || c>'~')
+                  throw new CompileException("Unbekanntes Zeichen im Zeichenliteral (Code " + c + ").", position); 
+                else
+                  ch=c;
                 nextChar();
-                while (c != -1 && Character.isLetterOrDigit((char) c)) {
-                    ident = ident + (char) c;
-                    nextChar();
-                }
-                Symbol.Id id = keywords.get(ident);
-                if (id != null) {
-                    symbol.id = id;
-                } else {
-                    symbol.ident = ident;
-                }
-            } else if (c=='\'') {
-                symbol = new Symbol(Symbol.Id.NUMBER, position);
-            	int ch;
-            	nextChar();
-            	if (c=='\\') {
-            	    nextChar();
-            	    switch (c) {
-            	    case 'n': ch='\n'; break;
-            	    case '\\': ch='\\'; break;
-            	    default: throw new CompileException("Zeichenliteral nicht erlaubt: "
-            	    		+ "'\\" + (char) c + " (Code " + c + ")", position);
-            	    }
-            	} else if (c<' ' || c>'~')
-        		    throw new CompileException("Unbekanntes Zeichen im Zeichenliteral (Code " + c + ").", position); 
-            	else
-            		ch=c;
-            	nextChar();
 
-            	if (c!='\'') {
-            		throw new CompileException("Zeichenliteral nicht abgeschlossen.", position);
-            	}
-            	nextChar();
-            	symbol.number=ch;
-            } else {
-                throw new CompileException("Unerwartetes Zeichen: " + (char) c + " (Code " + c + ")", position);
-            }
+                if (c!='\'') {
+                  /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+                  // Lese das Zeichen nochmal, denn es kann sein, dass es
+                  // nicht zum ''-Ausdruck gehoeren sollte.
+                  reread = ch;
+                  /** END Bonus Aufgabe 3*/
+                  throw new CompileException("Zeichenliteral nicht abgeschlossen.", position);
+                }
+                nextChar();
+                symbol.number=ch;
+              } else {
+                  throw new CompileException("Unerwartetes Zeichen: " + (char) c + " (Code " + c + ")", position);
+              }
+          }
+        /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+        } catch (CompileException e){
+          symbol = new Symbol(Symbol.Id.UNKNOWN, position);
+          System.out.println(e.getMessage());
+          if(reread == -1) nextChar();
         }
+        /** END Bonus Aufgabe 3*/
         if (printSymbols) {
             System.out.println(symbol.toString());
         }

@@ -1,6 +1,8 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Arrays;
 
 /**
  * Die Klasse realisiert die syntaktische Analyse für die folgende Grammatik.
@@ -36,7 +38,7 @@ import java.util.LinkedList;
  *                | WHILE logicalOR
  *                  DO statements
  *                  END WHILE
- *                | memberaccess [ ':=' expression ] ';'
+ *                | memberaccess [ ':=' logicalOR ] ';'
  *                | RETURN [ logicalOR ] ';'
  *                | THROW expression ';'
  *                | TRY
@@ -76,13 +78,49 @@ import java.util.LinkedList;
  * {@link Program Program} ist.
  */
 class SyntaxAnalysis extends LexicalAnalysis {
+
+    /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+    private int unknownCounter;
+    /** END Bonus Aufgabe 3*/
     /**
      * Die Methode erzeugt einen "Unerwartetes Symbol"-Fehler.
      * @throws CompileException Die entsprechende Fehlermeldung.
      */
-    private void unexpectedSymbol() throws CompileException {
-        throw new CompileException("Unerwartetes Symbol " + symbol.id.toString(), symbol);
+    private void unexpectedSymbol() throws CompileException, IOException {
+        /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+        OOPSC.buggyCode = true;
+        // throw new CompileException("Unerwartetes Symbol " + symbol.id.toString(), symbol);
+        if(symbol.id == Symbol.Id.EOF){
+          throw new CompileException("Unerwartetes Dateiende", symbol);
+        } else if(symbol.id != Symbol.Id.UNKNOWN){
+          System.out.println(new CompileException("Unerwartetes Symbol " + symbol.id.toString(), symbol).getMessage());
+        }
+        /** END Bonus Aufgabe 3*/
     }
+
+    /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+    /**
+     * Gibt eine Fehlermeldung aus, dass ein Bezeichner erwartet wurde
+     */
+    private void identExpected() throws CompileException, IOException {
+        OOPSC.buggyCode = true;
+        System.out.println(new CompileException("Bezeichner erwartet", symbol).getMessage());
+    }
+
+    /**
+     * Ueberspringt leise alle Symbole, bis ein Symbol aus der Parameterliste gefunden wurde.
+     * @params symbols Symbole, die nicht uebersprungen werden.
+     */
+    private void skipTo(Symbol.Id... symbols) throws CompileException, IOException {
+        HashSet<Symbol.Id> skip = new HashSet<Symbol.Id>(Arrays.asList(symbols));
+        while(!skip.contains(symbol.id) && symbol.id != Symbol.Id.EOF){
+          nextSymbol();
+        }
+        if(symbol.id == Symbol.Id.EOF){
+          throw new CompileException("Unerwartetes Dateiende", symbol);
+        }
+    }
+    /** END Bonus Aufgabe 3 */
 
     /**
      * Die Methode überprüft, ob das aktuelle Symbol das erwartete ist. Ist dem so,
@@ -105,11 +143,25 @@ class SyntaxAnalysis extends LexicalAnalysis {
      * @throws IOException Ein Lesefehler ist aufgetreten.
      */
     private Identifier expectIdent() throws CompileException, IOException {
-        if (symbol.id != Symbol.Id.IDENT) {
-            unexpectedSymbol();
+        /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+        Identifier i;
+        //Vor IDENT koennten mehrere UNKNOWN-Symbole stehen
+        //ueberspringe diese
+        while(symbol.id == Symbol.Id.UNKNOWN){
+          nextSymbol();
         }
-        Identifier i = new Identifier(symbol.ident, new Position(symbol.line, symbol.column));
-        nextSymbol();
+        if(symbol.id == Symbol.Id.EOF){
+            throw new CompileException("Unerwartetes Dateiende", symbol);
+        } else if (symbol.id != Symbol.Id.IDENT) {
+            //IDENT fehlt hier, also gebe einen Platzhalter aus
+            identExpected();
+            i = new Identifier("?"+unknownCounter, new Position(symbol.line, symbol.column));
+            unknownCounter++;
+        } else {
+            i = new Identifier(symbol.ident, new Position(symbol.line, symbol.column));
+            nextSymbol();
+        }
+        /** END Bonus Aufgabe 3*/
         return i;
     }
 
@@ -121,11 +173,26 @@ class SyntaxAnalysis extends LexicalAnalysis {
      * @throws IOException Ein Lesefehler ist aufgetreten.
      */
     private ResolvableIdentifier expectResolvableIdent() throws CompileException, IOException {
-        if (symbol.id != Symbol.Id.IDENT) {
-            unexpectedSymbol();
+        /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+        ResolvableIdentifier r;
+        //Vor IDENT koennten mehrere UNKNOWN-Symbole stehen
+        //ueberspringe diese
+        while(symbol.id == Symbol.Id.UNKNOWN){
+          nextSymbol();
         }
-        ResolvableIdentifier r = new ResolvableIdentifier(symbol.ident, new Position(symbol.line, symbol.column));
-        nextSymbol();
+        if(symbol.id == Symbol.Id.EOF){
+            throw new CompileException("Unerwartetes Dateiende", symbol);
+        } else if (symbol.id != Symbol.Id.IDENT) {
+            //IDENT fehlt hier, also gebe einen Platzhalter aus
+            identExpected();
+            r = new ResolvableIdentifier("_Univ", new Position(symbol.line, symbol.column));
+            r.declaration = ClassDeclaration.univType;
+            OOPSC.buggyCode = true;
+        } else {
+            r = new ResolvableIdentifier(symbol.ident, new Position(symbol.line, symbol.column));
+            nextSymbol();
+        }
+        /** END Bonus Aufgabe 3*/
         return r;
     }
 
@@ -149,7 +216,9 @@ class SyntaxAnalysis extends LexicalAnalysis {
         }
         /** END Aufgabe (i)*/
         expectSymbol(Symbol.Id.IS);
-        while (symbol.id != Symbol.Id.END) {
+        /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+        while (symbol.id != Symbol.Id.END && symbol.id != Symbol.Id.EOF) {
+        /** END Bonus Aufgabe 3*/
             memberdecl(c.attributes, c.methods);
         }
         nextSymbol();
@@ -250,7 +319,8 @@ class SyntaxAnalysis extends LexicalAnalysis {
     private void statements(LinkedList<Statement> statements) throws CompileException, IOException {
         // Veraendert fuer Aufgabe (b): ELSEIF und ELSE
         // Veraendert fuer Aufgabe (h): Ausnahmebehandlung
-        while (symbol.id != Symbol.Id.END && symbol.id != Symbol.Id.ELSE && symbol.id != Symbol.Id.ELSEIF && symbol.id != Symbol.Id.CATCH) {
+        // Veraendert fuer Bonus Aufgabe 3: Mehrere Fehlermeldungen
+        while (symbol.id != Symbol.Id.END && symbol.id != Symbol.Id.ELSE && symbol.id != Symbol.Id.ELSEIF && symbol.id != Symbol.Id.CATCH && symbol.id != Symbol.Id.EOF) {
             statement(statements);
         }
     }
@@ -507,7 +577,10 @@ class SyntaxAnalysis extends LexicalAnalysis {
      * @throws IOException Ein Lesefehler ist aufgetreten.
      */
     private Expression literal() throws CompileException, IOException {
-        Expression e = null;
+        /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+        // Expression e = null;
+        Expression e = new EmptyExpression(new Position(symbol.line, symbol.column));
+        /** END Bonus Aufgabe 3*/
         switch (symbol.id) {
         case NUMBER:
             e = new LiteralExpression(symbol.number, ClassDeclaration.intType, new Position(symbol.line, symbol.column));
@@ -553,6 +626,13 @@ class SyntaxAnalysis extends LexicalAnalysis {
             break;
         default:
             unexpectedSymbol();
+            /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
+            // Ueberspringe alle Symbole, bis ein Symbol auftaucht, welches
+            // laut Grammatik nach einem literal kommen kann.
+            skipTo(Symbol.Id.PERIOD, Symbol.Id.SEMICOLON, Symbol.Id.BECOMES, Symbol.Id.TIMES, Symbol.Id.DIV, Symbol.Id.MOD, Symbol.Id.PLUS, Symbol.Id.MINUS, 
+                Symbol.Id.EQ, Symbol.Id.NEQ, Symbol.Id.LT, Symbol.Id.GT, Symbol.Id.LTEQ, Symbol.Id.GTEQ, Symbol.Id.AND, Symbol.Id.OR, Symbol.Id.THEN, Symbol.Id.DO, 
+                Symbol.Id.RPAREN, Symbol.Id.COMMA);
+            /** END Bonus Aufgabe 3*/
         }
         return e;
     }
@@ -593,6 +673,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
             throws CompileException, FileNotFoundException, IOException {
         super(fileName, printSymbols);
         ResolvableIdentifier.init();
+        unknownCounter = 0;
     }
 
     /**
