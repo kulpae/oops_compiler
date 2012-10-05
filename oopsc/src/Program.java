@@ -232,7 +232,7 @@ class Program {
         	code.println("JPC R5, " + exceptionLabel + " ; Ueberspringe Fehlerauswertung");
 		for(int i=0;i<text.length(); i++){
 			Character c = text.charAt(i);
-        		code.println("MRI R5, "+(int)c+" ; "+c);
+        		code.println("MRI R5, "+(int)c+" ; "+((c!='\n')?c:"\\n"));
         		code.println("SYS 1, 5");
 		}
 	        code.println("MRI R0, _end ; Programm beenden ");

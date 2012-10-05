@@ -65,7 +65,7 @@ class CatchConstruct{
 			UnaryExpression e = (UnaryExpression)catchCode;
 			if(catchCode instanceof LiteralExpression){
 				LiteralExpression f = (LiteralExpression)e.operand;
-				return f.value;
+				return -f.value;
 			}
 		}
 		return null;

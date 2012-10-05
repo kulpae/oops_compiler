@@ -2,7 +2,7 @@
 CLASS Main IS
     METHOD tryer(a : Integer) IS BEGIN
 	TRY 
-	    WRITE a/(a-a);
+	    WRITE 'A' + a/(a-a);
         CATCH 0 DO
 	    WRITE 'c';
 	    WRITE 'a';
