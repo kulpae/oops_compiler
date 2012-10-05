@@ -198,7 +198,7 @@ class SwingModel {
         Line lo;
         if(tokens.length == 0){
             return null;
-        } else if(tokens[0].startsWith(";")){
+        } else if(line.length() <= 0 || tokens[0].startsWith(";")){
             lo = new Comment();
             lo.lineCount = 0;
             lo.type = 2;
