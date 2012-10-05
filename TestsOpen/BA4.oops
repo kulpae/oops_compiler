@@ -1,0 +1,32 @@
+| 0=0 1=1 OK
+CLASS Main IS
+    METHOD thrower(a : Integer) IS BEGIN
+	THROW a;
+    END METHOD
+
+    METHOD tryer(a : Integer) IS BEGIN
+	TRY 
+	    SELF.thrower(a);
+        CATCH 0 DO
+	    WRITE 48+a; | a
+	    WRITE 61;   | =
+	    WRITE 48;   | 0
+        CATCH 1 DO
+	    WRITE 48+a; | a
+	    WRITE 61;   | = 
+	    WRITE 49;   | 1
+        END TRY
+        WRITE ' ';
+    END METHOD
+    METHOD main IS BEGIN
+	SELF.tryer(0);
+	SELF.tryer(1);
+	TRY 
+	    SELF.tryer(2);
+        CATCH 2 DO
+	    WRITE 'O'; |
+	    WRITE 'K'; |
+            WRITE '\n';
+        END TRY
+    END METHOD
+END CLASS

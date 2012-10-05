@@ -322,6 +322,13 @@ class BinaryExpression extends Expression {
             code.println("MUL R6, R5");
             break;
         case DIV:
+	    /** BEGIN Bonus Aufgabe (4): Try&Catch-Erweiterung*/
+	    String catchDiv0Label = code.nextLabel();
+	    code.println("ISZ R7, R6 ; wenn 0, ");
+	    code.println("JPC R7, " + catchDiv0Label + " ; Überspringe Fehlerbehandlung /0");
+	    new ThrowStatement(new LiteralExpression(0, new ClassDeclaration(new Identifier("_Integer", null)) , position)).generateCode(code);
+	    code.println(catchDiv0Label + ":");
+	    /** END Bonus Aufgabe (4)*/
             code.println("DIV R6, R5");
             break;
         case MOD:

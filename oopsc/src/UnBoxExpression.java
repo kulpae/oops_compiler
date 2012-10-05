@@ -56,6 +56,12 @@ class UnBoxExpression extends Expression {
         operand.generateCode(code);
         code.println("; UNBOX");
         code.println("MRM R5, (R2) ; Objektreferenz vom Stapel lesen");
+	/** BEGIN Bonus Aufgabe (4): Try&Catch-Erweiterung */
+	String catchDiv0Label = code.nextLabel();
+	code.println("JPC R5, " + catchDiv0Label + " ; Überspringe Fehlerbehandlung UNBOX NULL");
+	new ThrowStatement(new LiteralExpression(1, new ClassDeclaration(new Identifier("_Integer", null)) , position)).generateCode(code);
+	code.println(catchDiv0Label + ":");
+	/** END Bonus Aufgabe (4)*/
         code.println("MRI R6, " + ClassDeclaration.HEADERSIZE);
         code.println("ADD R5, R6 ; Adresse des Werts bestimmen");
         code.println("MRM R5, (R5) ; Wert auslesen");

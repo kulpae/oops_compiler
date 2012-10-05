@@ -1,0 +1,8 @@
+|Div durch 0
+CLASS Main IS
+    a : Integer;
+    METHOD main IS BEGIN
+	    a := 3;
+	    WRITE a/(a-a);
+    END METHOD
+END CLASS

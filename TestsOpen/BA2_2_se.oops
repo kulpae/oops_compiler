@@ -2,6 +2,6 @@ CLASS Main IS
     a: Integer;
     METHOD main IS
     BEGIN
-        a := 0/0; 
+        a := 0/0; | Fehler, Division durch 0
     END METHOD
 END CLASS

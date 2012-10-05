@@ -1,3 +1,5 @@
+| Keine Interessante Ausgabe. 
+| Relevant ist der Syntaxbaum -c
 CLASS Main IS
     x,y,z: Integer;
     d,e,f: Boolean;
@@ -19,31 +21,31 @@ CLASS Main IS
 	| TIMES
         z := 0 * x;   | 0
         z := x * 0;   | 0
-        z := 1 * x;   | 1   !!!!!! A
-        z := x * 1;   | 1   !!!!!! A
+        z := 1 * x;   | 1
+        z := x * 1;   | 1
         z := 4 * -x;  | -4*x
         z := -x * 4;  | -4*x
-        z := x * -y;  | -(x*y) >>> NO -x*y !!!!!!!!!!!!!!!
-        z := -x * y;  | -(x*y) >>> NO -x*y !!!!!!!!!!!!!!!
-        z := -x * -y; | x*y  >>> NO -(-x)*y !!!!!!!!!!!!!!!
+        z := x * -y;  | -(x*y) >>> NO -x*y
+        z := -x * y;  | -(x*y) >>> NO -x*y
+        z := -x * -y; | x*y  >>> NO -(-x)*y
 
 	| DIV
 	z := 4 / 1;    | 4
 	z := x / 4;    | x/4
         z := 0 / x;   | 0
-        z := x / 1;   | x  !!!!!!!!!!!! A
-        z := -x / 4;  | (x/-4)   !!!!!!!!!!
-        z := -x / y;  | -(x/y)  !!!!!!!!!!!!!
-        z :=  x/ -y;  | -(x/y)  ? vergessen
-        z := -x / -y; | x*y      !!!!!!!!!!
+        z := x / 1;   | x
+        z := -x / 4;  | (x/-4)
+        z := -x / y;  | -(x/y)
+        z :=  x/ -y;  | -(x/y)
+        z := -x / -y; | x*y
 
 	IF FALSE THEN
 	THROW 0;
 	ELSE
 	| Ketten
-	z:= z+4+x-3+2-y; | 3+z+x-y   !!wyh 14?
+	z:= z+4+x-3+2-y; | 3+z+x-y
 	z:= z*4*x*3*2*y; | 24*z*x*y
-	z:= z/4/x/3/2/y; | z/24/x/y  4/3/2 nicht aufgelöst
+	z:= z/4/x/3/2/y; | z/24/x/y
 	END IF
 
 	| Boolean
@@ -51,12 +53,12 @@ CLASS Main IS
 	d := NOT NOT e;    | e
 	d := FALSE AND e;  | FALSE
 	d := e AND FALSE ; | FALSE
-	d := TRUE AND e;   | e      !!!A
-	d := e AND TRUE ;  | e      !!!! basierend auf vorigen
+	d := TRUE AND e;   | e
+	d := e AND TRUE ;  | e
 	d := FALSE OR e;   | e
 	d := e OR FALSE ;  | e
-	d := TRUE OR e;    | TRUE   !!A
-	d := e OR TRUE ;   | TRUE    !!!!A
+	d := TRUE OR e;    | TRUE
+	d := e OR TRUE ;   | TRUE
 	ELSE
 	THROW 1;
 	END IF

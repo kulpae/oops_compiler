@@ -1,0 +1,20 @@
+| catched
+CLASS Main IS
+    METHOD tryer(a : Integer) IS BEGIN
+	TRY 
+	    WRITE a/(a-a);
+        CATCH 0 DO
+	    WRITE 'c';
+	    WRITE 'a';
+	    WRITE 't';
+	    WRITE 'c';
+	    WRITE 'h';
+	    WRITE 'e';
+	    WRITE 'd';
+        END TRY
+        WRITE '\n';
+    END METHOD
+    METHOD main IS BEGIN
+	SELF.tryer(3);
+    END METHOD
+END CLASS

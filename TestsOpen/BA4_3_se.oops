@@ -1,0 +1,21 @@
+| NULL Zeigerzugriff
+CLASS Main IS
+    a : Integer;
+    b : Integer;
+    METHOD main IS BEGIN
+	TRY
+	    a := b;
+	    WRITE 'n';
+	    WRITE 'o';
+	    WRITE '!';
+	CATCH 0 DO
+	    WRITE 'n';
+	    WRITE 'o';
+	    WRITE ' ';
+	    WRITE 't';
+	    WRITE 'o';
+	    WRITE 'o';
+	    WRITE '!';
+	END TRY
+    END METHOD
+END CLASS

@@ -1,3 +1,5 @@
+| Keine Interessante Ausgabe, da Endlosschleife
+| Relevant ist der Syntaxbaum -c
 CLASS Main IS
     a: Integer;
     METHOD main IS

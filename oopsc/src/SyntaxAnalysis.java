@@ -390,7 +390,20 @@ class SyntaxAnalysis extends LexicalAnalysis {
             statements.add(t);
 
             statements(t.tryStatements);
-            expectSymbol(Symbol.Id.CATCH);
+	/** BEGIN Bonus Aufgabe 4: Try&Catch-Erweiterung*/
+	    while(Symbol.Id.CATCH == symbol.id){
+	    	nextSymbol();
+		CatchConstruct c = new CatchConstruct();
+		if (Symbol.Id.NUMBER != symbol.id) {
+	            unexpectedSymbol();
+		}
+		c.catchCode = new LiteralExpression(symbol.number, ClassDeclaration.intType, new Position(symbol.line, symbol.column));
+		nextSymbol();
+		expectSymbol(Symbol.Id.DO);
+		statements(c.catchStatements);
+		t.catches.add(c);
+	    }	
+            /*expectSymbol(Symbol.Id.CATCH);
             if (Symbol.Id.NUMBER != symbol.id) {
                 unexpectedSymbol();
             }
@@ -398,6 +411,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
             nextSymbol();
             expectSymbol(Symbol.Id.DO);
             statements(t.catchStatements);
+	/** END Bonus Aufgabe 4*/
             expectSymbol(Symbol.Id.END);
             expectSymbol(Symbol.Id.TRY);
 
@@ -460,6 +474,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
           Symbol.Id operator = symbol.id;
           nextSymbol();
           /** BEGIN Bonus Aufgabe 1: AND THEN und OR ELSE */
+
           if(symbol.id == Symbol.Id.THEN){
             operator = Symbol.Id.ANDTHEN;
             nextSymbol();

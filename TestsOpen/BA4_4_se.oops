@@ -1,0 +1,22 @@
+| Fehler in Zeile 10, Spalte 15: Catchcode 0 wird mehrfach verwendet
+CLASS Main IS
+    METHOD tryer(a : Integer) IS BEGIN
+	TRY 
+	    WRITE 'X';
+        CATCH 0 DO
+	    WRITE 'n';
+	    WRITE 'o';
+	    WRITE '!';
+	    WRITE '1';
+        CATCH 0 DO	| CATCH 0 existiert bereits
+	    WRITE 'n';
+	    WRITE 'o';
+	    WRITE '!';
+	    WRITE '2';
+        END TRY
+        WRITE '\n';
+    END METHOD
+    METHOD main IS BEGIN
+	SELF.tryer(3);
+    END METHOD
+END CLASS

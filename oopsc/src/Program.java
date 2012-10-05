@@ -185,7 +185,10 @@ class Program {
         // code.println("SUB R2, R1 ; pop");
 
         code.correctExceptionFrame();
-
+/** BEGIN Bonus Aufgabe (4): Try&Catch-Erweiterung*/
+	printException(code, "Div durch 0" , 0);
+	printException(code, "NULL Zeigerzugriff" , 1);
+/** END Bonus Aufgabe (4)*/
         code.println("MRI R5, 65 ; A");
         code.println("SYS 1, 5");
         code.println("MRI R5, 66 ; B");
@@ -219,4 +222,21 @@ class Program {
         code.println("DAT " + heapSize + ", 0");
         code.println("_end: ; Programmende");
     }
+
+/** BEGIN Bonus Aufgabe (4): Try&Catch-Erweiterung*/
+	void printException(CodeStream code, String exceptionText , int exceptionValue){
+		String exceptionLabel = code.nextLabel();
+		String text = exceptionText+"\n";
+        	code.println("MRI R5, "+exceptionValue+" ; Wert der Fehlerauswertung");
+        	code.println("SUB R5, R7 ; 0 wenn gleich");
+        	code.println("JPC R5, " + exceptionLabel + " ; Ueberspringe Fehlerauswertung");
+		for(int i=0;i<text.length(); i++){
+			Character c = text.charAt(i);
+        		code.println("MRI R5, "+(int)c+" ; "+c);
+        		code.println("SYS 1, 5");
+		}
+	        code.println("MRI R0, _end ; Programm beenden ");
+        	code.println(exceptionLabel + ":");
+	}
+/** END Bonus Aufgabe (4)*/
 }
