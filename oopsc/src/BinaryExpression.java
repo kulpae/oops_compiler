@@ -324,8 +324,7 @@ class BinaryExpression extends Expression {
         case DIV:
 	    /** BEGIN Bonus Aufgabe (4): Try&Catch-Erweiterung*/
 	    String catchDiv0Label = code.nextLabel();
-	    code.println("ISZ R7, R6 ; wenn 0, ");
-	    code.println("JPC R7, " + catchDiv0Label + " ; Überspringe Fehlerbehandlung /0");
+	    code.println("JPC R5, " + catchDiv0Label + " ; Überspringe Fehlerbehandlung /0");
 	    new ThrowStatement(new LiteralExpression(0, ClassDeclaration.intType, position)).generateCode(code);
 	    code.println(catchDiv0Label + ":");
 	    /** END Bonus Aufgabe (4)*/

@@ -1,8 +1,8 @@
 | catched
 CLASS Main IS
-    METHOD tryer(a : Integer) IS BEGIN
+    METHOD tryer(a : Integer ; b:Integer) IS BEGIN
 	TRY 
-	    WRITE 'A' + a/(a-a);
+	    WRITE '0' + a/(b-b);
         CATCH 0 DO
 	    WRITE 'c';
 	    WRITE 'a';
@@ -15,6 +15,6 @@ CLASS Main IS
         WRITE '\n';
     END METHOD
     METHOD main IS BEGIN
-	SELF.tryer(3);
+	SELF.tryer(3 , 2);
     END METHOD
 END CLASS
