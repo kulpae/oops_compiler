@@ -111,6 +111,11 @@ class LexicalAnalysis {
         keywords.put("EXTENDS", Symbol.Id.EXTENDS);
         keywords.put("BASE", Symbol.Id.BASE);
         /** END Aufgabe (i)*/
+        /** BEGIN Bonus Aufgabe 5: Zugriffsschutz */
+        keywords.put("PRIVATE", Symbol.Id.PRIVATE);
+        keywords.put("PROTECTED", Symbol.Id.PROTECTED);
+        keywords.put("PUBLIC", Symbol.Id.PUBLIC);
+        /** END Bonus Aufgabe 5*/
 
 
         /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/

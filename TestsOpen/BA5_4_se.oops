@@ -1,0 +1,80 @@
+| Darf nicht ueberschreiben
+CLASS A IS
+
+  PROTECTED METHOD protected: Integer IS
+  BEGIN
+    WRITE SELF.private;
+    RETURN SELF.protected;
+  END METHOD
+
+  PUBLIC METHOD public: Integer IS
+  BEGIN
+    RETURN '3';
+  END METHOD
+END CLASS
+
+CLASS B EXTENDS A IS
+  PRIVATE id : Integer;
+
+  PROTECTED METHOD protected: Integer IS
+  BEGIN
+    RETURN '2';
+  END METHOD
+
+  PUBLIC METHOD public: Integer IS
+  BEGIN
+    RETURN '3';
+  END METHOD
+END CLASS
+
+CLASS C EXTENDS A IS
+  
+  PRIVATE METHOD protected: Integer IS
+  BEGIN
+    RETURN '1';
+  END METHOD
+
+  PROTECTED METHOD public: Integer IS
+  BEGIN
+    RETURN '2';
+  END METHOD
+END CLASS
+
+CLASS D EXTENDS A IS
+  PRIVATE METHOD public: Integer IS
+  BEGIN
+    RETURN '1';
+  END METHOD
+END CLASS
+
+CLASS Main IS
+  METHOD main IS
+  a: A;
+  b: B;
+  c: C;
+  d: D;
+  BEGIN
+  a := NEW A;
+  b := NEW B;
+  c := NEW C;
+  d := NEW D;
+
+  WRITE 'A';
+  WRITE a.private; | not declared
+  WRITE a.protected; | not declared
+  WRITE a.public;
+  WRITE 'B';
+  WRITE b.private; | not declared
+  WRITE b.protected; | not declared
+  WRITE b.public;
+  WRITE 'C';
+  WRITE c.private; | not declared
+  WRITE c.protected; | not declared
+  WRITE c.public; | not declared
+  WRITE 'D';
+  WRITE d.private; | not declared
+  WRITE d.protected; | not declared
+  WRITE d.public; | not declared
+
+  END METHOD
+END CLASS

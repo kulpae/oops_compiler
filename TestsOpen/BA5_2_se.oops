@@ -1,0 +1,19 @@
+| Darf auf internal nicht zugreiffen
+CLASS Example IS
+  PRIVATE internal : Integer;
+
+  PUBLIC METHOD readonly: Integer IS
+  BEGIN
+    RETURN internal;
+  END METHOD
+END CLASS
+
+CLASS Main IS
+  METHOD main IS
+    a : Example;
+  BEGIN
+    a := NEW Example;
+    a.internal := 65;
+    WRITE a.readonly;
+  END METHOD
+END CLASS

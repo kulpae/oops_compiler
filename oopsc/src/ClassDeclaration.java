@@ -157,9 +157,21 @@ class ClassDeclaration extends Declaration {
                 m.index = i;
                 found = true;
                 if(vmt[i].sameSignature(m)){
+                  /** BEGIN Bonus Aufgabe 5: Zugriffsschutz*/
+                  if(vmt[i].identifier.accessType.ordinal() > m.identifier.accessType.ordinal()){
+                    OOPSC.buggyCode = true;
+                    // Wert korrigieren und Fehlermeldung ausgeben
+                    m.identifier.accessType = vmt[i].identifier.accessType;
+                    System.out.println(new CompileException("Verkleinerung der Zugriffsrechte nicht erlaubt!", m.identifier.position).getMessage());
+                  }
+                  /** END Bonus Aufgabe 5*/
                   vmt[i] = m; // Ueberschreiben
                 } else {
-                  throw new CompileException("Ueberladung nicht erlaubt!", m.identifier.position);
+                  /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+                  // throw new CompileException("Ueberladung nicht erlaubt!", m.identifier.position);
+                  // Fehlermeldung  ausgeben und die Methode ignorieren
+                  System.out.println(new CompileException("Ueberladung nicht erlaubt!", m.identifier.position).getMessage());
+                  /** END Bonus Aufgabe 3 */
                 }
               }
             }
@@ -346,7 +358,7 @@ class ClassDeclaration extends Declaration {
       code.println(identifier.name+":");
       for(MethodDeclaration m: vmt){
         if(m!= null){
-          code.format("DAT 1, %s_%s\n", identifier.name, m.identifier.name);
+          code.format("DAT 1, %s_%s\n", m.self.type.declaration.identifier.name, m.identifier.name);
         }
       }
     }

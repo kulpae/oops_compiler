@@ -4,10 +4,15 @@
 class Identifier {
     /** Der Name des Bezeichners. */
     String name;
-    
+
+    /** BEGIN Bonus Aufgabe 5: Zugriffsschutz*/
+    /** Zugriffstyp des Bezeichners. Defaultwert ist PUBLIC */
+    AccessType accessType = AccessType.PUBLIC;
+    /** END Bonus Aufgabe 5*/
+
     /** Die Quelltextstelle, an der der Bezeichner gelesen wurde. */
     Position position;
-    
+
     /**
      * Konstruktor.
      * @param name Der Name des Bezeichners.

@@ -67,8 +67,23 @@ class VarOrCall extends Expression {
      * @throws CompileException Während der Kontextanylyse wurde ein Fehler
      *         gefunden.
      */
+    /** BEGIN Bonus Aufgabe 5: Zugriffsschutz*/
     void contextAnalysisForMember(Declarations declarations) throws CompileException {
-        declarations.resolveVarOrMethod(identifier);
+      contextAnalysisForMember(declarations, null);
+    }
+
+    /**
+     * Die Methode führt die Kontextanalyse für diesen Ausdruck durch.
+     * Diese Methode wird auch für Ausdrücke aufgerufen, die rechts
+     * vom Objekt-Zugriffsoperator stehen.
+     * @param declarations Die an dieser Stelle gültigen Deklarationen.
+     * @param caller Die Klasse des Anfragenden.
+     * @throws CompileException Während der Kontextanylyse wurde ein Fehler
+     *         gefunden.
+     */
+    void contextAnalysisForMember(Declarations declarations, ClassDeclaration caller) throws CompileException {
+        declarations.resolveVarOrMethod(identifier, caller);
+    /** END Bonus Aufgabe 5*/
         if (identifier.declaration instanceof VarDeclaration) {
             type = (ClassDeclaration) ((VarDeclaration) identifier.declaration).type.declaration;
             lValue = true;

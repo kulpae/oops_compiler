@@ -1,0 +1,106 @@
+| Darf ueberschreiben
+CLASS A IS
+  PRIVATE internal : Integer;
+
+  PUBLIC METHOD readonly: Integer IS
+  BEGIN
+    RETURN internal;
+  END METHOD
+
+  PRIVATE METHOD private: Integer IS
+  BEGIN
+    RETURN '1';
+  END METHOD
+
+  PROTECTED METHOD protected: Integer IS
+  BEGIN
+    WRITE SELF.private;
+    RETURN SELF.protected;
+  END METHOD
+
+  PUBLIC METHOD public: Integer IS
+  BEGIN
+    RETURN '3';
+  END METHOD
+END CLASS
+
+CLASS B EXTENDS A IS
+  PRIVATE id : Integer;
+
+  PUBLIC METHOD getId: Integer IS
+  BEGIN
+    RETURN id;
+  END METHOD
+
+  PUBLIC METHOD getFromBase: Integer IS
+  BEGIN
+    RETURN BASE.protected;
+  END METHOD
+
+  PRIVATE METHOD private: Integer IS
+  BEGIN
+    RETURN '1';
+  END METHOD
+
+  PROTECTED METHOD protected: Integer IS
+  BEGIN
+    RETURN '2';
+  END METHOD
+
+  PUBLIC METHOD public: Integer IS
+  BEGIN
+    RETURN '3';
+  END METHOD
+END CLASS
+
+CLASS C EXTENDS A IS
+  PROTECTED METHOD private: Integer IS
+  BEGIN
+    RETURN '2';
+  END METHOD
+
+  PUBLIC METHOD protected: Integer IS
+  BEGIN
+    RETURN '3';
+  END METHOD
+END CLASS
+
+CLASS D EXTENDS A IS
+  PUBLIC METHOD private: Integer IS
+  BEGIN
+    RETURN '3';
+  END METHOD
+END CLASS
+
+CLASS Main IS
+  METHOD main IS
+  a: A;
+  b: B;
+  c: C;
+  d: D;
+  BEGIN
+  a := NEW A;
+  b := NEW B;
+  c := NEW C;
+  d := NEW D;
+
+  WRITE 'A';
+  | WRITE a.private;
+  | WRITE a.protected;
+  WRITE a.public;
+  WRITE 'B';
+  WRITE b.getFromBase;
+  | WRITE b.private;
+  | WRITE b.protected;
+  WRITE b.public;
+  WRITE 'C';
+  | WRITE c.private;
+  WRITE c.protected;
+  WRITE c.public;
+  WRITE 'D';
+  WRITE d.private;
+  | WRITE d.protected;
+  WRITE d.public;
+
+  END METHOD
+END CLASS

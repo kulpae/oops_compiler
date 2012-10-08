@@ -37,6 +37,9 @@ class VarDeclaration extends Declaration {
      * @param tree Der Strom, in den die Ausgabe erfolgt.
      */
     void print(TreeStream tree) {
+        /** BEGIN Bonus Aufgabe 5: Zugriffsschutz*/
+        tree.format("%s ", identifier.accessType);
+        /** END Bonus Aufgabe 5*/
         tree.println(identifier.name + 
                 (type.declaration == null ? "" : " (" + offset + ")") +
                 " : " + type.name);

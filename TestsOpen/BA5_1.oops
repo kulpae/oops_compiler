@@ -1,0 +1,24 @@
+| Soll A ausgeben
+CLASS Example IS
+  PRIVATE internal : Integer;
+
+  PUBLIC METHOD init IS
+  BEGIN
+    internal := 'A';
+  END METHOD
+
+  PUBLIC METHOD readonly: Integer IS
+  BEGIN
+    RETURN internal;
+  END METHOD
+END CLASS
+
+CLASS Main IS
+  METHOD main IS
+    a : Example;
+  BEGIN
+    a := NEW Example;
+    a.init;
+    WRITE a.readonly;
+  END METHOD
+END CLASS

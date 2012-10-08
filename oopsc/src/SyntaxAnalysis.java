@@ -14,9 +14,10 @@ import java.util.Arrays;
  *                  { memberdecl }
  *                  END CLASS
  *
- * memberdecl   ::= vardecl ';'
+ * memberdecl   ::= [ PRIVATE | PROTECTED | PUBLIC ]
+ *                ( vardecl ';'
  *                | METHOD identifier ['(' vardecl { ';' vardecl } ')']
- *                  [':' identifier ] IS methodbody
+ *                  [':' identifier ] IS methodbody )
  *
  * vardecl      ::= identifier { ',' identifier } ':' identifier
  *
@@ -238,9 +239,31 @@ class SyntaxAnalysis extends LexicalAnalysis {
     private void memberdecl(LinkedList<VarDeclaration> attributes,
             LinkedList<MethodDeclaration> methods)
             throws CompileException, IOException {
+        /** BEGIN Bonus Aufgabe 5: Zugriffsschutz*/
+        AccessType accessType = AccessType.PUBLIC;
+        switch(symbol.id){
+          case PRIVATE:
+            accessType = AccessType.PRIVATE;
+            nextSymbol();
+            break;
+          case PROTECTED:
+            accessType = AccessType.PROTECTED;
+            nextSymbol();
+            break;
+          case PUBLIC:
+            accessType = AccessType.PUBLIC;
+            nextSymbol();
+            break;
+        }
+        /** END Bonus Aufgabe 5*/
+
         if (symbol.id == Symbol.Id.METHOD) {
             nextSymbol();
             MethodDeclaration m = new MethodDeclaration(expectIdent());
+            /** BEGIN Bonus Aufgabe 5: Zugriffsschutz*/
+            m.identifier.accessType = accessType;
+            /** END Bonus Aufgabe 5*/
+
             /** BEGIN Aufgabe (f): Methoden Parameter */
             if(symbol.id == Symbol.Id.LPAREN){
               do {
@@ -260,7 +283,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
             methodbody(m.vars, m.statements);
             methods.add(m);
         } else {
-            vardecl(attributes, true);
+            vardecl(attributes, true, accessType);
             expectSymbol(Symbol.Id.SEMICOLON);
         }
     }
@@ -268,6 +291,7 @@ class SyntaxAnalysis extends LexicalAnalysis {
     /**
      * Die Methode parsiert die Deklaration eines Attributs bzw. einer Variablen
      * entsprechend der oben angegebenen Syntax und hängt sie an eine Liste an.
+     * // erweitert bei der Bonus Aufgabe 5: Zugriffsschutz
      * @param vars Die Liste der Attributdeklarationen der aktuellen Klasse oder
      *         der Variablen der aktuellen Methode.
      * @param isAttribute Ist die Variable ein Attribut?.
@@ -275,6 +299,21 @@ class SyntaxAnalysis extends LexicalAnalysis {
      * @throws IOException Ein Lesefehler ist aufgetreten.
      */
     private void vardecl(LinkedList<VarDeclaration> vars, boolean isAttribute) throws CompileException, IOException {
+      vardecl(vars, isAttribute, AccessType.PUBLIC);
+    }
+
+    /**
+     * Die Methode parsiert die Deklaration eines Attributs bzw. einer Variablen
+     * entsprechend der oben angegebenen Syntax und hängt sie an eine Liste an.
+     * // erweitert bei der Bonus Aufgabe 5: Zugriffsschutz
+     * @param vars Die Liste der Attributdeklarationen der aktuellen Klasse oder
+     *         der Variablen der aktuellen Methode.
+     * @param isAttribute Ist die Variable ein Attribut?.
+     * @param accessType Zugriffstyp des Attributs. // Bonus Aufgabe 5: Zugriffsschutz
+     * @throws CompileException Der Quelltext entspricht nicht der Syntax.
+     * @throws IOException Ein Lesefehler ist aufgetreten.
+     */
+    private void vardecl(LinkedList<VarDeclaration> vars, boolean isAttribute, AccessType accessType) throws CompileException, IOException {
         LinkedList<VarDeclaration> temp = new LinkedList<VarDeclaration>();
         temp.add(new VarDeclaration(expectIdent(), isAttribute));
         while (symbol.id == Symbol.Id.COMMA) {
@@ -285,6 +324,9 @@ class SyntaxAnalysis extends LexicalAnalysis {
         ResolvableIdentifier ident = expectResolvableIdent();
         for (VarDeclaration v : temp) {
             v.type = ident;
+            /** BEGIN Bonus Aufgabe 5: Zugriffsschutz*/
+            v.identifier.accessType = accessType;
+            /** END Bonus Aufgabe 5*/
             vars.add(v);
         }
     }

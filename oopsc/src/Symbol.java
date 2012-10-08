@@ -26,6 +26,7 @@ class Symbol extends Position {
         TRY, CATCH, THROW, /** Aufgabe (h): Ausnahmebehandlung */
         EXTENDS, BASE, /** Aufgabe (i): Vererbung */
         UNKNOWN, /** Bonus Aufgabe 3: Mehrere Fehlermeldungen */
+        PRIVATE, PROTECTED, PUBLIC, /** Bonus Aufgabe 5: Zugriffsschutz*/
         EOF
     };
     

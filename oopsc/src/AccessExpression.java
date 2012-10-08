@@ -40,7 +40,10 @@ class AccessExpression extends Expression {
 
         // Der rechte Operand hat einen Deklarationsraum, der sich aus dem 
         // Ergebnistyp des linken Operanden ergibt.
-        rightOperand.contextAnalysisForMember(leftOperand.type.declarations);
+        /** BEGIN Bonus Aufgabe 5: Zugriffsscutz */
+        // rightOperand.contextAnalysisForMember(leftOperand.type.declarations);
+        rightOperand.contextAnalysisForMember(leftOperand.type.declarations, declarations.currentClass);
+        /** END Bonus Aufgabe 5*/
         /** BEGIN Aufgabe (f): Methoden Parameter */
         rightOperand.contextAnalysisForParameters(declarations);
         /** END Aufgabe (f) */
