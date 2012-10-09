@@ -193,12 +193,25 @@ class VarOrCall extends Expression {
         } else if (identifier.declaration instanceof MethodDeclaration) {
             MethodDeclaration m = (MethodDeclaration) identifier.declaration;
             /** BEGIN Aufgabe (f): Methoden Parameter */
+            code.println("; CALL "+m.self.type.name + "."+m.identifier.name);
+            /** BEGIN Aufgabe (j): Garbage Collector*/
+            code.println("MRM R5, (R2) ; SELF von R2 nehmen");
+            code.println("SUB R2, R1");
+            code.println("ADD R4, R1");
+            code.println("MMR (R4), R5 ; SELF auf R4 legen");
+            /** END Aufgabe (j)*/
+
             if(!params.isEmpty()){
-              code.println("; CALL "+m.self.type.name + "."+m.identifier.name);
               for(int i = 0; i< params.size(); i++){
                 Expression p = params.get(i);
                 code.println("; Parameter "+i+":");
                 p.generateCode(code);
+                /** BEGIN Aufgabe (j): Garbage Collector */
+                code.println("MRM R5, (R2) ; Parameter "+i+" von R2 nehmen");
+                code.println("SUB R2, R1");
+                code.println("ADD R4, R1");
+                code.println("MMR (R4), R5 ; Parameter "+i+" auf R4 legen");
+                /** END Aufgabe (j) */
               }
             }
             /** END Aufgabe (f) */
@@ -211,7 +224,10 @@ class VarOrCall extends Expression {
               //dynamisches Binden
               code.println("; Dynamischer Aufruf von " + identifier.name);
               code.println("MRI R5, "+(m.self.offset+1));
-              code.println("ADD R5, R2 ");
+              /** BEGIN Aufgabe (j): Garbage Collector*/
+              // code.println("ADD R5, R2 ");
+              code.println("ADD R5, R4 ");
+              /** END Aufgabe (j) */
               code.println("MRM R5, (R5) ; Adresse von SELF auf dem Heap ");
               code.println("MRM R5, (R5) ; VMT Referenz ");
               code.println("MRI R6, "+m.index+" ; Methodenoffset");

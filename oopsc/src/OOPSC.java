@@ -25,8 +25,10 @@ class OOPSC {
         boolean showContext = false;
         boolean showSymbols = false;
         boolean showIdentifiers = false;
-	/**Bonus Aufgabe 2: Konstante Ausdrücke */
+	/** BEGIN Bonus Aufgabe 2: Konstante Ausdrücke */
         boolean showOptimizedTree = false;
+        boolean doOptimization = true;
+	/** END Bonus Aufgabe 2 */
         boolean showSyntax = false;
         int heapSize = 100;
         int stackSize = 100;
@@ -36,6 +38,8 @@ class OOPSC {
             if (arg.equals("-c")) {
                 showContext = true;
 	/**BEGIN Bonus Aufgabe 2: Konstante Ausdrücke */
+	    }else if (arg.equals("-no")) {
+                doOptimization = false;
 	    }else if (arg.equals("-o")) {
                 showOptimizedTree = true;
 	/**END Bonus Aufgabe 2*/
@@ -108,7 +112,9 @@ class OOPSC {
 
             /** BEGIN Bonus Aufgabe 2: Konstante Ausdruecke*/
             // optimiert den Syntaxbaum
-            p.optimizeTree();
+            if(doOptimization){
+              p.optimizeTree();
+            }
 
             if (showOptimizedTree) {
                 p.printTree();
@@ -137,5 +143,9 @@ class OOPSC {
         System.out.println("    -l       Zeige das Ergebnis der lexikalischen Analyse");
         System.out.println("    -s       Zeige das Ergebnis der syntaktischen Analyse");
         System.out.println("    -ss <n>  Reserviere <n> Worte fuer den Stapel (Standard ist 100)");
+        /**BEGIN Bonus Aufgabe 2: Konstante Ausdrücke */
+        System.out.println("    -no      Deaktiviere die Optimierung");
+        System.out.println("    -o       Zeige das Ergebnis der syntaktischen Analyse nach der Optimierung");
+        /**END Bonus Aufgabe 2*/
     }
 }

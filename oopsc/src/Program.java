@@ -144,8 +144,12 @@ class Program {
         code.setNamespace("_init");
         code.println("; Erzeugt durch OOPS-0 compiler, Version 2012-03-15.");
         code.println("MRI R1, 1 ; R1 ist immer 1");
-        code.println("MRI R2, _stack ; R2 zeigt auf Stapel");
-        code.println("MRI R4, _heap ; R4 zeigt auf die nächste freie Stelle auf dem Heap");
+        // code.println("MRI R2, _stack ; R2 zeigt auf Stapel");
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("MRI R2, _stackR2 ; R2 zeigt auf R2-Stapel");
+        code.println("MRI R4, _stackR4 ; R4 zeigt auf Objekt-Stapel");
+        // code.println("MRI R4, _heap ; R4 zeigt auf die nächste freie Stelle auf dem Heap");
+        /** END Aufgabe (j)*/
 
         /** BEGIN Aufgabe (h): Ausnahmebehandlung */
         // Zustand sichern
@@ -157,6 +161,10 @@ class Program {
         code.println("MMR (R2), R5 ; R2 sichern aus dem Zwischenspeicher");
         code.println("ADD R2, R1 ; push");
         code.println("MMR (R2), R3 ; R3 sichern");
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("ADD R2, R1 ; push");
+        code.println("MMR (R2), R4 ; R4 sichern");
+        /** END Aufgabe (j)*/
         code.println("ADD R2, R1 ; push");
         code.println("MRI R5, _final_exception_handler ; finalle Ausnahmenbehandlung ");
         code.println("MMR (R2), R5 ");
@@ -215,9 +223,18 @@ class Program {
         }
         /** END Aufgabe (i)*/
 
-        // Speicher für Stapel und Heap reservieren
-        code.println("_stack: ; Hier fängt der Stapel an");
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("_free: ; naechste freie Stelle im Heap");
+        code.println("DAT 1, _heap");
+        stackSize /= 2; // alle Stacks teilen die angegebene Stackgroesse
+        code.println("_stackR2: ; Hier fängt der R2-Stapel an");
         code.println("DAT " + stackSize + ", 0");
+        code.println("_stackR4: ; Hier fängt der R4-Stapel an");
+        code.println("DAT " + stackSize + ", 0");
+        /** END Aufgabe (j)*/
+        // Speicher für Stapel und Heap reservieren
+        // code.println("_stack: ; Hier fängt der Stapel an");
+        // code.println("DAT " + stackSize + ", 0");
         code.println("_heap: ; Hier fängt der Heap an");
         code.println("DAT " + heapSize + ", 0");
         code.println("_end: ; Programmende");

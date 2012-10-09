@@ -98,9 +98,12 @@ class MethodDeclaration extends Declaration {
         /** END Aufgabe (i) */
 
         /** BEGIN Aufgabe (f): Methoden Parameter */
-        int offset = -2 - params.size();
+        // int offset = -2 - params.size();
         // SELF liegt vor der Rücksprungadresse auf dem Stapel
         // self.offset = -2;
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        int offset = -1 - params.size();
+        /** END Aufgabe (j)*/
         self.offset = offset++;
 
         /** BEGIN Aufgabe (i): Vererbung */
@@ -116,7 +119,8 @@ class MethodDeclaration extends Declaration {
 
         // Rücksprungadresse und alten Rahmenzeiger überspringen
         // int offset = 1;
-        offset = 1; // Aufgabe (f)
+        // offset = 1; // Aufgabe (f): Methoden Parameter
+        offset = 0; // Aufgabe (j): Garbage Collector
 
         /** END Aufgabe (f)*/
 
@@ -233,10 +237,21 @@ class MethodDeclaration extends Declaration {
         code.println(self.type.name + "_" + identifier.name + ":");
         code.println("ADD R2, R1");
         code.println("MMR (R2), R3 ; Alten Stapelrahmen sichern");
-        code.println("MRR R3, R2 ; Aktuelle Stapelposition ist neuer Rahmen");
+        // code.println("MRR R3, R2 ; Aktuelle Stapelposition ist neuer Rahmen");
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("MRR R3, R4 ; Aktuelle R4 Stapelposition ist die Stelle vor neuem Rahmen");
+        code.println("ADD R3, R1 ; Neuen Rahmen anpassen");
+        /** END Aufgabe (j)*/
         if (!vars.isEmpty()) {
-            code.println("MRI R5, " + vars.size());
-            code.println("ADD R2, R5 ; Platz für lokale Variablen schaffen");
+            // code.println("MRI R5, " + vars.size());
+            // code.println("ADD R2, R5 ; Platz für lokale Variablen schaffen");
+            /** BEGIN Aufgabe (j): Garbage Collector*/
+            code.println("MRI R5, 0 ; NULL merken");
+            for(VarDeclaration v: vars){
+              code.println("ADD R4, R1");
+              code.println("MMR (R4), R5; lokale Variable "+v.identifier.name+" genullt");
+            }
+            /** END Aufgabe (j)*/
         }
         for (Statement s : statements) {
             s.generateCode(code);
@@ -252,27 +267,39 @@ class MethodDeclaration extends Declaration {
         /** BEGIN Aufgabe (g): Return */
         code.println(code.returnLabel()+":");
         if(hasReturnType()){
+            // code.println("MRM R6, (R2); Rueckgabewert sichern");
+            // code.println("SUB R2, R1");
+            /** BEGIN Aufgabe (j): Garbage Collector*/
             code.println("MRM R6, (R2); Rueckgabewert sichern");
             code.println("SUB R2, R1");
+            /** END Aufgabe (j) */
         }
         /** END Aufgabe (g)*/
 
         code.println("; END METHOD " + identifier.name);
         // code.println("MRI R5, " + (vars.size() + 3));
         /** BEGIN Aufgabe (f): Methoden Parameter */
-        code.println("MRI R5, " + (vars.size() + 3 + params.size()));
+        // code.println("MRI R5, " + (vars.size() + 3 + params.size()));
         /** END Aufgabe (f) */
-        code.println("SUB R2, R5 ; Stack korrigieren");
+        // code.println("SUB R2, R5 ; Stack korrigieren");
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("MRI R5, " + (vars.size() + 1 + params.size()));
+        code.println("SUB R4, R5 ; R4 Stack korrigieren");
+        code.println("MRM R3, (R2) ; Alten  R4 Stapelrahmen wiederherstellen");
+        code.println("SUB R2, R1");
+        code.println("MRM R5, (R2) ; Ruecksprungadresse holen");
+        code.println("SUB R2, R1");
+        /** END Aufgabe (j)*/
         /** BEGIN Aufgabe (g): Return */
         if(hasReturnType()){
             code.println("ADD R2, R1");
             code.println("MMR (R2), R6; Rueckgabewert auf dem Stack ablegen");
         }
         /** END Aufgabe (g)*/
-        code.println("SUB R3, R1");
-        code.println("MRM R5, (R3) ; Rücksprungadresse holen");
-        code.println("ADD R3, R1");
-        code.println("MRM R3, (R3) ; Alten Stapelrahmen holen");
+        // code.println("SUB R3, R1");
+        // code.println("MRM R5, (R3) ; Rücksprungadresse holen");
+        // code.println("ADD R3, R1");
+        // code.println("MRM R3, (R3) ; Alten Stapelrahmen holen");
         code.println("MRR R0, R5 ; Rücksprung");
     }
 

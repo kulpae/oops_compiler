@@ -139,6 +139,10 @@ class TryStatement extends Statement {
         code.println("MMR (R2), R6 ; R2 sichern aus dem Zwischenspeicher");
         code.println("ADD R2, R1 ; push");
         code.println("MMR (R2), R3 ; R3 sichern");
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("ADD R2, R1 ; push");
+        code.println("MMR (R2), R4 ; R4 sichern");
+        /** END Aufgabe (j)*/
         code.println("MRI R5, "+catchLabel+" ; catch Zweig ist die Ausnahmebehandlung ");
         code.println("ADD R2, R1 ; push");
         code.println("MMR (R2), R5 ");

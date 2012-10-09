@@ -45,12 +45,21 @@ class NewExpression extends Expression {
     void generateCode(CodeStream code) {
         code.println("; NEW " + newType.name);
         code.println("ADD R2, R1");
-        code.println("MMR (R2), R4 ; Referenz auf neues Objekt auf den Stapel legen");
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        // code.println("MMR (R2), R4 ; Referenz auf neues Objekt auf den Stapel legen");
+        code.println("MRI R6, _free ; Adresse von _free holen");
+        code.println("MRM R6, (R6) ; Referenz auf neues Objekt aus _free holen");
+        code.println("MMR (R2), R6 ; Referenz auf neues Objekt auf den Stapel legen");
         /** BEGIN Aufgabe (i): Vererbung */
         code.println("MRI R5, " + ((ClassDeclaration)newType.declaration).identifier.name);
-        code.println("MMR (R4), R5 ; Referenz auf die VMT des Objects");
+        // code.println("MMR (R4), R5 ; Referenz auf die VMT des Objects");
+        code.println("MMR (R6), R5 ; Referenz auf die VMT des Objects");
         /** END Aufgabe (i) */
         code.println("MRI R5, " + ((ClassDeclaration) newType.declaration).objectSize);
-        code.println("ADD R4, R5 ; Heap weiter zählen");
+        // code.println("ADD R4, R5 ; Heap weiter zählen");
+        code.println("ADD R6, R5 ; Heap weiter zählen");
+        code.println("MRI R5, _free ; Adresse von _free holen");
+        code.println("MMR (R5), R6 ; neuen Heap Pointer in _free ablegen");
+        /** END Aufgabe (j) */
     }
 }

@@ -78,6 +78,10 @@ class CodeStream extends PrintStream {
         println("MRM R2, (R6) ; R2 wiederherstellen");
         println("ADD R6, R1 ; gesicherten R3 holen");
         println("MRM R3, (R6) ; R3 wiederherstellen");
+        /**BEGIN Aufgabe (j): Garbage Collector*/
+        println("ADD R6, R1 ; gesicherten R4 holen");
+        println("MRM R3, (R6) ; R4 wiederherstellen");
+        /** END Aufgabe (j)*/
 
         println("; _exception auf den naechsten Ausnahmerahmen setzen");
         println("MRM R6, (R5) ; _exception holen");
