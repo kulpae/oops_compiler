@@ -187,7 +187,7 @@ class BinaryExpression extends Expression {
 					e1.value = e1.value + e2.value;
 					return e1;
 				case MINUS:
-					e1.value = e1.value + e2.value;
+					e1.value = e1.value - e2.value;
 					return e1;
 				case AND:
 				case TIMES:
