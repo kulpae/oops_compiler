@@ -1,5 +1,6 @@
 
 Bekannte Fehler:
 
+* NULL pointer fehlt (wegen NullPointerException)
 * Rueckgabewert landet nicht auf R4
 * SwingInspector aktualisiert die Farbmarkierung nicht in Bereichen unterhalb des betroffenen Bereichs

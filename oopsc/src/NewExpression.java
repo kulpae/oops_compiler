@@ -55,9 +55,17 @@ class NewExpression extends Expression {
         // code.println("MMR (R4), R5 ; Referenz auf die VMT des Objects");
         code.println("MMR (R6), R5 ; Referenz auf die VMT des Objects");
         /** END Aufgabe (i) */
-        code.println("MRI R5, " + ((ClassDeclaration) newType.declaration).objectSize);
+        // code.println("MRI R5, " + ((ClassDeclaration) newType.declaration).objectSize);
         // code.println("ADD R4, R5 ; Heap weiter zählen");
-        code.println("ADD R6, R5 ; Heap weiter zählen");
+        // code.println("ADD R6, R5 ; Heap weiter zählen");
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("ADD R6, R1 ; Heap weiter zählen");
+        code.println("MRI R5, 0 ; NULL Pointer ");
+        for(int i=0; i<((ClassDeclaration) newType.declaration).objectSize; i++){
+          code.println("MMR (R6), R5 ; Attribut "+i+" nullen");
+          code.println("ADD R6, R1 ; Heap weiter zaehlen");
+        }
+        /** END Aufgabe (j)*/
         code.println("MRI R5, _free ; Adresse von _free holen");
         code.println("MMR (R5), R6 ; neuen Heap Pointer in _free ablegen");
         /** END Aufgabe (j) */

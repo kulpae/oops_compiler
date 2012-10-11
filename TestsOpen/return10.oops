@@ -1,0 +1,12 @@
+| Gibt A zurueck
+CLASS Main IS
+    METHOD main IS
+    BEGIN
+        WRITE call('C') - 1; WRITE '\n';
+    END METHOD
+    
+    METHOD call (t : Integer): Integer IS
+    BEGIN
+      RETURN t - 1;
+    END METHOD
+END CLASS

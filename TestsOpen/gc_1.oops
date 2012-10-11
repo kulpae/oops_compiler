@@ -1,0 +1,33 @@
+| Rueckgabewert soll auf R4 landen
+| Es darf keine Objektreferenzen auf R2 geben, wenn GC aktiv ist
+| Ausgabe: B42
+CLASS Main IS
+
+  METHOD main IS
+  BEGIN
+    WRITE call('A');
+    cat(cx, cy);
+  END METHOD
+
+  METHOD call(t: Integer): Integer IS
+  BEGIN
+    RETURN 1 + t;
+  END METHOD
+
+  METHOD cat (p1: Integer; p2: Integer) IS
+  BEGIN
+    WRITE p1;
+    WRITE p2;
+  END METHOD
+
+  METHOD cx: Integer IS
+  BEGIN
+    RETURN '4';
+  END METHOD
+
+  METHOD cy: Integer IS
+  BEGIN
+    RETURN '2';
+  END METHOD
+
+END CLASS
