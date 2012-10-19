@@ -61,15 +61,26 @@ class Assignment extends Statement {
      * @param code Der Strom, in den die Ausgabe erfolgt.
      */
     void generateCode(CodeStream code) {
-    	code.println("; ASSIGNMENT code for left operand");
-        leftOperand.generateCode(code);
-    	code.println("; ASSIGNMENT code for right operand");
-        rightOperand.generateCode(code);
-        code.println("; ASSIGNMENT");
-        code.println("MRM R5, (R2) ; Rechten Wert vom Stapel nehmen");
-        code.println("SUB R2, R1");
-        code.println("MRM R6, (R2) ; Referenz auf linken Wert vom Stapel nehmen");
-        code.println("SUB R2, R1");
-        code.println("MMR (R6), R5 ; Zuweisen");
+      // code.println("; ASSIGNMENT code for left operand");
+      // leftOperand.generateCode(code);
+      // code.println("; ASSIGNMENT code for right operand");
+      // rightOperand.generateCode(code);
+      // code.println("; ASSIGNMENT");
+      // code.println("MRM R5, (R2) ; Rechten Wert vom Stapel nehmen");
+      // code.println("SUB R2, R1");
+      // code.println("MRM R6, (R2) ; Referenz auf linken Wert vom Stapel nehmen");
+      // code.println("SUB R2, R1");
+      /** BEGIN Aufgabe (j): Garbage Collector */
+      code.println("; ASSIGNMENT code for right operand");
+      rightOperand.generateCode(code);
+      code.println("; ASSIGNMENT code for left operand");
+      leftOperand.generateCode(code);
+      code.println("; ASSIGNMENT");
+      code.println("MRM R6, (R2) ; Referenz auf linken Wert vom Stapel nehmen");
+      code.println("SUB R2, R1");
+      code.println("MRM R5, (R2) ; Rechten Wert vom Stapel nehmen");
+      code.println("SUB R2, R1");
+      /** END Aufgabe (j)*/
+      code.println("MMR (R6), R5 ; Zuweisen");
     }
 }

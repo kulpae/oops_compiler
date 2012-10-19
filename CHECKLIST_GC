@@ -4,11 +4,15 @@ Vorbereitungen:
 ✔ Attribute genullt
 ✔ Heap pointer ausgelagert (_free)
 ✔ Stack getrennt in R2 und R4
+✔ Rechte Seite vor linken Seite auswerten
+✔ Zwei heaps
 
-✘ Alle Referenzen von R2 auf R4 portieren (Rueckgabewert, VarDecl, etc), aber Referenzen von R2 auf R4 belassen
-✘ Zwei heaps
-✘ Bei NEW Platz ueberpruefen, Speicher bereinigen, wenn noetig und Fehler ausgeben, falls immer noch voll
-✘ Rechte Seite vor linken Seite auswerten
+~ Alle Referenzen von R2 auf R4 portieren (Rueckgabewert, VarDecl, etc), aber Referenzen von R2 auf R4 belassen
+ \-> test fehlt, bitte ueberpruefen
+
+~ Bei NEW Platz ueberpruefen, Speicher bereinigen, wenn noetig und Fehler ausgeben, falls immer noch voll
+  \-> _lookup fertig implementieren (umfasst die restlichen Punkte)
+
 ✘ Clone - Methode fur Object
 ✘ Clone fuer jede andere Klasse
 ✘ void _Null Attribut als Pointer auf den Klon

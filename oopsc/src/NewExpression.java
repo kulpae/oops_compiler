@@ -43,13 +43,23 @@ class NewExpression extends Expression {
      * @param code Der Strom, in den die Ausgabe erfolgt.
      */
     void generateCode(CodeStream code) {
+        String lookupLabel = code.nextLabel();
         code.println("; NEW " + newType.name);
         code.println("ADD R2, R1");
         /** BEGIN Aufgabe (j): Garbage Collector*/
         // code.println("MMR (R2), R4 ; Referenz auf neues Objekt auf den Stapel legen");
-        code.println("MRI R6, _free ; Adresse von _free holen");
-        code.println("MRM R6, (R6) ; Referenz auf neues Objekt aus _free holen");
-        code.println("MMR (R2), R6 ; Referenz auf neues Objekt auf den Stapel legen");
+        // code.println("MRI R6, _free ; Adresse von _free holen");
+        // code.println("MRM R6, (R6) ; Referenz auf neues Objekt aus _free holen");
+        // code.println("MMR (R2), R6 ; Referenz auf neues Objekt auf den Stapel legen");
+        code.println("MRI R5, "+lookupLabel);
+        code.println("ADD R2, R1");
+        code.println("MMR (R2), R5; Ruecksprungadresse");
+        code.println("MRI R5, "+((ClassDeclaration) newType.declaration).objectSize);
+        code.println("ADD R2, R1");
+        code.println("MMR (R2), R5; Objektgroesse");
+        code.println("MRI R0, _lookup; Rufe _lookup Methode auf");
+        code.println("MMR (R2), R6");
+        code.println(lookupLabel + ":");
         /** BEGIN Aufgabe (i): Vererbung */
         code.println("MRI R5, " + ((ClassDeclaration)newType.declaration).identifier.name);
         // code.println("MMR (R4), R5 ; Referenz auf die VMT des Objects");
@@ -61,7 +71,7 @@ class NewExpression extends Expression {
         /** BEGIN Aufgabe (j): Garbage Collector*/
         code.println("ADD R6, R1 ; Heap weiter zählen");
         code.println("MRI R5, 0 ; NULL Pointer ");
-        for(int i=0; i<((ClassDeclaration) newType.declaration).objectSize; i++){
+        for(int i=0; i<((ClassDeclaration) newType.declaration).objectSize-1; i++){
           code.println("MMR (R6), R5 ; Attribut "+i+" nullen");
           code.println("ADD R6, R1 ; Heap weiter zaehlen");
         }

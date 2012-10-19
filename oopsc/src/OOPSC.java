@@ -84,6 +84,10 @@ class OOPSC {
         /** BEGIN Bonus Aufgabe 3: Mehrere Fehlermeldungen*/
         buggyCode = false;
         /** END Bonus Aufgabe 3*/
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        stackSize /= 2; // alle Stacks teilen die angegebene Stackgroesse
+        heapSize /= 2; // alle Heaps teilen die angegebene Heapgroesse
+        /** END Aufgabe (j)*/
             
         if (inFile == null) {
             System.out.println("Keine Quelldatei angegeben");

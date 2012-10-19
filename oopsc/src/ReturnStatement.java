@@ -69,6 +69,12 @@ class ReturnStatement extends Statement {
         if(value != null){
             value.generateCode(code);
         }
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        // code.println("MRM R5, (R2)");
+        // code.println("ADD R4, R1");
+        // code.println("MMR (R4), R5");
+        // code.println("MMR (R2), R4");
+        /** END Aufgabe (j) */
         //Springe ans Ende der Methode
         code.println("MRI R0, "+code.returnLabel());
     }
