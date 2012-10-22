@@ -76,6 +76,13 @@ class Program {
         ClassDeclaration.boolClass.baseType = new ResolvableIdentifier("Object", null);
         /** END Aufgabe (i) */
 
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        VarDeclaration nullAttr = new VarDeclaration(new Identifier("_Null", null), true);
+        nullAttr.type = new ResolvableIdentifier("_Void", null);
+        nullAttr.type.declaration = ClassDeclaration.voidType;
+        ClassDeclaration.objectClass.attributes.add(nullAttr);
+        /** END Aufgabe (j)*/
+
         VarDeclaration intValue = new VarDeclaration(new Identifier("_value", null), true);
         intValue.type = new ResolvableIdentifier("_Integer", null);
         intValue.type.declaration = ClassDeclaration.intType;
@@ -219,12 +226,59 @@ class Program {
         // @return freie Adresse
         // TODO: ueberpruefe platz und raeume auf
         code.println("_lookup: ; legt die naechste freie Stelle vom Heap auf R6 ab");
-        code.println("SUB R2, R1; entferne die Objektgroesse");
+        code.println("MRI R7, _free; hole die Adresse von _free");
+        code.println("MRM R7, (R7); hole den Wert von _free");
+        code.println("MRM R5, (R2); hole die Objektgroesse");
+        code.println("SUB R2, R1; pop");
+        //kein erneutes gc, wenn gc gerade aktiv ist
+        code.println("MRI R6, _gc_active");
+        code.println("MRM R6, (R6)");
+        code.println("JPC R6, _lookup_ret ; ueberspringe den GC");
+        //setze _gc_active auf 1
+        code.println("MRI R6, _gc_active");
+        code.println("MMR (R6), R1");
+        //heapgrenzen vergleichen
+        code.println("ADD R5, R7; naechste freie Stelle");
+        code.println("MRI R6, "+heapSize+"; heapgroesse");
+        code.println("SUB R5, R6");
+        code.println("MRI R6, _ch");
+        code.println("MRM R6, (R6)");
+        code.println("SUB R5, R6");
+        code.println("ISN R5, R5; wenn heap platz hat,");
+        code.println("JPC R5, _lookup_ret; ueberspringe den GC");
+
+        //_free auf den Anfang des naechsten Heaps setzen und heappointer
+        //tauschen
+        code.println("MRI R6, _nh");
+        code.println("MRM R6, (R6)");
+        code.println("MRI R5, _free");
+        code.println("MMR (R5), R6");
+        code.println("MRI R5, _ch");
+        code.println("MRM R7, (R5)");
+        code.println("MMR (R5), R6");
+        code.println("MRI R5, _nh");
+        code.println("MMR (R5), R7");
+        
+        //Objekte klonen
+        //for (e: range(_stackR4, R4)){
+        // if(e != NULL){
+        //  e := call(e.vmt[0]);
+        // }
+        //}
+        
+
+        // gc laeuft nicht mehr
+        // setze _gc_active auf 0
+        code.println("MRI R6, _gc_active");
+        code.println("MRI R5, 0");
+        code.println("MMR (R6), R5");
+
+
+        //TODO: erneut die Grenzen prueffen
+        code.println("_lookup_ret:");
         code.println("MRM R5, (R2); hole Ruecksprungadresse");
-        code.println("SUB R2, R1; entferne die Ruecksprungadresse");
-        code.println("MRI R6, _free; hole die Adresse von _free");
-        code.println("MRM R6, (R6); hole den Wert von _free");
-        code.println("MMR (R2), R6; lege den Wert von _free ab");
+        code.println("SUB R2, R1; pop");
+        code.println("MMR (R2), R7; lege die freie Adresse ab");
         code.println("MRR R0, R5; springe zurueck");
         /** END Aufgabe (j)*/
 
@@ -240,6 +294,8 @@ class Program {
         /** END Aufgabe (i)*/
 
         /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("_gc_active: ; flag, ob GC gerade arbeitet");
+        code.println("DAT 1, 0");
         code.println("_free: ; naechste freie Stelle im Heap");
         // code.println("DAT 1, _heap");
         code.println("DAT 1, _heap1");

@@ -53,6 +53,11 @@ class ClassDeclaration extends Declaration {
     /** Die Methoden dieser Klasse. */
     LinkedList<MethodDeclaration> methods = new LinkedList<MethodDeclaration>();
 
+    /**BEGIN Aufgabe (j): Garbage Collector*/
+    /** Die KlonMethode dieser Klasse. */
+    MethodDeclaration cloneMethod = new MethodDeclaration(new Identifier("clone", null));
+    /** END Aufgabe (j) */
+
     /** BEGIN Aufgabe (i): Vererbung */
     MethodDeclaration[] vmt;
     /** END Aufgabe (i) */
@@ -75,6 +80,10 @@ class ClassDeclaration extends Declaration {
         /** BEGIN Aufgabe (i): Vererbung */
         vmt = new MethodDeclaration[0];
         /** END Aufgabe (i)*/
+        /** BEGIN Aufgabe (j): Garbage Collector */
+        //Klonmethode an Stelle 0 der VMT
+        methods.add(cloneMethod);
+        /** END Aufgabe (j)*/
     }
 
     /**
@@ -130,6 +139,10 @@ class ClassDeclaration extends Declaration {
         // Neuen Deklarationsraum schaffen
         declarations.enter();
         declarations.currentClass = this;
+
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        // generateCloneMethod(declarations);
+        /** END Aufgabe (j)*/
 
         // Attribute eintragen
         for (VarDeclaration a : attributes) {
@@ -363,4 +376,28 @@ class ClassDeclaration extends Declaration {
       }
     }
     /** END Aufgabe (i)*/
+
+    /**BEGIN Aufgabe (j): Garbage Collector*/
+    // BAD impl
+    // TODO: rethink
+    private void generateCloneMethod(Declarations declarations){
+      // MethodDeclaration cloneMet = declarations.cloneMethod;
+      // System.out.println(this.identifier.name + ": "+klass.identifier.name + " >>@"+cloneMet.hashCode());
+      // if(baseType != null){
+      // } else {
+      //   //in Object
+      //   VarDeclaration objVar = new VarDeclaration(new Identifier("copy",null), false);
+      //   objVar.type = new ResolvableIdentifier(klass.identifier.name, null);
+      //   cloneMet.vars.add(objVar);
+      // }
+      //if _Null == Null do
+      //  _Null = new ClassName();
+      //  for a: attributes do
+      //    a := call(a.vmt[0])
+      //  end
+      //
+      //end
+      //return _Null;
+    }
+    /** END Aufgabe (j) */
 }
