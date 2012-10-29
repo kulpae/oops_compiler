@@ -77,10 +77,10 @@ class Program {
         /** END Aufgabe (i) */
 
         /** BEGIN Aufgabe (j): Garbage Collector*/
-        VarDeclaration nullAttr = new VarDeclaration(new Identifier("_Null", null), true);
-        nullAttr.type = new ResolvableIdentifier("_Void", null);
-        nullAttr.type.declaration = ClassDeclaration.voidType;
-        ClassDeclaration.objectClass.attributes.add(nullAttr);
+        VarDeclaration newAttr = new VarDeclaration(new Identifier("_newAddr", null), true);
+        newAttr.type = new ResolvableIdentifier("_Null", null);
+        newAttr.type.declaration = ClassDeclaration.nullType;
+        ClassDeclaration.objectClass.attributes.add(newAttr);
         /** END Aufgabe (j)*/
 
         VarDeclaration intValue = new VarDeclaration(new Identifier("_value", null), true);
@@ -99,11 +99,19 @@ class Program {
         // declarations.add(theClass);
         for(ClassDeclaration c: classes){
             declarations.add(c);
+            /** BEGIN Aufgabe (j): Garbage Collector*/
+            c.cloneMethod = new CloneMethodDeclaration(c.identifier);
+            //Klonmethode an Stelle 0 der VMT eintragen
+            c.methods.add(c.cloneMethod);
+            /** END Aufgabe (j)*/
         }
 
         // Kontextanalyse für die Methoden der Klasse durchführen
         // theClass.contextAnalysis(declarations);
         for(ClassDeclaration c: classes){
+            /** BEGIN Aufgabe (j): Garbage Collector*/
+            declarations.currentClass = c;
+            /** END Aufgabe (j)*/
             c.contextAnalysis(declarations);
         }
 

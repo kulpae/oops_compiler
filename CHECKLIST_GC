@@ -16,9 +16,10 @@ Vorbereitungen:
  \-> test fehlt, bitte ueberpruefen
 
 
-~ Clone - Methode fur Object
-~ Clone fuer jede andere Klasse
+✔ Clone - Methode fur Object
+✔ Clone fuer jede andere Klasse
   ✘ Attribute und Attribute der Bassisklassen kopieren.
-  ✘ Integer und Boolean klonen _value direkt (ohne clone())
+  ✔ Integer und Boolean klonen _value direkt (ohne clone())
 ✘ nur einmal kopieren (ueber _Null erkennbar)
 ✘ Fehler ausgeben, falls nach GC immer noch voll ist
+✘ primitive Types (_value) werden geboxt, Loesung finden!

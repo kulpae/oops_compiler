@@ -53,17 +53,17 @@ class ClassDeclaration extends Declaration {
     /** Die Methoden dieser Klasse. */
     LinkedList<MethodDeclaration> methods = new LinkedList<MethodDeclaration>();
 
-    /**BEGIN Aufgabe (j): Garbage Collector*/
-    /** Die KlonMethode dieser Klasse. */
-    MethodDeclaration cloneMethod = new MethodDeclaration(new Identifier("clone", null));
-    /** END Aufgabe (j) */
-
     /** BEGIN Aufgabe (i): Vererbung */
     MethodDeclaration[] vmt;
     /** END Aufgabe (i) */
 
     /** Die innerhalb dieser Klasse sichtbaren Deklarationen. */
     Declarations declarations;
+
+    /** BEGIN Aufgabe (j): Garbage Collector */
+    /** Die Klonmethode dieser Klasse */
+    CloneMethodDeclaration cloneMethod;
+    /** END Aufgabe (j)*/
 
     /**
      * Die Größe eines Objekts dieser Klasse. Die Größe wird innerhalb von
@@ -80,10 +80,6 @@ class ClassDeclaration extends Declaration {
         /** BEGIN Aufgabe (i): Vererbung */
         vmt = new MethodDeclaration[0];
         /** END Aufgabe (i)*/
-        /** BEGIN Aufgabe (j): Garbage Collector */
-        //Klonmethode an Stelle 0 der VMT
-        methods.add(cloneMethod);
-        /** END Aufgabe (j)*/
     }
 
     /**
@@ -111,6 +107,9 @@ class ClassDeclaration extends Declaration {
             }
           }
 
+          /** BEGIN Aufgabe (j): Garbage Collector*/
+          ClassDeclaration curClass = declarations.currentClass;
+          /** END Aufgabe (j)*/
           // Basisklasse vor aktueller Klasse
           baseType.declaration.contextAnalysis(declarations);
           //aktuelle VMT um die Groesse der VMT der Basisklasse vergroessern
@@ -126,6 +125,9 @@ class ClassDeclaration extends Declaration {
           declarations = (Declarations) ((ClassDeclaration)baseType.declaration).declarations.clone();
           //objectSize von der Basisklasse wird hier weiter benutzt
           objectSize = ((ClassDeclaration) baseType.declaration).objectSize;
+          /** BEGIN Aufgabe (j): Garbage Collector*/
+          declarations.currentClass = curClass;
+          /** END Aufgabe (j)*/
 
         }
         /** END Aufgabe (i)*/
@@ -134,6 +136,9 @@ class ClassDeclaration extends Declaration {
         for (VarDeclaration a : attributes) {
             a.contextAnalysis(declarations);
             a.offset = objectSize++;
+            if(declarations.currentClass != null){
+              declarations.currentClass.cloneMethod.addAttribute(a);
+            }
         }
 
         // Neuen Deklarationsraum schaffen
@@ -241,6 +246,13 @@ class ClassDeclaration extends Declaration {
         // } else {
         //     return this == expected;
         // }
+        /** BEGIN Aufgabe (j): Garbage Collector */
+        // Erlaube die Zuweisung von einem Objekt an eine nullType Variable.
+        // (fuer Garbage Collector's _newAddr )
+        if(expected == nullType){
+          return this.isA(objectClass);
+        }
+        /** END Aufgabe (j)*/
         return (this == expected) ||
           ((this == nullType) && (expected != null) && expected.isA(objectClass)) ||
           ((this != objectClass) && (this.baseType != null) && ((ClassDeclaration)this.baseType.declaration).isA(expected));
