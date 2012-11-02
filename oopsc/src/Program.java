@@ -242,9 +242,6 @@ class Program {
         code.println("MRI R6, _gc_active");
         code.println("MRM R6, (R6)");
         code.println("JPC R6, _lookup_ret ; ueberspringe den GC");
-        //setze _gc_active auf 1
-        code.println("MRI R6, _gc_active");
-        code.println("MMR (R6), R1");
         //heapgrenzen vergleichen
         code.println("ADD R5, R7; naechste freie Stelle");
         code.println("MRI R6, "+heapSize+"; heapgroesse");
@@ -254,6 +251,9 @@ class Program {
         code.println("SUB R5, R6");
         code.println("ISN R5, R5; wenn heap platz hat,");
         code.println("JPC R5, _lookup_ret; ueberspringe den GC");
+        //setze _gc_active auf 1
+        code.println("MRI R6, _gc_active");
+        code.println("MMR (R6), R1");
 
         //_free auf den Anfang des naechsten Heaps setzen und heappointer
         //tauschen
@@ -268,6 +268,20 @@ class Program {
         code.println("MMR (R5), R7");
         
         //Objekte klonen
+        code.println("; Wurzelmenge durchgehen");
+        code.println("MRI R5, _stackR4");
+        code.println("_lookup_root_iter:");
+        code.println("MRM R6, (R5)");
+
+        code.println("MRR R7, R5");
+        code.println("SUB R7, R4");
+        code.println("ISZ R7, R7");
+        code.println("JPC R7, _lookup_root_end");
+        code.println("ADD R5, R1");
+
+
+        code.println("MRI R0, _lookup_root_iter");
+        code.println("_lookup_root_end:");
         //for (e: range(_stackR4, R4)){
         // if(e != NULL){
         //  e := call(e.vmt[0]);
@@ -281,11 +295,14 @@ class Program {
         code.println("MRI R5, 0");
         code.println("MMR (R6), R5");
 
+        code.println("MRI R5, _free");
+        code.println("MRM R7, (R5)");
+
 
         //TODO: erneut die Grenzen prueffen
         code.println("_lookup_ret:");
         code.println("MRM R5, (R2); hole Ruecksprungadresse");
-        code.println("SUB R2, R1; pop");
+        // code.println("SUB R2, R1; pop");
         code.println("MMR (R2), R7; lege die freie Adresse ab");
         code.println("MRR R0, R5; springe zurueck");
         /** END Aufgabe (j)*/

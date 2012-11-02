@@ -19,6 +19,8 @@ class CloneMethodDeclaration extends MethodDeclaration {
         super(new Identifier("clone", null));
         this.classIdent = classIdent;
         cloneAttributes = new LinkedList<VarDeclaration>();
+        // Rueckgabetyp setzen
+        returnType = new ResolvableIdentifier("Object", null);
     }
 
     void addAttribute(VarDeclaration attr){
@@ -57,14 +59,14 @@ class CloneMethodDeclaration extends MethodDeclaration {
       for(VarDeclaration a: cloneAttributes){
         String attrname = a.identifier.name;
         ifs.thenStatements.add(new Assignment(
-            new AccessExpression(
-              new VarOrCall(new ResolvableIdentifier("c", null)),
-              new VarOrCall(new ResolvableIdentifier(attrname, null))),
-            new AccessExpression(
-              new VarOrCall(new ResolvableIdentifier("_self", null)),
-              new VarOrCall(new ResolvableIdentifier(attrname, null)))
-          )
-        );
+              new AccessExpression(
+                new VarOrCall(new ResolvableIdentifier("c", null)),
+                new VarOrCall(new ResolvableIdentifier(attrname, null))),
+              new AccessExpression(
+                new VarOrCall(new ResolvableIdentifier("_self", null)),
+                new VarOrCall(new ResolvableIdentifier(attrname, null)))
+              )
+            );
       }
       // _newAddr = c;
       ifs.thenStatements.add(new Assignment(
@@ -78,8 +80,6 @@ class CloneMethodDeclaration extends MethodDeclaration {
       statements.add(retStat);
       super.contextAnalysis(declarations);
     }
-
-
 }
 
 /** END Aufgabe (j) */

@@ -1,0 +1,13 @@
+| GC Test, erstellt ununterbrochen neue Objekte
+CLASS Main IS
+
+  METHOD main IS
+    obj : Object;
+  BEGIN
+    WHILE TRUE DO
+      obj := NEW Object;
+      WRITE '.';
+    END WHILE
+  END METHOD
+END CLASS
+
