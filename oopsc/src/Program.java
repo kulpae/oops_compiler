@@ -209,6 +209,7 @@ class Program {
 
         code.correctExceptionFrame();
 /** BEGIN Bonus Aufgabe (4): Try&Catch-Erweiterung*/
+	printException(code, "Speicher voll" , -1);
 	printException(code, "Div durch 0" , 0);
 	printException(code, "NULL Zeigerzugriff" , 1);
 /** END Bonus Aufgabe (4)*/
@@ -237,19 +238,20 @@ class Program {
         code.println("MRI R7, _free; hole die Adresse von _free");
         code.println("MRM R7, (R7); hole den Wert von _free");
         code.println("MRM R5, (R2); hole die Objektgroesse");
-        code.println("SUB R2, R1; pop");
         //kein erneutes gc, wenn gc gerade aktiv ist
         code.println("MRI R6, _gc_active");
         code.println("MRM R6, (R6)");
         code.println("JPC R6, _lookup_ret ; ueberspringe den GC");
         //heapgrenzen vergleichen
-        code.println("ADD R5, R7; naechste freie Stelle");
+        code.println("; jpc if neue adresse + objektgroesse <= heapgrenze");
+        code.println("ADD R5, R7; naechste freie Stelle + Objektgroesse");
         code.println("MRI R6, "+heapSize+"; heapgroesse");
         code.println("SUB R5, R6");
         code.println("MRI R6, _ch");
         code.println("MRM R6, (R6)");
         code.println("SUB R5, R6");
-        code.println("ISN R5, R5; wenn heap platz hat,");
+        code.println("ISP R5, R5; wenn heap kein platz hat,");
+        code.println("ISZ R5, R5; nicht,");
         code.println("JPC R5, _lookup_ret; ueberspringe den GC");
         //setze _gc_active auf 1
         code.println("MRI R6, _gc_active");
@@ -275,32 +277,79 @@ class Program {
 
         code.println("MRR R7, R5");
         code.println("SUB R7, R4");
-        code.println("ISZ R7, R7");
+        code.println("ISP R7, R7; do next if R5>R4");
         code.println("JPC R7, _lookup_root_end");
-        code.println("ADD R5, R1");
 
+        // NULL-Referenzen ueberspringen
+        code.println("ISZ R7, R6");
+        code.println("JPC R7, _lookup_root_next");
+
+        //Register sichern
+        code.println("ADD R2, R1");
+        code.println("MMR (R2), R5");
+        //Rufe clone
+        //  SELF ablegen
+        code.println("ADD R4, R1");
+        code.println("MMR (R4), R6; SELF ablegen");
+        //  clone Methode ueber die VMT finden
+        code.println("MRM R6, (R6); VMT Adresse holen");
+        code.println("MRM R6, (R6); Adresse von clone holen");
+        //Ruecksprungadresse ablegen
+        code.println("MRI R7, _lookup_root_call_done");
+        code.println("ADD R2, R1");
+        code.println("MMR (R2), R7; Ruecksprungadresse ablegen");
+        //rufe die Methode clone auf
+        code.println("MRR R0, R6; springe zu clone ");
+
+        //Ruecksprunglabel
+        code.println("_lookup_root_call_done:");
+        //neue Adresse holen
+        code.println("MRM R6, (R2); neue Adresse holen");
+        code.println("SUB R2, R1");
+        //Register wiederherstellen
+        code.println("MRM R5, (R2)");
+        code.println("SUB R2, R1");
+        //Wert in der Wurzelmenge ueberschreiben
+        code.println("MMR (R5), R6; Referenz vom Objekt aktualisieren");
+        //weiter in der Wurzelmenge voranschreiten
+        code.println("_lookup_root_next:");
+        code.println("ADD R5, R1");
 
         code.println("MRI R0, _lookup_root_iter");
         code.println("_lookup_root_end:");
-        //for (e: range(_stackR4, R4)){
-        // if(e != NULL){
-        //  e := call(e.vmt[0]);
-        // }
-        //}
-        
 
         // gc laeuft nicht mehr
         // setze _gc_active auf 0
         code.println("MRI R6, _gc_active");
         code.println("MRI R5, 0");
         code.println("MMR (R6), R5");
-
+        //aktualisieren _free
         code.println("MRI R5, _free");
         code.println("MRM R7, (R5)");
 
 
         //TODO: erneut die Grenzen prueffen
         code.println("_lookup_ret:");
+        code.println("MRM R5, (R2); hole die Objektgroesse");
+        code.println("SUB R2, R1; pop");
+        //heapgrenzen vergleichen
+        code.println("; jpc if neue adresse + objektgroesse <= heapgrenze");
+        code.println("ADD R5, R7; naechste freie Stelle + Objektgroesse");
+        code.println("MRI R6, "+heapSize+"; heapgroesse");
+        code.println("SUB R5, R6");
+        code.println("MRI R6, _ch");
+        code.println("MRM R6, (R6)");
+        code.println("SUB R5, R6");
+        code.println("ISP R5, R5; wenn heap platz hat,");
+        code.println("ISZ R5, R5; nicht,");
+        code.println("JPC R5, _lookup_no_error; Ueberspringe die Fehlerbehandlung");
+
+        code.println("MRI R6, -1; Fehlercode fuer 'Speicher voll'");
+        code.println("ADD R2, R1");
+        code.println("MMR (R2), R6");
+        code.println("MRI R0, _final_exception_handler; Springe zum Fehler");
+
+        code.println("_lookup_no_error:");
         code.println("MRM R5, (R2); hole Ruecksprungadresse");
         // code.println("SUB R2, R1; pop");
         code.println("MMR (R2), R7; lege die freie Adresse ab");

@@ -12,14 +12,14 @@ Vorbereitungen:
 ✔ NEW: _Null im neuen Objekt auf NULL setzen
 
 
-~ Alle Referenzen von R2 auf R4 portieren (Rueckgabewert, VarDecl, etc), aber Referenzen von R2 auf R4 belassen
- \-> test fehlt, bitte ueberpruefen
-
-
+_lookup:
 ✔ Clone - Methode fur Object
 ✔ Clone fuer jede andere Klasse
   ✘ Attribute und Attribute der Bassisklassen kopieren.
   ✔ Integer und Boolean klonen _value direkt (ohne clone())
-✘ nur einmal kopieren (ueber _Null erkennbar)
-✘ Fehler ausgeben, falls nach GC immer noch voll ist
-✘ primitive Types (_value) werden geboxt, Loesung finden!
+✔ nur einmal kopieren (ueber _Null erkennbar)
+✔ Fehler ausgeben, falls nach GC immer noch voll ist
+✔ primitive Types (_value) werden geboxt, Loesung finden!
+
+BUGS:
+✘ return1 ist verbuggt, wir haben den Code verbockt!

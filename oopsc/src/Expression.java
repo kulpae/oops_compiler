@@ -88,9 +88,7 @@ abstract class Expression {
         } else if(this instanceof VarOrCall){
           var = (VarOrCall)this;
         }
-        if(var != null && var.identifier.name.startsWith("_") &&
-            !var.identifier.name.equals("_base") &&
-            !var.identifier.name.equals("_self")){
+        if(var != null && var.identifier.name.equals("_value")){
           return this;
         }
         /** END Aufgabe (j)*/

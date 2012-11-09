@@ -52,7 +52,6 @@ class NewExpression extends Expression {
         // code.println("MRM R6, (R6) ; Referenz auf neues Objekt aus _free holen");
         // code.println("MMR (R2), R6 ; Referenz auf neues Objekt auf den Stapel legen");
         code.println("MRI R5, "+lookupLabel);
-        code.println("ADD R2, R1");
         code.println("MMR (R2), R5; Ruecksprungadresse");
         code.println("MRI R5, "+((ClassDeclaration) newType.declaration).objectSize);
         code.println("ADD R2, R1");

@@ -72,9 +72,13 @@ class BinaryExpression extends Expression {
         case NEQ:
             // Wenn einer der beiden Operanden NULL ist, muss der andere
             // ein Objekt sein (oder auch NULL)
-            if (leftOperand.type == ClassDeclaration.nullType) {
+            // if (leftOperand.type == ClassDeclaration.nullType) {
+            /** BEGIN Aufgabe (j): Garbage Collector */
+            if (isNull(leftOperand)) {
                 rightOperand = rightOperand.box(declarations);
-            } else if (rightOperand.type == ClassDeclaration.nullType) {
+            // } else if (rightOperand.type == ClassDeclaration.nullType) {
+            } else if (isNull(rightOperand)) {
+            /** END Aufgabe (j) */
                 leftOperand = leftOperand.box(declarations);
             } else {
                 // ansonsten wird versucht, die beiden Operanden in
@@ -380,4 +384,10 @@ class BinaryExpression extends Expression {
         }
         /** END Bonus Aufgabe 1*/
     }
+
+    /** BEGIN Aufgabe (j): Garbage Collector*/
+    boolean isNull(Expression e){
+      return e.type == ClassDeclaration.nullType && !(e instanceof VarOrCall) && !(e instanceof AccessExpression);
+    }
+    /** END Aufgabe (j)*/
 }
