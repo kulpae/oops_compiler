@@ -75,12 +75,24 @@ class CloneMethodDeclaration extends MethodDeclaration {
           call = new CastExpression(call, null);
           ((CastExpression)call).castType = new ResolvableIdentifier(a.type.name, null);
         }
-        ifs.thenStatements.add(new Assignment(
+        Assignment attrAssignment = new Assignment(
               new AccessExpression(
                 new VarOrCall(new ResolvableIdentifier("c", null)),
                 new VarOrCall(new ResolvableIdentifier(attrname, null))),
               call
-            ));
+            );
+        if(attrname.startsWith("_")){
+          ifs.thenStatements.add(attrAssignment);
+        }else {
+          //IF attr != NULL
+          IfStatement attif = new IfStatement(new BinaryExpression(
+                new VarOrCall(new ResolvableIdentifier(attrname, null)),
+                Symbol.Id.NEQ,
+                new LiteralExpression(0, ClassDeclaration.nullType, null)
+                ));
+          attif.thenStatements.add(attrAssignment);
+          ifs.thenStatements.add(attif);
+        }
       }
       // _newAddr = c;
       ifs.thenStatements.add(new Assignment(
