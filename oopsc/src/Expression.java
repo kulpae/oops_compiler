@@ -89,7 +89,7 @@ abstract class Expression {
           var = (VarOrCall)this;
         }
         if(var != null && var.identifier.name.equals("_value")){
-          return this;
+          return new DeRefExpression(this);
         }
         /** END Aufgabe (j)*/
 

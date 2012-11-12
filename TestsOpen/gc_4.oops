@@ -1,0 +1,17 @@
+| GC Test, erstellt ununterbrochen neue Objekte, die auf andere Objekte zeigen
+CLASS Item IS
+  price : Integer;
+END CLASS
+
+CLASS Main IS
+  METHOD main IS
+    item : Item;
+  BEGIN
+    WHILE TRUE DO
+      item := NEW Item;
+      item.price := 100;
+      WRITE '.';
+    END WHILE
+  END METHOD
+END CLASS
+

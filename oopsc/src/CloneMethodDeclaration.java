@@ -58,15 +58,29 @@ class CloneMethodDeclaration extends MethodDeclaration {
       //   c.a = SELF.a;
       for(VarDeclaration a: cloneAttributes){
         String attrname = a.identifier.name;
+        Expression call;
+        if(attrname.startsWith("_")){
+          call = new AccessExpression(
+              new VarOrCall(new ResolvableIdentifier("_self", null)),
+              new VarOrCall(new ResolvableIdentifier(attrname, null))
+              );
+        } else {
+          call = new AccessExpression(
+              new AccessExpression(
+                new VarOrCall(new ResolvableIdentifier("_self", null)),
+                new VarOrCall(new ResolvableIdentifier(attrname, null))),
+              new VarOrCall(new ResolvableIdentifier("clone", null))
+              );
+          //caste clone() zu der Klasse des Attributs
+          call = new CastExpression(call, null);
+          ((CastExpression)call).castType = new ResolvableIdentifier(a.type.name, null);
+        }
         ifs.thenStatements.add(new Assignment(
               new AccessExpression(
                 new VarOrCall(new ResolvableIdentifier("c", null)),
                 new VarOrCall(new ResolvableIdentifier(attrname, null))),
-              new AccessExpression(
-                new VarOrCall(new ResolvableIdentifier("_self", null)),
-                new VarOrCall(new ResolvableIdentifier(attrname, null)))
-              )
-            );
+              call
+            ));
       }
       // _newAddr = c;
       ifs.thenStatements.add(new Assignment(

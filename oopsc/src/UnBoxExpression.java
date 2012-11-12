@@ -62,7 +62,10 @@ class UnBoxExpression extends Expression {
 	new ThrowStatement(new LiteralExpression(1, new ClassDeclaration(new Identifier("_Integer", null)) , position)).generateCode(code);
 	code.println(catchDiv0Label + ":");
 	/** END Bonus Aufgabe (4)*/
-        code.println("MRI R6, " + ClassDeclaration.HEADERSIZE);
+        // code.println("MRI R6, " + ClassDeclaration.HEADERSIZE);
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("MRI R6, " + (operand.type.objectSize - 1));
+        /** END Aufgabe (j)*/
         code.println("ADD R5, R6 ; Adresse des Werts bestimmen");
         code.println("MRM R5, (R5) ; Wert auslesen");
         code.println("MMR (R2), R5 ; und auf den Stapel schreiben");

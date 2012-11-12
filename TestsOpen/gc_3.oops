@@ -1,0 +1,20 @@
+| GC Test, erstellt ununterbrochen neue Objekte
+CLASS Main IS
+
+  METHOD main IS
+    obj : Integer;
+  BEGIN
+    obj := 77;
+    WHILE obj = 77 DO
+      obj := 77;
+      WRITE '.';
+    END WHILE
+    WRITE 'E';
+    WRITE 'R';
+    WRITE 'R';
+    WRITE 'O';
+    WRITE 'R';
+    WRITE '\n';
+  END METHOD
+END CLASS
+

@@ -69,7 +69,10 @@ class BoxExpression extends Expression {
         code.println("MRM R5, (R2) ; Wert vom Stapel nehmen");
         code.println("SUB R2, R1");
         code.println("MRM R6, (R2) ; Referenz auf neues Objekt holen (bleibt auf Stapel)");
-        code.println("MRI R7, " + ClassDeclaration.HEADERSIZE);
+        // code.println("MRI R7, " + ClassDeclaration.HEADERSIZE);
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("MRI R7, " + (type.objectSize - 1));
+        /** END Aufgabe (j)*/
         code.println("ADD R6, R7 ; Speicherstelle in neuem Objekt berechnen");
         code.println("MMR (R6), R5 ; Wert in Objekt speichern");
     }
