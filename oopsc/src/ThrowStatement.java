@@ -56,7 +56,10 @@ class ThrowStatement extends Statement {
     value.generateCode(code);
     code.println("MRI R7, _exception ; _exception Adresse holen");
     code.println("MRM R7, (R7) ; _exception holen");
-    code.println("MRI R5, 3 ; offset fuer Ausnahmebehandlung");
+    // code.println("MRI R5, 3 ; offset fuer Ausnahmebehandlung");
+    /** BEGIN Aufgabe (j): Garbage Collector*/
+    code.println("MRI R5, 4 ; offset fuer Ausnahmebehandlung");
+    /** END Aufgabe (j)*/
     code.println("ADD R7, R5 ; zeigt auf Stelle mit der naechste Ausnahmebehandlung");
     code.println("MRM R0, (R7) ; springe zur naechsten Ausnahmebehandlung");
   }

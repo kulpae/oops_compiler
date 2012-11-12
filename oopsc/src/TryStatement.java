@@ -175,7 +175,10 @@ class TryStatement extends Statement {
         	//Throw-Wert,  Catch-Wert und Adresse der naechsten Ausnahmerbehandlung holen
         	code.println("MRI R7, _exception ; _exception Adresse holen");
         	code.println("MRM R7, (R7) ; _exception holen");
-        	code.println("MRI R5, 3 ; offset fuer Ausnahmebehandlung");
+        	// code.println("MRI R5, 3 ; offset fuer Ausnahmebehandlung");
+          /** BEGIN Aufgabe (j): Garbage Collector*/
+        	code.println("MRI R5, 4 ; offset fuer Ausnahmebehandlung");
+          /** END Aufgabe (j)*/
         	code.println("ADD R7, R5 ; zeigt auf Stelle mit der naechste Ausnahmebehandlung");
         	code.println("MRM R7, (R7) ; naechste Ausnahmebehandlung holen");
         	code.println("MRM R5, (R2) ; pop catch value");
