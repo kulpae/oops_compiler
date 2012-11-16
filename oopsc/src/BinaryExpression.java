@@ -181,7 +181,7 @@ class BinaryExpression extends Expression {
 					return leftOperand;
 				case TIMES:
 				case AND:
-					return (leftOperand);			
+					return (rightOperand);			
 			}
 		}
 		if(rightOperand instanceof LiteralExpression){
@@ -216,9 +216,9 @@ class BinaryExpression extends Expression {
 		BinaryExpression e1 = (BinaryExpression) leftOperand;
 		if(rightOperand instanceof LiteralExpression){
 			LiteralExpression e2 = (LiteralExpression) rightOperand;
-			if(e2.value == 1 && operator == Symbol.Id.DIV){
-				return leftOperand;
-			}		
+			// if(e2.value == 1 && operator == Symbol.Id.DIV){
+			// 	return leftOperand;
+			// }		
 			if(!(e1.rightOperand instanceof LiteralExpression)){ 
 			//tauschen ((a # A) #c) >> ((a # c) #A)
 				switch(operator){
@@ -232,6 +232,7 @@ class BinaryExpression extends Expression {
 							e1.rightOperand = e2;
 							return this.optimizeTree();
 						}
+            break;
 					case TIMES:
 					case DIV:
 					case OR:
