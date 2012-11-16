@@ -163,7 +163,7 @@ class TryStatement extends Statement {
         // nicht notwendig, da Stack wiederhergestellt wird
         // code.println("SUB R2, R1 ; pop");
 
-        code.correctExceptionFrame();
+        // code.correctExceptionFrame();
         code.println("ADD R2, R1 ; push");
         code.println("MMR (R2), R7 ; Fehlercode auf dem Stack legen");
 /** BEGIN Bonus Aufgabe (4): Try&Catch-Erweiterung*/
@@ -172,15 +172,7 @@ class TryStatement extends Statement {
         	String endCatchLabel = code.nextLabel();
         	//catchCode auf dem Stack ablegen
         	c.catchCode.generateCode(code);
-        	//Throw-Wert,  Catch-Wert und Adresse der naechsten Ausnahmerbehandlung holen
-        	code.println("MRI R7, _exception ; _exception Adresse holen");
-        	code.println("MRM R7, (R7) ; _exception holen");
-        	// code.println("MRI R5, 3 ; offset fuer Ausnahmebehandlung");
-          /** BEGIN Aufgabe (j): Garbage Collector*/
-        	code.println("MRI R5, 4 ; offset fuer Ausnahmebehandlung");
-          /** END Aufgabe (j)*/
-        	code.println("ADD R7, R5 ; zeigt auf Stelle mit der naechste Ausnahmebehandlung");
-        	code.println("MRM R7, (R7) ; naechste Ausnahmebehandlung holen");
+          //Throw Wert holen
         	code.println("MRM R5, (R2) ; pop catch value");
         	code.println("SUB R2, R1");
         	code.println("MRM R6, (R2) ; pop throw value");
@@ -199,6 +191,16 @@ class TryStatement extends Statement {
         	code.println("; END CATCH");
         	code.println(endCatchLabel + ":");
 	}
+        //Adresse der naechsten Ausnahmerbehandlung holen
+        code.println("MRI R7, _exception ; _exception Adresse holen");
+        code.println("MRM R7, (R7) ; _exception holen");
+        code.println("MRM R7, (R7) ; naechsten Ausnahmerahmen holen");
+        // code.println("MRI R5, 3 ; offset fuer Ausnahmebehandlung");
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("MRI R5, 4 ; offset fuer Ausnahmebehandlung");
+        /** END Aufgabe (j)*/
+        code.println("ADD R7, R5 ; zeigt auf Stelle mit der naechste Ausnahmebehandlung");
+        code.println("MRM R7, (R7) ; naechste Ausnahmebehandlung holen");
         code.println("MRR R0, R7 ; springe zur naechsten Ausnahmebehandlung");
 	/*//catchCode auf dem Stack ablegen
         catchCode.generateCode(code);
@@ -228,6 +230,9 @@ class TryStatement extends Statement {
 	/**END Bonus Aufgabe 4*/
         code.println("; END TRY");
         code.println(endLabel + ":");
+        /** Bonus Aufgabe (4): Try&Catch-Erweiterung */
+        code.correctExceptionFrame();
+        /** END Bonus Aufgabe (4) */
     }
 
 
