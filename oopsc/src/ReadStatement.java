@@ -57,8 +57,11 @@ class ReadStatement extends Statement {
         newInt.generateCode(code);
         code.println("; READ");
         code.println("MRM R5, (R2)"); // R2 zeigt auf ein boxed Integer
+        /** BEGIN Aufgabe (j): Garbage Collector*/
+        code.println("MRI R6, " + (ClassDeclaration.intClass.objectSize - 1));
+        /** END Aufgabe (j)*/
         /** BEGIN Aufgabe (i): Vererbung*/
-        code.println("MRI R6, " + ClassDeclaration.HEADERSIZE); 
+        // code.println("MRI R6, " + ClassDeclaration.HEADERSIZE); 
         code.println("ADD R5, R6");
         /** END Aufgabe (i)*/
         code.println("SYS 0, 6 ; Gelesenen Wert in R6 ablegen");
