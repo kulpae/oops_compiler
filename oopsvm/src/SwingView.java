@@ -4,13 +4,14 @@ import javax.swing.text.html.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.font.TextLayout;
 import java.awt.font.FontRenderContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.HashMap;
 
 class SwingView extends JFrame {
 
@@ -18,7 +19,7 @@ class SwingView extends JFrame {
     private RegisterTable registerTbl;
     private WordTable progTbl;
     private JLabel helpPanel;
-    private JPanel widgetPane;
+    private LabelBagPanel widgetPane;
     private CodeTextPane codeViewer;
     private LinkedList<SwingView.WordTable> dataPools;
     private static Color[] regColors = new Color[]{Color.orange, new Color(255,240,245),
@@ -27,6 +28,12 @@ class SwingView extends JFrame {
 
     public SwingView(SwingController controller, boolean expand){
         super("OOPSVM Inspector");
+        UIManager.put ("ToggleButton.select", new Color(0.05f, 0.2f, 0.3f));
+        UIManager.put ("ToggleButton.background", new Color(0.1f, 0.4f, 0.6f));
+        UIManager.put ("ToggleButton.foreground", Color.white);
+        UIManager.put ("ToggleButton.focus", new Color(0.05f, 0.2f, 0.3f));
+        UIManager.put ("ToggleButton.border", BorderFactory.createLineBorder(Color.black, 1));
+        UIManager.put ("Resizer.background", Color.lightGray);
         this.controller = controller;
         dataPools = new LinkedList<SwingView.WordTable>();
         build(expand);
@@ -103,13 +110,7 @@ class SwingView extends JFrame {
         c.gridwidth=2;
         c.gridheight=3;
         c.fill=GridBagConstraints.BOTH;
-        // stackTbl = new SwingView.WordTable();
-        // heapTbl = new SwingView.WordTable();
-        // JScrollPane stackTblSP = new JScrollPane(stackTbl);
-        // JScrollPane heapTblSP = new JScrollPane(heapTbl);
-        // JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, stackTblSP, heapTblSP);
-        // jsp.setResizeWeight(0.5);
-        widgetPane = new JPanel(new BorderLayout());
+        widgetPane = new LabelBagPanel();
         add(new JScrollPane(widgetPane), c);
 
         setPreferredSize(new Dimension(800, 400));
@@ -145,56 +146,17 @@ class SwingView extends JFrame {
       SwingView.WordTable tbl = new SwingView.WordTable();
       tbl.setModel(new SwingModel.WordModel(mem, offset, 1, name));
       dataPools.add(tbl);
-      addWidget(tbl);
-    }
-
-    private void addWidget(SwingView.WordTable tbl){
-      JScrollPane tblS = new JScrollPane(tbl);
-      int height = widgetPane.getHeight()/dataPools.size();
-      int width = 50;
-      if(widgetPane.getComponentCount() > 0){
-        Component c = widgetPane.getComponent(0);
-        widgetPane.removeAll();
-        JSplitPane jsp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, c, tblS);
-        // jsp.setResizeWeight(0.5);
-        widgetPane.add(jsp, BorderLayout.CENTER);
-      }else{
-        widgetPane.add(tblS, BorderLayout.CENTER);
-      }
-      Container con = widgetPane;
-      Component c;
-      while(con.getComponentCount()>0){
-        c = con.getComponent(0);
-        if(c instanceof JScrollPane){
-          c.setPreferredSize(new Dimension(width, height));
-          break;
-        } else if(c instanceof JSplitPane){
-          Component c1 = ((JSplitPane)c).getTopComponent();
-          Component c2 = ((JSplitPane)c).getBottomComponent();
-          c1.setPreferredSize(new Dimension(width, height));
-          c2.setPreferredSize(new Dimension(width, height));
-          con = (Container)c1;
-        } else {
-          break;
-        }
+      widgetPane.add(tbl, name);
+      if(mem.length < 3){
+        widgetPane.setExpanded(tbl, false);
       }
       widgetPane.revalidate();
     }
 
-    // public void setStack(int[] stack, int offset){
-    //     stackTbl.setModel(new SwingModel.WordModel(stack, offset, 1, "Stack"));
-    // }
-
-    // public void setHeap(int[] heap, int offset){
-    //     heapTbl.setModel(new SwingModel.WordModel(heap, offset, 1, "Heap"));
-    // }
-
     public void setMemory(int idx, int value){
         progTbl.getModel().setMemory(idx, value);
         for(SwingView.WordTable t: dataPools){
-          if(t.getModel().setMemory(idx, value)){
-            break;
-          }
+          t.getModel().setMemory(idx, value);
         }
     }
 
@@ -223,9 +185,7 @@ class SwingView extends JFrame {
             }
         }
         for(SwingView.WordTable t: dataPools){
-          if(t.getModel().setMark(value, regColors[idx])){
-            break;
-          }
+          t.getModel().setMark(value, regColors[idx]);
         }
     }
 
@@ -350,7 +310,7 @@ class SwingView extends JFrame {
         }
 
         private void rebuildCache(){
-            ArrayList<Row> rows = new ArrayList<Row>(); 
+            ArrayList<Row> rows = new ArrayList<Row>();
             Graphics2D g2 = (Graphics2D)getGraphics();
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                             RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -378,7 +338,7 @@ class SwingView extends JFrame {
                     row.x = x;
                 }
                 lineNumber += line.lineCount;
-                rows.add(row); 
+                rows.add(row);
 
                 x += tokenSpace;
                 row.y = y;
@@ -482,11 +442,102 @@ class SwingView extends JFrame {
         }
 
         public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return 10;
+            return 100;
         }
 
         public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
             return 20;
         }
+    }
+
+    static class LabelBagPanel extends JPanel{
+      private Component glue;
+      private ActionListener expanderListener;
+      private MouseAdapter resizerListener;
+      private static final int headerHeight = 22;
+
+      public LabelBagPanel(){
+        super();
+        super.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        glue = Box.createVerticalGlue();
+
+        expanderListener = new ActionListener(){
+          public void actionPerformed(ActionEvent e){
+            if(e.getSource() instanceof JToggleButton){
+              Component s = (Component) e.getSource();
+              Container con = s.getParent();
+              Component jscomp = con.getComponent(2);
+              jscomp.setVisible(!jscomp.isVisible());
+              con.revalidate();
+              con.repaint();
+            }
+          }
+        };
+
+        resizerListener = new MouseAdapter(){
+          public void mouseDragged(MouseEvent e){
+            Component s = (Component) e.getSource();
+            Container con = s.getParent();
+            Component jscomp = con.getComponent(2);
+            if(jscomp instanceof JScrollPane && jscomp.isVisible()){
+              Dimension d = new Dimension(jscomp.getSize());
+              d.height = e.getYOnScreen() - jscomp.getLocationOnScreen().y;
+              int h = Integer.MAX_VALUE;
+              try {
+                JViewport v = ((JScrollPane)jscomp).getViewport();
+                Component c = v.getView();
+                h = c.getHeight();
+              } catch(Exception ex){}
+              if(d.height < headerHeight) d.height = headerHeight;
+              if(d.height > h+headerHeight) d.height = h + headerHeight;
+              jscomp.setPreferredSize(d);
+              con.revalidate();
+              con.repaint();
+            }
+          }
+        };
+      }
+
+
+      public void setExpanded(Component comp, boolean value){
+        Component jsp = comp.getParent().getParent();
+        jsp.setVisible(value);
+        Component tb = jsp.getParent().getComponent(0);
+        if(tb instanceof JToggleButton){
+          ((JToggleButton)tb).getModel().setSelected(value);
+        }
+
+      }
+
+      protected void addImpl(Component comp, Object constraints, int index){
+        JPanel compWrapper = new JPanel(new BorderLayout());
+        String name = "Expand";
+        if(constraints != null && constraints instanceof String){
+          name = (String) constraints;
+        }
+        JToggleButton expander = new JToggleButton(name, true);
+        expander.addActionListener(expanderListener);
+        compWrapper.add(expander, BorderLayout.NORTH);
+
+        JPanel resizer = new JPanel();
+        resizer.setOpaque(true);
+        resizer.setBackground((Color)UIManager.get("Resizer.background"));
+        resizer.setPreferredSize(new Dimension(Integer.MAX_VALUE, 5));
+        resizer.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+        resizer.addMouseMotionListener(resizerListener);
+        compWrapper.add(resizer, BorderLayout.SOUTH);
+
+        compWrapper.setBorder(BorderFactory.createLineBorder(Color.darkGray, 1));
+
+        JScrollPane jsp = new JScrollPane(comp);
+        Dimension jspDim = new Dimension(compWrapper.getPreferredSize().width,
+            Math.min(200+headerHeight, comp.getPreferredSize().height + headerHeight));
+        jsp.setPreferredSize(jspDim);
+        compWrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+
+        compWrapper.add(jsp, BorderLayout.CENTER);
+        super.addImpl(compWrapper, constraints, index);
+        super.addImpl(glue, null, -1);
+      }
     }
 }

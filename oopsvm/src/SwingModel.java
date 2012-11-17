@@ -173,7 +173,10 @@ class SwingModel {
         };
 
         public static String query(int instr, int p1, int p2){
+          if(instr >= 0 && instr < db.length){
             return String.format(db[instr], p1, p2);
+          }
+          return "-";
         }
     }
 
