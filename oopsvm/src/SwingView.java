@@ -468,8 +468,8 @@ class SwingView extends JFrame {
               Container con = s.getParent();
               Component jscomp = con.getComponent(2);
               jscomp.setVisible(!jscomp.isVisible());
-              con.revalidate();
-              con.repaint();
+              if(con instanceof JComponent)
+                ((JComponent)con).revalidate();
             }
           }
         };
@@ -491,8 +491,8 @@ class SwingView extends JFrame {
               if(d.height < headerHeight) d.height = headerHeight;
               if(d.height > h+headerHeight) d.height = h + headerHeight;
               jscomp.setPreferredSize(d);
-              con.revalidate();
-              con.repaint();
+              if(con instanceof JComponent)
+                ((JComponent)con).revalidate();
             }
           }
         };

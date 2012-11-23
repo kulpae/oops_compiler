@@ -11,7 +11,7 @@ class IfStatement extends Statement {
     LinkedList<Statement> thenStatements = new LinkedList<Statement>();
 
     /** BEGIN Aufgabe (b): ELSEIF und ELSE */
-    /** Die Anweisungen im THEN-Teil. */
+    /** Die Anweisungen im ELSE-Teil. */
     LinkedList<Statement> elseStatements = new LinkedList<Statement>();
     /** END Aufgabe (b) */
 
@@ -106,14 +106,14 @@ class IfStatement extends Statement {
      * @param code Der Strom, in den die Ausgabe erfolgt.
      */
     void generateCode(CodeStream code) {
-        String elseLabel = code.nextLabel();
+        String elseLabel = code.nextLabel();//Aufgabe(b) Label für ELSE Statements
         String endLabel = code.nextLabel();
         code.println("; IF");
         condition.generateCode(code);
         code.println("MRM R5, (R2) ; Bedingung vom Stapel nehmen");
         code.println("SUB R2, R1");
         code.println("ISZ R5, R5 ; Wenn 0, dann");
-        code.println("JPC R5, " + elseLabel + " ; Sprung zu ELSE"); // Veraendert fuer Aufgabe (b)
+        code.println("JPC R5, " + elseLabel + " ; Sprung zu ELSE"); //Aufgabe(b) Sprung zu ELSE statt zum ende
         code.println("; THEN");
         for (Statement s : thenStatements) {
             s.generateCode(code);
