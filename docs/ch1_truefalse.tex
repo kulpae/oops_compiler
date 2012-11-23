@@ -1,19 +1,13 @@
+\section{Einführung}
+In diesem Kapitel führen wir die Begriffe \verb|TRUE| und \verb|FALSE| ein.
+Da noch keine Boolschen Ausdrücke Exisitieren, entsprechen die dann 1 und 0.\\
 
-\section{Placeholder Text}
+\section{Lexikalische Analyse}
+Damit die Symbole  \verb|TRUE| und \verb|FALSE|  eingelesen werden können müssen sie zuerst in  \verb|Symbol.java| definiert werden.
+\lstinputlisting[firstnumber=21, linerange={21-21}]{../oopsc/src/Symbol.java}
+Nun da wir Symbole haben mit denen OOPSC arbeiten kann, definieren wir in \verb|LexicalAnalysis.java|, dass er die Symbole anlegen soll, wenn er \verb|TRUE| bzw. \verb|FALSE| ließt.
+\lstinputlisting[firstnumber=89, linerange={89-92}]{../oopsc/src/LexicalAnalysis.java}
 
-Test True False
-\lstinputlisting[firstnumber=19, linerange={19-22}]{../oopsc/src/Symbol.java}
-
-\begin{Verbatim}
-  Ein wenig Text.
-  Mehr Text.
-  Nice.
-\end{Verbatim}
-
-\begin{Verbatim}[frame=single, label=\textit{N}\textbf{ice}!, 
-       labelposition=topline, formatcom=\color{orange}, 
-       framesep=2mm, framerule=2mm, fontseries=b]
-  Etwas Style!
-\end{Verbatim}
-
-\textbf{Bold Text}
+\section{Syntaktische Analyse}
+In der Syntax von OOPS gehören  \verb|TRUE| und \verb|FALSE| zu den Literalen, also müssen wir in \verb|SyntaxAnalysis.java| Sie als LiteralExpression in \verb|literal()| einfügen. Da nun alle wieteren Komponenten wie BoolType bereits bekannt sind, könne wir sie verwenden und  \verb|TRUE| und \verb|FALSE| sind erfolgreich eingebunden.
+\lstinputlisting[firstnumber=646, linerange={646-655}]{../oopsc/src/SyntaxAnalysis.java}
