@@ -1,0 +1,2 @@
+TESTTYPE := COMPILE
+@@VALID@@Fehler in Zeile 2, Spalte 12: Auf jedem Ausführungspfad wird Rückgabewert erwartet

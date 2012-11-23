@@ -65,11 +65,11 @@ class MethodDeclaration extends Declaration {
         //Main.main darf keine Parameter haben!
         if(declarations.currentClass.identifier.name.equals("Main") && identifier.name.equals("main")){
           if(!params.isEmpty()){
-            throw new CompileException("Methode Main.main darf keine Parameter haben", null);
+            throw new CompileException("Methode Main.main darf keine Parameter haben", identifier.position);
           }
           /** BEGIN Aufgabe (g): Return*/
           if(hasReturnType()){
-            throw new CompileException("Methode Main.main darf keinen Rueckgabewert haben", null);
+            throw new CompileException("Methode Main.main darf keinen Rueckgabewert haben", identifier.position);
           }
           /** END Aufgabe (g) */
         }
@@ -141,7 +141,7 @@ class MethodDeclaration extends Declaration {
             returnAccessible = returnAccessible || s.returnAccessible();
         }
         if(hasReturnType() && !returnAccessible){
-          throw new CompileException("Auf jedem Ausfuehrungspfad wird ein Rueckgabewert erwartet", null);
+          throw new CompileException("Auf jedem Ausfuehrungspfad wird ein Rueckgabewert erwartet", identifier.position);
         }
         /** END Aufgabe (g) */
 

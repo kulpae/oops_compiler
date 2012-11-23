@@ -1,0 +1,2 @@
+TESTTYPE := COMPILE
+@@VALID@@Fehler in Zeile 27, Spalte 7: Doppelte Deklaration von Main
