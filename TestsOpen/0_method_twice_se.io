@@ -1,0 +1,2 @@
+TESTTYPE := COMPILE
+@@VALID@@Fehler in Zeile 6, Spalte 12: Doppelte Deklaration von main

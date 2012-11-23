@@ -1,0 +1,4 @@
+TESTTYPE := EXECUTE
+abc@@VALID@@OK
+cba@@VALID@@
+cda@@VALID@@OK

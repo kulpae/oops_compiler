@@ -1,0 +1,4 @@
+TESTTYPE := EXECUTE
+t@@VALID@@t
+e@@VALID@@e
+s@@VALID@@s

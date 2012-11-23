@@ -1,0 +1,4 @@
+TESTTYPE := EXECUTE
+a@@VALID@@Yes
+b@@VALID@@ABORT c
+f@@VALID@@ABORT g
