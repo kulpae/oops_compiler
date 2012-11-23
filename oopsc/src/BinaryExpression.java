@@ -121,10 +121,26 @@ class BinaryExpression extends Expression {
 			leftOperand = e1.operand;
 			e1.operand = this;
 			return e1.optimizeTree();
-		case TIMES:
-		case DIV:
 		case OR:
 		case AND:
+			if(rightOperand instanceof UnaryExpression){
+				UnaryExpression e2 = (UnaryExpression)rightOperand;
+				leftOperand = e1.operand;
+				rightOperand = e2.operand;
+				if(operator == Symbol.Id.OR){
+					operator = Symbol.Id.AND;
+				}else{
+					operator = Symbol.Id.OR;
+				}
+				e1.operand = this;
+				return e1.optimizeTree();
+			}else{
+				leftOperand = rightOperand;
+				rightOperand = e1;
+			return this.optimizeTree();
+			}
+		case TIMES:
+		case DIV:
 			// (-(A) * B) >> -(A*B)
 			leftOperand = e1.operand;
 			e1.operand = this;
@@ -145,10 +161,11 @@ class BinaryExpression extends Expression {
 			operator = Symbol.Id.MINUS;
 			rightOperand = e2.operand;
 			return this.optimizeTree();
-		case TIMES:
-		case DIV:
 		case OR:
 		case AND:
+			return this;
+		case TIMES:
+		case DIV:
 			// (A * -(B)) >> -(A*B)
 			rightOperand = e2.operand;
 			e2.operand = this;
