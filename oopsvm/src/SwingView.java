@@ -423,7 +423,7 @@ class SwingView extends JFrame {
                 if(row.lineNumber == targetRow){
                     r.y = (int)(row.y - (row.layout.getAscent() + 1));
                     r.width = (int)row.width;
-                    r.height = (int)row.height;
+                    r.height = (int)row.height*2;// with extra margin
                 }
             }
             scrollRectToVisible(r);

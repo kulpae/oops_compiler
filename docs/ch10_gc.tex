@@ -1,0 +1,42 @@
+\section{Einf"uhrung}
+Die ganze Zeit lang wurde der \verb|Push only Stack| verwendet.  Obwohl dieser
+recht leicht zu implementieren ist, hat dieser den Nachteil, dass er irgendwann
+voll wird.
+
+In dieser Aufgabe wird ein \verb|Copy Collector| mit Stackverbrauch
+implementiert. Dieser verwendet zwei Heaps. Es wird, wie beim \verb|Push only Stack|,
+ein Heap sequentiell gef"ullt, bis dieser voll ist.
+
+Wird beim erstellen eines Objekts detektiert, dass nicht genug Platz vorhanden
+ist, so wird der \verb|Garbage Collector| aktiviert.
+Dieser kopiert alle erreichbaren Objekte von aktuellen Heap auf den anderen und
+arbeitet auf diesem weiter. Ist der Heap danach immer noch voll, so kann auch
+der \verb|Garbage Collector| nicht mehr helfen und das Programm terminiert mit
+einem Fehler.
+
+Es stellt sich nun ein Problem, wie die erreichbaren Objekte ermittelt werden
+k"onnen.  Dieses Problem l"asst sich l"osen, indem eine Wurzelmenge gef"uhrt
+wird, die erstmal nur die Objekte enth"alt, die direkt vom Stack referenziert
+werden. Dann werden diese Objekte auf den neuen Heap mit einer
+\verb|clone|-Methode kopiert, die jede Klasse definiert.  Diese Methode kennt
+die Attribute ihrer Klasse und kopiert rekursiv alle referenzierten Objekte auf
+den neuen Heap. So wird ein Baum aufgespannt, der in der Wurzelmenge beginnt.
+Dieser stellt alle erreichbaren Objekte dar.
+
+%TODO: Baumgraph mit Wurzelmenge (Stack) auf Heap zeigen
+
+\section{Vorbereitung}
+% 1. Heap teilen
+% 2. _ch, _nh
+% 3. NEW nullt Attribute
+% 4. Lokale Variablen nullen (VarOrCall)
+% 5. Wurzelmenge (R4)
+% 6. Fixes fuer R4 (_free und changes im code)
+% 7. NEW ruft _lookup auf, die die Obergrenzen ueberprueft und den Garbage
+%    Collector in Gang setzt, falls notwenig
+% 8. Reihenfolge aendern fuer AccessSteatement, damit Objekt-Referenz nicht auf R2 liegt.
+% 9. Objekte um _newAddress erweitern
+% 10. Klonemethode implementieren
+% 11. Code-Fixes, damit clone klappt (box/unbox, isA, CastStatement)
+% 12. Attributliste beschaffen (samt der von Parentklasse)
+
