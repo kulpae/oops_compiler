@@ -1,12 +1,16 @@
 \section{Einführung}
-In diesem Kapitel führen wir die Begriffe \verb|TRUE| und \verb|FALSE| als erste boolsche Werte ein.\\
+In diesem Kapitel führen wir die Begriffe \verb|TRUE| und \verb|FALSE| ein.
+Da noch keine Boolschen Ausdrücke Exisitieren, entsprechen True und False dann jeweils 1 und 0.\\
 
 \section{Lexikalische Analyse}
-Damit die Symbole  \verb|TRUE| und \verb|FALSE|  eingelesen werden können müssen sie zuerst in  \verb|Symbol.java| definiert werden.
+Damit die Symbole  \verb|TRUE| und \verb|FALSE|  eingelesen werden können müssen sie zuerst in  \verb|Symbol.java| definiert werden.\\
+Dafür wird folgendes der enum Id in \verb|Symbo.java| hinzugefügt:
 \lstinputlisting[firstnumber=21, linerange={21-21}]{../oopsc/src/Symbol.java}
-Nun da wir Symbole haben mit denen OOPSC arbeiten kann, definieren wir in \verb|LexicalAnalysis.java|, dass er die Symbole anlegen soll, wenn er \verb|TRUE| bzw. \verb|FALSE| ließt.
+In \verb|LexicalAnalysis.java| muss eingefügt werden, dass beim lesen von \verb|TRUE| bzw. \verb|FALSE| die jeweiligen Symbole angelegt werden sollen.\\
+Dazu wird LexicalAnalysis in \verb|LexicalAnalysis.java| erweitert:
 \lstinputlisting[firstnumber=89, linerange={89-92}]{../oopsc/src/LexicalAnalysis.java}
 
 \section{Syntaktische Analyse}
-In der Syntax von OOPS gehören  \verb|TRUE| und \verb|FALSE| zu den Literalen, also müssen wir in \verb|SyntaxAnalysis.java| Sie als LiteralExpression in \verb|literal()| einfügen. Da nun alle wieteren Komponenten wie BoolType bereits bekannt sind, könne wir sie verwenden und  \verb|TRUE| und \verb|FALSE| sind erfolgreich eingebunden.
+In der Syntax von OOPS gehören  \verb|TRUE| und \verb|FALSE| zu den Literalen, also werden \verb|TRUE| und \verb|False| in \verb|SyntaxAnalysis.java|  als LiteralExpression in \verb|literal()| einfügen. Da nun alle wieteren Komponenten wie BoolType bereits bekannt sind, sind \verb|TRUE| und \verb|FALSE| funktionsfähig integriert.\\
+Dazu wird in literal in \verb|SyntaxAnalysis.java| folgendes hinzugefügt:
 \lstinputlisting[firstnumber=646, linerange={646-655}]{../oopsc/src/SyntaxAnalysis.java}

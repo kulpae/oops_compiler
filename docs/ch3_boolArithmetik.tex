@@ -1,16 +1,54 @@
 \section{Einführung}
-In deisem Kaptiel wird die Boolsche Arithmethik um \verb|AND|, \verb|OR| und \verb|NOT| erweitert.
+In diesem Kapitel wird die Boolsche Arithmetik um AND, OR und NOT erweitert.
+Dazu werden wieder die Bezeichner der Lexika hinzugefügt ,die Syntax und die Kontext Analyse erweitert und der zu generierende Code definiert.  Diesesmal sind die Syntax und der Code jedoch eigenständig. 
 
 \section{Lexikalische Analyse}
-Wie zuvor werden die Symbole \verb|AND| ,\verb|OR| und \verb|NOT| in Symbol.java hinzugefügt.
-Und in der lexikalischen Analyse in LexicalAnalysis.java lesbar gemacht.
-\lstinputlisting[firstnumber=97, linerange={97-92}]{../oopsc/src/LexicalAnalysis.java}
-
+Zuerst werden die Symbole in  \verb|Symbol.java| definiert.\\
+Dafür wird folgendes der enum Id in \verb|Symbo.java| hinzugefügt:
+\lstinputlisting[firstnumber=23, linerange={23-23}]{../oopsc/src/Symbol.java}
+In der lexikalischen Analyse in \verb|LexicalAnalysis.java| wird ergänzt, wie die Token erstellt werden.\\
+Dazu wird LexicalAnalysis in \verb|LexicalAnalysis.java| erweitert:
+\lstinputlisting[firstnumber=97, linerange={97-100}]{../oopsc/src/LexicalAnalysis.java}
 
 \section{Syntaktische Analyse}
+\subsection{NOT}
+Die Boolsche Ausdruck NOT ist mit dem Ausdruck Minus zuvergleichen, beide negieren den Literalen-Ausdruck im Anschluss.
+Der Unterschied wird erst in der Kontext Analyse.
+\lstinputlisting[firstnumber=597, linerange={597-608}]{../oopsc/src/SyntaxAnalysis.java}
+
+\subsection{OR}
+Die Syntax von OR ist der von der Multiplikation oder auch Addition ähnlich. 
+Nur dass die nächst kleineren Ausdrücke Relationen sind, da OR die nächst höhere  Bindung hat.
+Da AND die nächst höhere Bindung hat, wird der aufrug dort sein,siehe AND.
+\lstinputlisting[firstnumber=513, linerange={513-528}]{../oopsc/src/SyntaxAnalysis.java}
+\subsection{AND}
+Die Syntax von AND ist ebenfalls den von der Multiplikation oder auch Addition ähnlich. 
+Nur dass die nächst kleineren Ausdrücke die eben definierten logicalOR sind.
+\lstinputlisting[firstnumber=597, linerange={597-608}]{../oopsc/src/SyntaxAnalysis.java}
+Nun fehlen noch die Aufrufe von logicalAND. Diese sind überall dort, wo vorher die Relationen erwartet wurden. mit ausnahme des eben definierten logicalOR.
+IF-Statements:\\
+\lstinputlisting[firstnumber=391, linerange={391-391}]{../oopsc/src/LexicalAnalysis.java}
+WHILE-Statements:\\
+\lstinputlisting[firstnumber=410, linerange={410-410}]{../oopsc/src/LexicalAnalysis.java}
+und zu letzt im Literal:
+\lstinputlisting[firstnumber=678, linerange={678-678}]{../oopsc/src/LexicalAnalysis.java}
 
 \section{Kontext Analyse}
+\subsection{NOT}
+Für NOT wird UnaryExpression erweitert.
+Wenn als Operator NOT erkannt wird, soll ein boolType erwartet werden.
+\lstinputlisting[firstnumber=34, linerange={34-38}]{../oopsc/src/UnaryExpression.java}
+\subsection{AND und OR}
+Beide Ausdrücke sind BinaryExpression und bei Beiden müssen die Sieten vom Typ boolType sein.
+\lstinputlisting[firstnumber=52, linerange={52-59}]{../oopsc/src/BinaryExpression.java}
+
+
 
 \section{Ausführender Code}
-
-\lstinputlisting[firstnumber=39, linerange={39-43}]{../oopsc/src/ifStatement.java}
+\subsection{NOT}
+Um den Ausdruck zu verneinen wird ISZ auf das Ergebniss verwendet.
+ISZ prüft auf 0 und gibt dann 1 zurück, somit wird der Wert negiert.
+\lstinputlisting[firstnumber=114, linerange={114-119}]{../oopsc/src/UnaryExpression.java}
+\subsection{AND und OR}
+Für AND und OR existieren bereits Befehle, welche hier nur aufgerufen werden müssen.
+\lstinputlisting[firstnumber=385, linerange={385-394}]{../oopsc/src/BinaryExpression.java}

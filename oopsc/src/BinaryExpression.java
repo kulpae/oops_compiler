@@ -47,10 +47,10 @@ class BinaryExpression extends Expression {
             type = ClassDeclaration.intType;
             break;
         /** BEGIN Aufgabe (c): AND, OR, NOT */
-        case AND:
-        case OR:
         case ANDTHEN:
         case ORELSE:
+        case AND:
+        case OR:
             leftOperand = leftOperand.unBox();
             rightOperand = rightOperand.unBox();
             leftOperand.type.check(ClassDeclaration.boolType, leftOperand.position);

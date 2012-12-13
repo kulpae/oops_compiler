@@ -1,0 +1,34 @@
+\section{Einführung}
+In diesem Kapitel wird Das Program um weitere Klassen erweitert.
+Dazu muss die Syntax und der Code von Program erweitert werden.
+Auch können nun Boolean und Integer diesen Klassen hinzugefügt werden, statt gesondert behandelt zu werden.
+
+\section{Klassen Deklaration}
+Damit alle Deklarationen zur Kontext-Analyse bekannt sind, muss das Deklarieren und die Analyse in ClassDeclaration getrennt werden,
+ sodass  eine neue Methode \verb|contextAnalysisForBody(Declaration declarations)| verfügbar ist.
+\lstinputlisting[firstnumber=218, linerange={218-231}]{../oopsc/src/ClassDeclaration.java}
+
+\section{mehrere Klassen im Programm}
+In Programm muss zuerst die classDeclaration durch eine Liste von classDeclaration's ersetzt werden.
+\lstinputlisting[firstnumber=9, linerange={9-12}]{../oopsc/src/Program.java}
+Ebenso muss der Konstruktor angepasst werden. In diesem Code werden nun zwei Konstruktoren geführt. Einer für nur eine Klasse und einer führ eine Liste von Klassen.
+\lstinputlisting[firstnumber=22, linerange={22-41}]{../oopsc/src/Program.java}
+Da nun das Programm bereits mehrere Klassen führen kann, muss nun angepasst werden, was damit getan werden muss.
+Dazu ist die Bearbeitung zur vorherigen Klasse ähnlich. Nur dass nun die Deklaration und Kontext-Analyse getrennt ausgeführt werden müssen, damit sämtliche Definitionen der Klassen und Methoden der Klassen wärend der ganzen Kontext-Analyse vorhanden ist.
+\lstinputlisting[firstnumber=98, linerange={98-122}]{../oopsc/src/Program.java}
+
+Da Boolean und Integer ebenfalls Klassen sind können sie nun mit den anderen Behandelt werden, so entfällt der bisherige Code in \verb|Program.java| von Integer und Boolean stattdessen werden sie der Liste der Klassen hinzugefügt.
+\lstinputlisting[firstnumber=69, linerange={69-70}]{../oopsc/src/Program.java}
+Daraufhin müssen sie aber mit \verb|null| initialisiert werden.
+\lstinputlisting[firstnumber=86, linerange={86-94}]{../oopsc/src/Program.java}
+
+\section{Syntax}
+Zum Schluss muss noch die Syntax angepasst werden, sodass auch mehrere Klassen für ein Programm gelesen werden können.
+Dazu fügen wir der Funktion \verb|parse()| eine Schleife hinzu, welche mit Hilfe des Symbols \verb|Class| nach Klassen sucht.
+Die Notwendigkeit und Eigenschaften von Main sind hier nicht nötig, da sie wie vorher in \verb|Programm.java| berücksichtigt werden.
+\lstinputlisting[firstnumber=742, linerange={742-750}]{../oopsc/src/SyntaxAnalysis.java}
+
+\section{Ausführender Code}
+Der meiste Code ist bereits über die Deklarationen abgedeckt, somit sind die Aufrufe bereits abgeschlossen.
+Da ebenfalls bereits für Klassen eine vollständige \verb|generateCode| Methode existiert, muss Diese nurnoch für alle Klassen ausgeführt werden.
+\lstinputlisting[firstnumber=197, linerange={197-201}]{../oopsc/src/Program.java}

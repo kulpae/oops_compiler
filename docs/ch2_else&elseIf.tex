@@ -1,45 +1,48 @@
 \section{Einführung}
-In diesem Kapitel erweitern wir das If-Statement um einen möglichen else-Pfad und mehreren möglichen elseIf-Pfaden.
-
+In diesem Kapitel wird das If-Statement um einen möglichen else-Pfad und mehreren möglichen elseIf-Pfaden erweitert.
+Dazu werden die Bezeichner dem Lexika hinzugefügt und die Syntax und die Kontext Analyse um die else- bzw. elseIf-Pfade erweitert. Ebenso wird nun auch der generierte Code erweitert.
 
 \section{Lexikalische Analyse}
-Zuerst werde die Symbole in  \verb|Symbol.java| definiert.
+Zuerst werden die Symbole in  \verb|Symbol.java| definiert.\\
+Dafür wird folgendes der enum Id in \verb|Symbo.java| hinzugefügt:
 \lstinputlisting[firstnumber=22, linerange={22-22}]{../oopsc/src/Symbol.java}
 In der lexikalischen Analyse in \verb|LexicalAnalysis.java| wird ergänzt, dass beim einlesen von \verb|ELSE| das Symbol ELSE und bei 
-\verb|ELSEIF| das Symbol ELSEIF erzeugt wird.
+\verb|ELSEIF| das Symbol ELSEIF erzeugt wird.\\
+Dazu wird LexicalAnalysis in \verb|LexicalAnalysis.java| erweitert:
 \lstinputlisting[firstnumber=93, linerange={93-96}]{../oopsc/src/LexicalAnalysis.java}
 
 \section{Syntaktische Analyse}
-Bevor mit der syntaktischen Analyse begonnen werden kann muss  ifStatement.java
+Bevor mit der syntaktischen Analyse begonnen werden kann muss  \verb|IfStatement.java|
 durch elseStatements erweitert werden. Statements für die ELSEIF-Pfade sind nicht nötig, genauer wird darauf noch später eingegangen.
-\lstinputlisting[firstnumber=13, linerange={13-16}]{../oopsc/src/ifStatement.java}
+\lstinputlisting[firstnumber=13, linerange={13-16}]{../oopsc/src/IfStatement.java}
 Für spätere Tests ist es auch sinnvoll die print() Funktion zu erweitern.
-\lstinputlisting[firstnumber=90, linerange={90-99}]{../oopsc/src/ifStatement.java}
+\lstinputlisting[firstnumber=90, linerange={90-99}]{../oopsc/src/IfStatement.java}
 \vspace{3mm}
 Die Syntax einer If-Anweisung sieht wie folgt aus:\\ \verb|IF relation THEN statements { ELSEIF relation THEN statements }|\\
-\verb|[ ELSE statements ] END IF|\\  bisher haben wir: \verb| IF relation THEN statements END IF|.\\
+\verb|[ ELSE statements ] END IF|\\  bisher ist vorhanden: \verb| IF relation THEN statements END IF|.\\
 Als erstes müssen die IF-Statements zus"atzlich bei ELSE, bzw ELSEIF abgebrochen werden.
-Entweder man ersetzt dafür die Statements hier durch einen neuen Statement-Typ oder wie in unserem Falle, wird Statements erweitert, da ELSE und ELSEIF in keinen anderen Kontext Verwendung findet.
+Entweder man ersetzt dafür die Statements hier durch einen neuen Statement-Typ ersetzt oder Statements wird erweitert.
+Da  ELSE und ELSEIF in keinen anderen Kontext Verwendung findet, wird hier einfach Statements erweitert.
 \lstinputlisting[firstnumber=361, linerange={361-368}]{../oopsc/src/SyntaxAnalysis.java}
 Die restlichen Erg"anzungen der SyntaxAnalyse finden in \verb|statement()| unter dem Fall \verb|IF| statt.
 Nach dem hinzufügen der IF-Statements muss nun überprüft werden, was als nächstes Zeichen folgt, ist es ELSE, bzw. ELSEIF, muss es verbraucht werden und weitere Statements für die ELSE-Statements, bzw ELSEIF-Statements hinzugefügt werden.
 Dabei ist zu beachten, das nur ELSEIF folgende ELSEIF und/oder ELSE zulässt.
 Da ELSEIF ebenso wie IF im ELSE-Pfad funktioniert, kann es auch so verwendet werden.
-Dazu ver"andert man Das Symbol ELSEIF zu IF, erzeugt daraus ein \verb|ifStatement()| und fügt dieses zu den elseStatements hinzu.
+Dazu ver"andert man Das Symbol ELSEIF zu IF, erzeugt daraus ein \verb|ifStatement()| und fügt dieses zu den elseStatements hinzu.\\  Hierfür wird in statement der IF-Fall in \verb|SyntaxAnalysis.java| wie folgt erweitert:
 \lstinputlisting[firstnumber=395, linerange={395-399}]{../oopsc/src/SyntaxAnalysis.java}
-Dadurch werden Rekursiv weitere ELSEIF-Pfade möglich.
+Dadurch werden Rekursiv weitere ELSEIF-Pfade möglich.	
 Falls jedoch kein ELSEIF noch vorhanden ist, muss noch der ELSE-Fall geprüft werden.
 Wenn das Symbol ELSE erkannt wird, werden die folgenden Statements den ELSE-Statements hinzugefügt.
 \lstinputlisting[firstnumber=400, linerange={400-404}]{../oopsc/src/SyntaxAnalysis.java}
 
 \section{Kontext Analyse}
 Die Kontext Analyse findet in der Regel in der dazugehörigen Java-Datei statt.
-In ifStatement.java ist bereits eine Analyse für das Statement mit IF-Pfad vorhanden. Diesen müssen wir nun noch mit dem ELSE-Pfad ergänzen. Da wir IFELSE ersetzen ist keine eigene Analyse mehr nötig.
-\lstinputlisting[firstnumber=39, linerange={39-43}]{../oopsc/src/ifStatement.java}
+In \verb|IfStatement.java| ist bereits eine Analyse für das Statement mit IF-Pfad vorhanden. Diesen müssen noch mit dem ELSE-Pfad ergänzen. Da IFELSE ersetzen wurde ist die Einbettung vollständig und muss nicht weiter Beachtet werden.
+\lstinputlisting[firstnumber=39, linerange={39-43}]{../oopsc/src/IfStatement.java}
 
 \section{Ausführender Code}
 Auch hier wird auf den bereits bestehenden Code aufgesetzt.
-Zuerst brauchen wir ein weiteres Label für den ELSE-Pfad.
+Zuerst wird ein weiteres Label für den ELSE-Pfad benötigt.
 \lstinputlisting[firstnumber=109, linerange={109-109}]{../oopsc/src/ifStatement.java}
 Der Sprung falls die Bedingung nicht zutrifft muss auf den ELSE-Pfad gehen.
 \lstinputlisting[firstnumber=116, linerange={116-116}]{../oopsc/src/ifStatement.java}

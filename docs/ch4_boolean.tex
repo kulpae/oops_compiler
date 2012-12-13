@@ -1,0 +1,18 @@
+\section{Einführung}
+In diesem Kapitel fügen wir den Typ Boolean hinzu.
+Heirfür muss zunächst das Objekt erstellt, die Grösse festgelegt und  den Deklarationen hinzufügen werden.
+Ausserdem muss \verb|box< , bzw \verb|unBox|, angepasst werden.
+
+\section{Implementierung}
+Zuerst muss die Deklaration boolClass in \verb|ClassDeclaration.java| erstellt werden.
+\lstinputlisting[firstnumber=37, linerange={37-40}]{../oopsc/src/ClassDeclaration.java}
+Wie auch beim Integer muss die Objektgröße in der contextAnalyse definiert werden.
+\lstinputlisting[firstnumber=37, linerange={54-57}]{../oopsc/src/Program.java}
+ Außerdem muss boolClass den Deklarationen hinzugefügt werden.
+\lstinputlisting[firstnumber=69, linerange={69-70}]{../oopsc/src/Program.java}
+\section{Boxen}
+Jetzt können bereits Boolean-Objekte angelegt werden, aber nicht geboxt, bzw. unboxt werden.
+Dazu müssen noch \verb|BoxExpression.java| und \verb|UnBoxExpression.java| erweitert werden. Dabei sollte auch boolClass als Operand zugelassen werden:
+\lstinputlisting[firstnumber=17, linerange={17-29}]{../oopsc/src/UnBoxExpression.java}
+
+\lstinputlisting[firstnumber=23, linerange={23-38}]{../oopsc/src/BoxExpression.java}
